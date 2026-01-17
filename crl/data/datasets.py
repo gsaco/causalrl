@@ -39,7 +39,7 @@ class LoggedBanditDataset:
     contexts: np.ndarray
     actions: np.ndarray
     rewards: np.ndarray
-    behavior_action_probs: np.ndarray
+    behavior_action_probs: np.ndarray | None
     action_space_n: int
     metadata: dict[str, Any] | None = None
 
@@ -52,7 +52,8 @@ class LoggedBanditDataset:
         require_ndarray("contexts", self.contexts)
         require_ndarray("actions", self.actions)
         require_ndarray("rewards", self.rewards)
-        require_ndarray("behavior_action_probs", self.behavior_action_probs)
+        if self.behavior_action_probs is not None:
+            require_ndarray("behavior_action_probs", self.behavior_action_probs)
 
         if self.contexts.ndim not in (1, 2):
             raise ValueError(
@@ -61,13 +62,20 @@ class LoggedBanditDataset:
             )
         require_shape("actions", self.actions, 1)
         require_shape("rewards", self.rewards, 1)
-        require_shape("behavior_action_probs", self.behavior_action_probs, 1)
+        if self.behavior_action_probs is not None:
+            require_shape("behavior_action_probs", self.behavior_action_probs, 1)
 
-        require_same_length(
-            ["contexts", "actions", "rewards", "behavior_action_probs"],
-            [self.contexts, self.actions, self.rewards, self.behavior_action_probs],
-        )
-        require_in_unit_interval("behavior_action_probs", self.behavior_action_probs)
+        if self.behavior_action_probs is not None:
+            require_same_length(
+                ["contexts", "actions", "rewards", "behavior_action_probs"],
+                [self.contexts, self.actions, self.rewards, self.behavior_action_probs],
+            )
+            require_in_unit_interval("behavior_action_probs", self.behavior_action_probs)
+        else:
+            require_same_length(
+                ["contexts", "actions", "rewards"],
+                [self.contexts, self.actions, self.rewards],
+            )
 
         if self.action_space_n <= 0:
             raise ValueError("action_space_n must be positive.")
@@ -87,6 +95,36 @@ class LoggedBanditDataset:
 
         return int(self.actions.shape[0])
 
+    @property
+    def states(self) -> np.ndarray:
+        """Alias for contexts to match the core Dataset interface."""
+
+        return self.contexts
+
+    @property
+    def next_states(self) -> None:
+        """Bandit data has no next-state field."""
+
+        return None
+
+    @property
+    def dones(self) -> np.ndarray:
+        """Bandit data is terminal after each sample."""
+
+        return np.ones_like(self.actions, dtype=bool)
+
+    @property
+    def horizon(self) -> int:
+        """Return horizon length for bandits (1)."""
+
+        return 1
+
+    @property
+    def discount(self) -> float:
+        """Return discount factor for bandits (1.0)."""
+
+        return 1.0
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize dataset to a dictionary of arrays."""
 
@@ -99,6 +137,12 @@ class LoggedBanditDataset:
             "metadata": self.metadata or {},
         }
 
+    def __repr__(self) -> str:
+        return (
+            "LoggedBanditDataset(num_samples="
+            f"{self.num_samples}, action_space_n={self.action_space_n})"
+        )
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "LoggedBanditDataset":
         """Create a dataset from a serialized dictionary."""
@@ -107,7 +151,11 @@ class LoggedBanditDataset:
             contexts=np.asarray(data["contexts"]),
             actions=np.asarray(data["actions"]),
             rewards=np.asarray(data["rewards"]),
-            behavior_action_probs=np.asarray(data["behavior_action_probs"]),
+            behavior_action_probs=(
+                np.asarray(data["behavior_action_probs"])
+                if data.get("behavior_action_probs") is not None
+                else None
+            ),
             action_space_n=int(data["action_space_n"]),
             metadata=dict(data.get("metadata", {})),
         )
@@ -142,7 +190,7 @@ class TrajectoryDataset:
     actions: np.ndarray
     rewards: np.ndarray
     next_observations: np.ndarray
-    behavior_action_probs: np.ndarray
+    behavior_action_probs: np.ndarray | None
     mask: np.ndarray
     discount: float
     action_space_n: int
@@ -159,7 +207,8 @@ class TrajectoryDataset:
         require_ndarray("actions", self.actions)
         require_ndarray("rewards", self.rewards)
         require_ndarray("next_observations", self.next_observations)
-        require_ndarray("behavior_action_probs", self.behavior_action_probs)
+        if self.behavior_action_probs is not None:
+            require_ndarray("behavior_action_probs", self.behavior_action_probs)
         require_ndarray("mask", self.mask)
 
         if self.observations.ndim not in (2, 3):
@@ -175,7 +224,8 @@ class TrajectoryDataset:
 
         require_shape("actions", self.actions, 2)
         require_shape("rewards", self.rewards, 2)
-        require_shape("behavior_action_probs", self.behavior_action_probs, 2)
+        if self.behavior_action_probs is not None:
+            require_shape("behavior_action_probs", self.behavior_action_probs, 2)
         require_shape("mask", self.mask, 2)
 
         if self.actions.shape != self.rewards.shape:
@@ -183,7 +233,7 @@ class TrajectoryDataset:
                 "actions and rewards must share shape (n, t), got "
                 f"{self.actions.shape} vs {self.rewards.shape}."
             )
-        if self.actions.shape != self.behavior_action_probs.shape:
+        if self.behavior_action_probs is not None and self.actions.shape != self.behavior_action_probs.shape:
             raise ValueError(
                 "behavior_action_probs must share shape (n, t) with actions, got "
                 f"{self.behavior_action_probs.shape} vs {self.actions.shape}."
@@ -213,8 +263,9 @@ class TrajectoryDataset:
                 "actions must be within [0, action_space_n) on valid steps."
             )
 
-        valid_probs = self.behavior_action_probs[self.mask]
-        require_in_unit_interval("behavior_action_probs (masked)", valid_probs)
+        if self.behavior_action_probs is not None:
+            valid_probs = self.behavior_action_probs[self.mask]
+            require_in_unit_interval("behavior_action_probs (masked)", valid_probs)
 
     @property
     def num_trajectories(self) -> int:
@@ -234,6 +285,30 @@ class TrajectoryDataset:
 
         return int(self.mask.sum())
 
+    @property
+    def states(self) -> np.ndarray:
+        """Alias for observations to match the core Dataset interface."""
+
+        return self.observations
+
+    @property
+    def next_states(self) -> np.ndarray:
+        """Alias for next_observations to match the core Dataset interface."""
+
+        return self.next_observations
+
+    @property
+    def dones(self) -> np.ndarray:
+        """Infer terminal flags from the mask (last valid step per trajectory)."""
+
+        mask = np.asarray(self.mask, dtype=bool)
+        dones = np.zeros_like(mask, dtype=bool)
+        lengths = mask.sum(axis=1).astype(int)
+        for idx, length in enumerate(lengths):
+            if length > 0:
+                dones[idx, length - 1] = True
+        return dones
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize dataset to a dictionary of arrays."""
 
@@ -250,6 +325,12 @@ class TrajectoryDataset:
             "metadata": self.metadata or {},
         }
 
+    def __repr__(self) -> str:
+        return (
+            "TrajectoryDataset(num_trajectories="
+            f"{self.num_trajectories}, horizon={self.horizon}, action_space_n={self.action_space_n})"
+        )
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "TrajectoryDataset":
         """Create a dataset from a serialized dictionary."""
@@ -259,7 +340,11 @@ class TrajectoryDataset:
             actions=np.asarray(data["actions"]),
             rewards=np.asarray(data["rewards"]),
             next_observations=np.asarray(data["next_observations"]),
-            behavior_action_probs=np.asarray(data["behavior_action_probs"]),
+            behavior_action_probs=(
+                np.asarray(data["behavior_action_probs"])
+                if data.get("behavior_action_probs") is not None
+                else None
+            ),
             mask=np.asarray(data["mask"], dtype=bool),
             discount=float(data["discount"]),
             action_space_n=int(data["action_space_n"]),

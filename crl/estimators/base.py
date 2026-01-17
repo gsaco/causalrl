@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -59,8 +59,37 @@ class EstimatorReport:
     stderr: float | None
     ci: tuple[float, float] | None
     diagnostics: dict[str, Any]
-    warnings: list[str]
-    metadata: dict[str, Any]
+    warnings: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a pandas-friendly dict representation."""
+
+        return {
+            "value": self.value,
+            "stderr": self.stderr,
+            "ci": self.ci,
+            "diagnostics": self.diagnostics,
+            "warnings": list(self.warnings),
+            "metadata": dict(self.metadata),
+        }
+
+    def to_dataframe(self) -> Any:
+        """Return a one-row pandas DataFrame if pandas is available."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for to_dataframe().") from exc
+        return pd.DataFrame([self.to_dict()])
+
+    def __repr__(self) -> str:
+        return (
+            "EstimatorReport(value="
+            f"{self.value:.6f}, stderr={self.stderr}, ci={self.ci}, "
+            f"diagnostics_keys={list(self.diagnostics.keys())}, "
+            f"warnings={len(self.warnings)}, metadata_keys={list(self.metadata.keys())})"
+        )
 
 
 class OPEEstimator(ABC):
@@ -91,6 +120,9 @@ class OPEEstimator(ABC):
         self.diagnostics_config = diagnostics_config or DiagnosticsConfig()
         self.estimand.require(self.required_assumptions)
 
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(run_diagnostics={self.run_diagnostics})"
+
     @abstractmethod
     def estimate(self, data: Any) -> EstimatorReport:
         """Estimate policy value from data."""
@@ -105,3 +137,6 @@ def compute_ci(
         return None
     z = 1.96 if alpha == 0.05 else 1.96
     return (value - z * stderr, value + z * stderr)
+
+
+EstimationReport = EstimatorReport

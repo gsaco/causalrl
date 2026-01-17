@@ -15,6 +15,7 @@ from crl.estimators.base import (
     OPEEstimator,
     compute_ci,
 )
+from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
@@ -53,6 +54,7 @@ class LinearQModel:
         self.state_space_n = state_space_n
         self.ridge = ridge
         self.weights: np.ndarray | None = None
+        self.train_mse: float | None = None
 
     def _features(self, observations: np.ndarray) -> np.ndarray:
         obs = np.asarray(observations)
@@ -103,6 +105,9 @@ class LinearQModel:
                 xty = x.T @ y
                 self.weights[action] = np.linalg.solve(xtx, xty)
 
+        preds = self.predict_q(observations, actions)
+        self.train_mse = float(np.mean((preds - targets) ** 2))
+
     def _predict_all(self, obs_features: np.ndarray) -> np.ndarray:
         if self.weights is None:
             raise ValueError("Q model is not fit.")
@@ -149,16 +154,19 @@ class DoublyRobustEstimator(OPEEstimator):
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via cross-fitted DR."""
 
-        rng = np.random.default_rng(self.config.seed)
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for DR.")
         indices = np.arange(data.num_trajectories)
-        rng.shuffle(indices)
-        folds = np.array_split(indices, self.config.num_folds)
+        folds = make_folds(data.num_trajectories, self.config.num_folds, self.config.seed)
 
         fold_values = np.zeros(data.num_trajectories, dtype=float)
+        model_mse: list[float] = []
 
         for fold_idx in folds:
             train_idx = np.setdiff1d(indices, fold_idx)
             q_model = self._fit_q_model(data, train_idx)
+            if q_model.train_mse is not None:
+                model_mse.append(q_model.train_mse)
             fold_values[fold_idx] = self._dr_values(data, fold_idx, q_model)
 
         value = float(np.mean(fold_values))
@@ -173,6 +181,8 @@ class DoublyRobustEstimator(OPEEstimator):
             diagnostics, warnings = run_diagnostics(
                 weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
             )
+            if model_mse:
+                diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
 
         return EstimatorReport(
             value=value,

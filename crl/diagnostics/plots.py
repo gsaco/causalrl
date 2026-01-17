@@ -7,61 +7,85 @@ from typing import Any
 import numpy as np
 
 
-def plot_weight_histogram(weights: np.ndarray, bins: int = 50) -> Any:
-    """Plot histogram of importance weights using matplotlib.
+def _as_finite_1d(x: np.ndarray) -> np.ndarray:
+    x = np.asarray(x, dtype=float).reshape(-1)
+    return x[np.isfinite(x)]
 
-    Estimand:
-        Not applicable.
-    Assumptions:
-        matplotlib is installed.
-    Inputs:
-        weights: Array of importance weights.
-        bins: Number of histogram bins.
-    Outputs:
-        Matplotlib figure.
-    Failure modes:
-        Raises ImportError if matplotlib is unavailable.
+
+def plot_weight_histogram(
+    weights: np.ndarray,
+    bins: int = 50,
+    *,
+    xlabel: str = r"$\hat{w}$",
+    ylabel: str = "Count",
+    title: str | None = None,
+    column: str = "double",
+    aspect: float = 0.55,
+    clip_quantile: float | None = None,
+    log_y: bool = False,
+    ax: Any | None = None,
+) -> Any:
     """
-
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as exc:  # pragma: no cover - optional dependency
-        raise ImportError("matplotlib is required for plotting diagnostics.") from exc
-
-    w = np.asarray(weights, dtype=float)
-    fig, ax = plt.subplots()
-    ax.hist(w, bins=bins)
-    ax.set_title("Importance Weight Histogram")
-    ax.set_xlabel("Weight")
-    ax.set_ylabel("Count")
-    return fig
-
-
-def plot_ratio_histogram(ratios: np.ndarray, bins: int = 50) -> Any:
-    """Plot histogram of target/behavior ratios.
-
-    Estimand:
-        Not applicable.
-    Assumptions:
-        matplotlib is installed.
-    Inputs:
-        ratios: Array of target/behavior ratios.
-        bins: Number of histogram bins.
-    Outputs:
-        Matplotlib figure.
-    Failure modes:
-        Raises ImportError if matplotlib is unavailable.
+    Journal-ready histogram for importance weights.
+    Returns the Matplotlib figure (so callers can save/export consistently).
     """
+    from crl.viz import apply_axes_style, journal_style, new_figure, paper_figspec
 
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as exc:  # pragma: no cover - optional dependency
-        raise ImportError("matplotlib is required for plotting diagnostics.") from exc
+    w = _as_finite_1d(weights)
+    if clip_quantile is not None and w.size > 0:
+        hi = float(np.quantile(w, clip_quantile))
+        w = np.clip(w, None, hi)
 
-    r = np.asarray(ratios, dtype=float)
-    fig, ax = plt.subplots()
-    ax.hist(r, bins=bins)
-    ax.set_title("Target/Behavior Ratio Histogram")
-    ax.set_xlabel("Ratio")
-    ax.set_ylabel("Count")
-    return fig
+    with journal_style():
+        if ax is None:
+            spec = paper_figspec(column=column, aspect=aspect)
+            fig, ax = new_figure(spec)
+        else:
+            fig = ax.figure
+
+        ax.hist(
+            w,
+            bins=bins,
+            color="0.40",
+            edgecolor="0.10",
+            linewidth=1.0,
+        )
+
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        if title:
+            ax.set_title(title)
+
+        if log_y:
+            ax.set_yscale("log")
+
+        apply_axes_style(ax)
+        return fig
+
+
+def plot_ratio_histogram(
+    ratios: np.ndarray,
+    bins: int = 50,
+    *,
+    xlabel: str = r"$\hat{\nu}$",
+    ylabel: str = "Count",
+    title: str | None = None,
+    column: str = "double",
+    aspect: float = 0.55,
+    clip_quantile: float | None = None,
+    log_y: bool = False,
+    ax: Any | None = None,
+) -> Any:
+    """Journal-ready histogram for target/behavior ratios."""
+    return plot_weight_histogram(
+        ratios,
+        bins=bins,
+        xlabel=xlabel,
+        ylabel=ylabel,
+        title=title,
+        column=column,
+        aspect=aspect,
+        clip_quantile=clip_quantile,
+        log_y=log_y,
+        ax=ax,
+    )

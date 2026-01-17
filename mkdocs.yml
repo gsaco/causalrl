@@ -6,49 +6,71 @@ theme:
 nav:
   - Home: index.md
   - Tutorials:
-      - Bandit OPE: tutorials/bandit_ope.md
-      - MDP OPE: tutorials/mdp_ope.md
-      - Benchmarks: tutorials/benchmarks.md
+      - Quickstart (Bandit): tutorials/quickstart_bandit.md
+      - Quickstart (MDP): tutorials/quickstart_mdp.md
+      - Diagnostics: tutorials/diagnostics.md
+      - Confidence Intervals: tutorials/confidence_intervals.md
+      - Sensitivity Analysis: tutorials/sensitivity.md
+      - Long-Horizon MIS vs IS: tutorials/long_horizon_mis.md
+      - Proximal OPE (Advanced): tutorials/proximal_ope.md
+  - How-to:
+      - Run OPE Pipeline: how-to/run_ope_pipeline.md
+      - Generate Reports: how-to/generate_reports.md
+      - Run Benchmarks: how-to/run_benchmarks.md
+      - Sensitivity Bounds: how-to/sensitivity_bounds.md
+  - Reference:
+      - API Overview: reference/api/index.md
+      - Core Interfaces: reference/api/core.md
+      - Assumptions: reference/api/assumptions.md
+      - Estimands: reference/api/estimands.md
+      - Estimators: reference/api/estimators.md
+      - OPE Pipeline: reference/api/ope.md
+      - Diagnostics: reference/api/diagnostics.md
+      - Sensitivity: reference/api/sensitivity.md
+      - Benchmarks: reference/api/benchmarks.md
+      - Confounding: reference/api/confounding.md
+      - Policies: reference/api/policies.md
+      - Data: reference/api/data.md
+      - Experiments: reference/api/experiments.md
+      - Visualization: reference/api/viz.md
+      - Estimator Reference:
+          - Overview: reference/estimators/index.md
+          - IS: reference/estimators/is.md
+          - WIS: reference/estimators/wis.md
+          - PDIS: reference/estimators/pdis.md
+          - DR: reference/estimators/dr.md
+          - WDR: reference/estimators/wdr.md
+          - MAGIC: reference/estimators/magic.md
+          - MRDR: reference/estimators/mrdr.md
+          - MIS: reference/estimators/mis.md
+          - FQE: reference/estimators/fqe.md
+          - DualDICE: reference/estimators/dual_dice.md
+          - Double RL: reference/estimators/double_rl.md
+          - High-Confidence OPE: reference/estimators/hcope.md
+      - Config Schemas: reference/configs.md
+  - Explanation:
+      - Estimator Selection Guide: explanation/estimator_selection.md
+      - Assumptions & Identifiability: explanation/assumptions.md
+      - Bias-Variance Tradeoffs: explanation/bias_variance.md
+      - Confounding & Sensitivity: explanation/confounding.md
+      - Proximal OPE: explanation/proximal.md
   - Notebooks:
-      - Bandit OPE: notebooks/01_bandit_ope.ipynb
-      - MDP OPE: notebooks/02_mdp_ope.ipynb
-      - Diagnostics: notebooks/03_diagnostics.ipynb
-      - Sensitivity: notebooks/04_sensitivity.ipynb
-  - Methods:
-      - Importance Sampling: methods/is.md
-      - Weighted IS: methods/wis.md
-      - Per-Decision IS: methods/pdis.md
-      - Doubly Robust: methods/dr.md
-      - Fitted Q Evaluation: methods/fqe.md
-      - Sensitivity (Bandit): methods/bandit_sensitivity.md
-      - Overlap Diagnostics: methods/overlap_diagnostics.md
-      - ESS Diagnostics: methods/ess_diagnostics.md
-      - Weight Tail Diagnostics: methods/weight_tail_diagnostics.md
-  - Assumptions:
-      - Sequential Ignorability: assumptions/sequential_ignorability.md
-      - Overlap: assumptions/overlap.md
-      - Markov: assumptions/markov.md
-      - Correct Model: assumptions/correct_model.md
-      - Bounded Rewards: assumptions/bounded_rewards.md
-      - Bounded Confounding: assumptions/bounded_confounding.md
-  - API:
-      - Overview: api/index.md
-      - Assumptions: api/assumptions.md
-      - Estimands: api/estimands.md
-      - Estimators: api/estimators.md
-      - Diagnostics: api/diagnostics.md
-      - Sensitivity: api/sensitivity.md
-      - Benchmarks: api/benchmarks.md
-      - Policies: api/policies.md
-      - Data: api/data.md
-      - Experiments: api/experiments.md
+      - Gallery: notebooks/index.md
+      - 01 Quickstart Bandit: notebooks/01_quickstart_bandit_ope.ipynb
+      - 02 Quickstart MDP: notebooks/02_quickstart_mdp_ope.ipynb
+      - 03 Diagnostics: notebooks/03_diagnostics_overlap_ess.ipynb
+      - 04 Confidence Intervals: notebooks/04_confidence_intervals_safe_selection.ipynb
+      - 05 Sensitivity Analysis: notebooks/05_sensitivity_analysis_bandits.ipynb
+      - 06 Long-Horizon MIS vs IS: notebooks/06_long_horizon_mis_vs_is.ipynb
+      - 07 Proximal OPE: notebooks/07_proximal_ope_confounded_pomdp.ipynb
   - References: references.md
   - Project Status: project_status.md
 plugins:
   - search
   - mkdocs-jupyter:
       include_source: true
-      execute: false
+      execute: true
+      allow_errors: false
   - mkdocstrings:
       handlers:
         python:

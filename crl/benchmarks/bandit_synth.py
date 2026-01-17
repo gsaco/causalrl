@@ -36,6 +36,8 @@ class SyntheticBanditConfig:
     num_contexts: int = 5
     num_actions: int = 4
     reward_noise_std: float = 0.1
+    behavior_scale: float = 1.0
+    target_scale: float = 1.0
     seed: int = 0
 
 
@@ -60,8 +62,8 @@ class SyntheticBandit:
         self.context_probs = rng.dirichlet(np.ones(config.num_contexts))
         self.reward_means = rng.normal(0.0, 1.0, size=(config.num_contexts, config.num_actions))
 
-        behavior_logits = rng.normal(size=(config.num_contexts, config.num_actions))
-        target_logits = rng.normal(size=(config.num_contexts, config.num_actions))
+        behavior_logits = rng.normal(size=(config.num_contexts, config.num_actions)) * config.behavior_scale
+        target_logits = rng.normal(size=(config.num_contexts, config.num_actions)) * config.target_scale
         self.behavior_policy = TabularPolicy(_softmax(behavior_logits))
         self.target_policy = TabularPolicy(_softmax(target_logits))
 

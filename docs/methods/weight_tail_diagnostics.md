@@ -20,3 +20,7 @@
 
 **References**
 - Uehara, Shi, Kallus (2022).
+
+## Example (synthetic benchmark)
+
+![](../assets/figures/weights_hist.png)

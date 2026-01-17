@@ -1,0 +1,20 @@
+suite: horizon
+benchmarks:
+  - name: mdp_short_horizon
+    type: mdp
+    num_trajectories: 200
+    estimators: ["is", "wis", "pdis", "dr", "wdr", "mis", "fqe"]
+    behavior_known: true
+    config:
+      horizon: 3
+      behavior_scale: 0.5
+      target_scale: 0.5
+  - name: mdp_long_horizon
+    type: mdp
+    num_trajectories: 200
+    estimators: ["is", "wis", "pdis", "dr", "wdr", "mis", "fqe"]
+    behavior_known: true
+    config:
+      horizon: 10
+      behavior_scale: 0.5
+      target_scale: 0.5

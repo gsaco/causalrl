@@ -13,15 +13,33 @@ license-files = ["LICENSE"]
 authors = [
   {name = "Gabriel Saco", email = "gsacow@gmail.com"}
 ]
+keywords = ["causal-inference", "reinforcement-learning", "off-policy-evaluation", "ope", "causal-rl"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
   "numpy>=1.23",
+  "pandas>=2.0",
+  "pyyaml>=6.0",
+  "typer>=0.12",
   "torch>=2.0",
 ]
 
 [project.optional-dependencies]
+plots = [
+  "matplotlib>=3.7",
+]
 dev = [
   "pytest>=7.4",
   "pytest-cov>=4.1",
+  "hypothesis>=6.95",
   "ruff>=0.4",
   "mypy>=1.6",
   "mkdocs>=1.5",
@@ -40,9 +58,22 @@ docs = [
   "mkdocstrings[python]>=0.24",
   "jupytext>=1.16",
   "matplotlib>=3.7",
+  "scienceplots>=2.1",
 ]
 benchmarks = [
   "matplotlib>=3.7",
+  "scienceplots>=2.1",
+]
+notebooks = [
+  "jupytext>=1.16",
+  "matplotlib>=3.7",
+  "pandas>=2.0",
+  "ipykernel>=6.29",
+  "jupyterlab>=4.0",
+  "scienceplots>=2.1",
+]
+dice-torch = [
+  "torch>=2.0",
 ]
 
 [project.urls]
@@ -51,6 +82,9 @@ Documentation = "https://gsaco.github.io/causalrl/"
 Repository = "https://github.com/gsaco/causalrl"
 Issues = "https://github.com/gsaco/causalrl/issues"
 Changelog = "https://github.com/gsaco/causalrl/blob/v1/CHANGELOG.md"
+
+[project.scripts]
+crl = "crl.cli:app"
 
 [tool.setuptools]
 include-package-data = true
