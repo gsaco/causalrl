@@ -1,0 +1,31 @@
+site_name: causalrl
+repo_url: https://github.com/gabrielsaco/causalrl
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Assumptions:
+      - Sequential Ignorability: assumptions/sequential_ignorability.md
+      - Overlap: assumptions/overlap.md
+      - Markov: assumptions/markov.md
+      - Correct Model: assumptions/correct_model.md
+      - Bounded Rewards: assumptions/bounded_rewards.md
+      - Bounded Confounding: assumptions/bounded_confounding.md
+  - Methods:
+      - Importance Sampling: methods/is.md
+      - Weighted IS: methods/wis.md
+      - Per-Decision IS: methods/pdis.md
+      - Doubly Robust: methods/dr.md
+      - Fitted Q Evaluation: methods/fqe.md
+      - Sensitivity (Bandit): methods/bandit_sensitivity.md
+      - Overlap Diagnostics: methods/overlap_diagnostics.md
+      - ESS Diagnostics: methods/ess_diagnostics.md
+      - Weight Tail Diagnostics: methods/weight_tail_diagnostics.md
+  - Tutorials:
+      - Bandit OPE: tutorials/bandit_ope.md
+      - MDP OPE: tutorials/mdp_ope.md
+      - Benchmarks: tutorials/benchmarks.md
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
