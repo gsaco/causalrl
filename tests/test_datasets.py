@@ -34,6 +34,40 @@ def test_logged_bandit_validation_fails_on_action_range():
         )
 
 
+def test_logged_bandit_validation_fails_on_nan():
+    contexts = np.zeros((2, 1))
+    contexts[0, 0] = np.nan
+    actions = np.array([0, 1])
+    rewards = np.ones(2)
+    behavior_action_probs = np.full(2, 0.5)
+    with pytest.raises(ValueError):
+        LoggedBanditDataset(
+            contexts=contexts,
+            actions=actions,
+            rewards=rewards,
+            behavior_action_probs=behavior_action_probs,
+            action_space_n=2,
+        )
+
+
+def test_logged_bandit_describe():
+    contexts = np.zeros((3, 2))
+    actions = np.array([0, 1, 0])
+    rewards = np.array([1.0, 0.5, 0.0])
+    behavior_action_probs = np.full(3, 0.5)
+    dataset = LoggedBanditDataset(
+        contexts=contexts,
+        actions=actions,
+        rewards=rewards,
+        behavior_action_probs=behavior_action_probs,
+        action_space_n=2,
+    )
+    summary = dataset.describe()
+    assert summary["num_samples"] == 3
+    assert summary["context_dim"] == 2
+    assert summary["behavior_action_probs_present"] is True
+
+
 def test_trajectory_validation_passes():
     obs = np.zeros((2, 3))
     actions = np.zeros((2, 3), dtype=int)
@@ -72,3 +106,66 @@ def test_trajectory_validation_fails_on_shape():
             discount=0.9,
             action_space_n=2,
         )
+
+
+def test_trajectory_validation_fails_on_noncontiguous_mask():
+    obs = np.zeros((1, 3))
+    actions = np.zeros((1, 3), dtype=int)
+    rewards = np.ones((1, 3))
+    next_obs = np.zeros((1, 3))
+    behavior_action_probs = np.full((1, 3), 0.5)
+    mask = np.array([[True, False, True]])
+    with pytest.raises(ValueError):
+        TrajectoryDataset(
+            observations=obs,
+            actions=actions,
+            rewards=rewards,
+            next_observations=next_obs,
+            behavior_action_probs=behavior_action_probs,
+            mask=mask,
+            discount=0.9,
+            action_space_n=2,
+        )
+
+
+def test_trajectory_validation_fails_on_empty_trajectory():
+    obs = np.zeros((1, 2))
+    actions = np.zeros((1, 2), dtype=int)
+    rewards = np.ones((1, 2))
+    next_obs = np.zeros((1, 2))
+    behavior_action_probs = np.full((1, 2), 0.5)
+    mask = np.zeros((1, 2), dtype=bool)
+    with pytest.raises(ValueError):
+        TrajectoryDataset(
+            observations=obs,
+            actions=actions,
+            rewards=rewards,
+            next_observations=next_obs,
+            behavior_action_probs=behavior_action_probs,
+            mask=mask,
+            discount=0.9,
+            action_space_n=2,
+        )
+
+
+def test_trajectory_describe():
+    obs = np.zeros((2, 3))
+    actions = np.zeros((2, 3), dtype=int)
+    rewards = np.ones((2, 3))
+    next_obs = np.zeros((2, 3))
+    behavior_action_probs = np.full((2, 3), 0.5)
+    mask = np.array([[True, True, False], [True, True, True]])
+    dataset = TrajectoryDataset(
+        observations=obs,
+        actions=actions,
+        rewards=rewards,
+        next_observations=next_obs,
+        behavior_action_probs=behavior_action_probs,
+        mask=mask,
+        discount=0.9,
+        action_space_n=2,
+    )
+    summary = dataset.describe()
+    assert summary["num_trajectories"] == 2
+    assert summary["horizon"] == 3
+    assert summary["behavior_action_probs_present"] is True

@@ -25,6 +25,7 @@ from crl.estimators.mis import MarginalizedImportanceSamplingEstimator
 from crl.estimators.mrdr import MRDREstimator
 from crl.estimators.wdr import WeightedDoublyRobustEstimator
 from crl.estimators.utils import compute_action_probs
+from crl.utils.seeding import set_seed
 
 
 @dataclass
@@ -155,6 +156,7 @@ def evaluate(
         Raises ValueError if requested estimators are unavailable.
     """
 
+    set_seed(seed)
     if estimand is None:
         assumptions = [SEQUENTIAL_IGNORABILITY, OVERLAP]
         if isinstance(dataset, TrajectoryDataset):
@@ -281,3 +283,6 @@ def _figure_to_base64(fig: Any) -> str:
     from crl.viz.style import figure_to_base64
 
     return figure_to_base64(fig, dpi=500)
+
+
+__all__ = ["OpeReport", "evaluate"]

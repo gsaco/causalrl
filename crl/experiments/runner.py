@@ -218,14 +218,14 @@ def _write_html_report(aggregate: pd.DataFrame, figures_dir: Path, output_path: 
         aggregate.to_html(index=False),
         "<h2>Figures</h2>",
     ]
-    for fig_path in sorted(figures_dir.glob(\"*.png\")):
+    for fig_path in sorted(figures_dir.glob("*.png")):
         img = _to_base64(fig_path)
-        html_parts.append(f\"<h3>{fig_path.stem}</h3>\")
-        html_parts.append(f\"<img src='data:image/png;base64,{img}' />\")
-    html_parts.append(\"</body></html>\")
-    output_path.write_text(\"\\n\".join(html_parts), encoding=\"utf-8\")
+        html_parts.append(f"<h3>{fig_path.stem}</h3>")
+        html_parts.append(f"<img src='data:image/png;base64,{img}' />")
+    html_parts.append("</body></html>")
+    output_path.write_text("\n".join(html_parts), encoding="utf-8")
 
 
 def _to_base64(path: Path) -> str:
     data = path.read_bytes()
-    return base64.b64encode(data).decode(\"utf-8\")
+    return base64.b64encode(data).decode("utf-8")

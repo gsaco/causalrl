@@ -35,6 +35,7 @@ class ISEstimator(OPEEstimator):
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via IS."""
 
+        self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
             return self._estimate_bandit(data)
         return self._estimate_trajectory(data)
@@ -116,6 +117,7 @@ class WISEstimator(OPEEstimator):
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via WIS."""
 
+        self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
             return self._estimate_bandit(data)
         return self._estimate_trajectory(data)
@@ -193,6 +195,7 @@ class PDISEstimator(OPEEstimator):
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via PDIS."""
 
+        self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
             return ISEstimator(self.estimand, self.run_diagnostics, self.diagnostics_config)._estimate_bandit(data)
         return self._estimate_trajectory(data)

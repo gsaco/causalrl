@@ -123,6 +123,13 @@ class OPEEstimator(ABC):
     def __repr__(self) -> str:
         return f"{type(self).__name__}(run_diagnostics={self.run_diagnostics})"
 
+    def _validate_dataset(self, data: Any) -> None:
+        """Run dataset validation if available."""
+
+        validator = getattr(data, "validate", None)
+        if callable(validator):
+            validator()
+
     @abstractmethod
     def estimate(self, data: Any) -> EstimatorReport:
         """Estimate policy value from data."""

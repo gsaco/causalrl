@@ -154,6 +154,7 @@ class DoublyRobustEstimator(OPEEstimator):
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via cross-fitted DR."""
 
+        self._validate_dataset(data)
         if data.behavior_action_probs is None:
             raise ValueError("behavior_action_probs are required for DR.")
         indices = np.arange(data.num_trajectories)

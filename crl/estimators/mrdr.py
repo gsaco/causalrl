@@ -83,6 +83,7 @@ class MRDREstimator(OPEEstimator):
         self.config = config or MRDRConfig()
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
+        self._validate_dataset(data)
         if data.behavior_action_probs is None:
             raise ValueError("behavior_action_probs are required for MRDR.")
 

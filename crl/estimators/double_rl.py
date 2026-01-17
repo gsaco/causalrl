@@ -95,6 +95,7 @@ class DoubleRLEstimator(OPEEstimator):
         self.config = config or DoubleRLConfig()
 
     def estimate(self, data: LoggedBanditDataset) -> EstimatorReport:
+        self._validate_dataset(data)
         indices = np.arange(data.num_samples)
         folds = make_folds(data.num_samples, self.config.num_folds, self.config.seed)
 

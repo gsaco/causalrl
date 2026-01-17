@@ -20,6 +20,7 @@ from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
 from crl.policies.tabular import TabularPolicy
+from crl.utils.seeding import set_seed
 
 try:
     import torch
@@ -112,6 +113,7 @@ class FQEEstimator(OPEEstimator):
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via FQE."""
 
+        self._validate_dataset(data)
         if self._can_use_tabular(data):
             values = self._tabular_values(data)
             value = float(np.mean(values))
@@ -235,8 +237,7 @@ class FQEEstimator(OPEEstimator):
         return v0[initial_states]
 
     def _fit_q_function(self, data: TrajectoryDataset) -> tuple[TorchQNetwork, float]:
-        torch.manual_seed(self.config.seed)
-        np.random.seed(self.config.seed)
+        set_seed(self.config.seed)
 
         obs, next_obs, actions, rewards, next_policy_probs = self._flatten_transitions(
             data
