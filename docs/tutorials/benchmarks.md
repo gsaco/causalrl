@@ -1,6 +1,6 @@
 # Benchmark Runner Tutorial
 
-Run the benchmark harness and write results to disk:
+Benchmark harness command:
 
 ```bash
 python experiments/run_benchmarks.py --output-dir results

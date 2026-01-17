@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to causalrl.
+Contribution guidelines for causalrl.
 
 ## Development setup
 

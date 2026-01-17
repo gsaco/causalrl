@@ -11,10 +11,10 @@ automatic diagnostics, and benchmark-driven development.
 - Synthetic benchmarks with known ground truth
 - Minimal dependencies with a PyTorch backend for model-based baselines
 
-## Quickstart
+## Installation
 
 ```bash
 python -m pip install -e ".[dev]"
 ```
 
-See the tutorials for minimal scripts and benchmark runs.
+Tutorials include minimal scripts and benchmark runs.

@@ -11,13 +11,13 @@ benchmarks with ground truth.
 - Confounded and partially identified settings (interfaces are explicit, advanced methods marked experimental)
 - Transport and mechanism shift (planned)
 
-## Quickstart
+## Installation
 
 ```bash
 python -m pip install -e ".[dev]"
 ```
 
-## Minimal examples
+## Examples
 
 Bandit OPE:
 
@@ -84,7 +84,7 @@ for estimator in estimators:
 - Confounded and transport settings are documented as experimental interfaces only.
 - Representation learning claims are treated as heuristics unless identified.
 
-## Citations (verified sources)
+## Citations
 
 - Deng, Jiang, Long, Zhang (2023). Causal Reinforcement Learning: A Survey. https://arxiv.org/abs/2307.01452
 - da Costa Cunha, Liu, French, Mian (2025). Unifying Causal Reinforcement Learning. https://arxiv.org/abs/2512.18135
@@ -96,7 +96,7 @@ for estimator in estimators:
 
 ## Benchmarks
 
-Run the synthetic benchmarks and write a table:
+Benchmark runner (CSV/JSONL output):
 
 ```bash
 python experiments/run_benchmarks.py --output-dir results
@@ -104,7 +104,7 @@ python experiments/run_benchmarks.py --output-dir results
 
 ## Documentation
 
-Build the docs locally:
+Documentation build:
 
 ```bash
 mkdocs serve
