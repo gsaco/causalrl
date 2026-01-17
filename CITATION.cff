@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "causalrl"
+message: "If you use this software, please cite it using the metadata below."
+authors:
+  - name: "CRL Contributors"
+version: "0.1.0"
+repository-code: "https://github.com/gabrielsaco/causalrl"
+license: "MIT"

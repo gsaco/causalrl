@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "causalrl"
+version = "0.1.0"
+description = "Causal Reinforcement Learning (CRL) toolbox"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+  {name = "CRL Contributors"}
+]
+dependencies = [
+  "numpy>=1.23",
+  "torch>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "ruff>=0.4",
+  "mypy>=1.6",
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.5",
+  "matplotlib>=3.7",
+]
+docs = [
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.5",
+]
+benchmarks = [
+  "matplotlib>=3.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/gabrielsaco/causalrl"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["crl*"]
+
+[tool.setuptools.package-data]
+crl = ["py.typed"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = false
+warn_unused_ignores = true
+ignore_missing_imports = true
