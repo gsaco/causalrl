@@ -1,9 +1,9 @@
 # MDP OPE Tutorial
 
-Minimal finite-horizon MDP OPE example.
+Quickstart finite-horizon MDP OPE example.
 
 ```bash
-python examples/minimal/mdp_ope.py
+python examples/quickstart/mdp_ope.py
 ```
 
 Generates trajectories, declares assumptions, and compares IS, WIS, PDIS, DR,

@@ -1,16 +1,19 @@
 site_name: causalrl
-repo_url: https://github.com/gabrielsaco/causalrl
+repo_url: https://github.com/gsaco/causalrl
+site_url: https://gsaco.github.io/causalrl/
 theme:
   name: material
 nav:
   - Home: index.md
-  - Assumptions:
-      - Sequential Ignorability: assumptions/sequential_ignorability.md
-      - Overlap: assumptions/overlap.md
-      - Markov: assumptions/markov.md
-      - Correct Model: assumptions/correct_model.md
-      - Bounded Rewards: assumptions/bounded_rewards.md
-      - Bounded Confounding: assumptions/bounded_confounding.md
+  - Tutorials:
+      - Bandit OPE: tutorials/bandit_ope.md
+      - MDP OPE: tutorials/mdp_ope.md
+      - Benchmarks: tutorials/benchmarks.md
+  - Notebooks:
+      - Bandit OPE: notebooks/01_bandit_ope.ipynb
+      - MDP OPE: notebooks/02_mdp_ope.ipynb
+      - Diagnostics: notebooks/03_diagnostics.ipynb
+      - Sensitivity: notebooks/04_sensitivity.ipynb
   - Methods:
       - Importance Sampling: methods/is.md
       - Weighted IS: methods/wis.md
@@ -21,10 +24,36 @@ nav:
       - Overlap Diagnostics: methods/overlap_diagnostics.md
       - ESS Diagnostics: methods/ess_diagnostics.md
       - Weight Tail Diagnostics: methods/weight_tail_diagnostics.md
-  - Tutorials:
-      - Bandit OPE: tutorials/bandit_ope.md
-      - MDP OPE: tutorials/mdp_ope.md
-      - Benchmarks: tutorials/benchmarks.md
+  - Assumptions:
+      - Sequential Ignorability: assumptions/sequential_ignorability.md
+      - Overlap: assumptions/overlap.md
+      - Markov: assumptions/markov.md
+      - Correct Model: assumptions/correct_model.md
+      - Bounded Rewards: assumptions/bounded_rewards.md
+      - Bounded Confounding: assumptions/bounded_confounding.md
+  - API:
+      - Overview: api/index.md
+      - Assumptions: api/assumptions.md
+      - Estimands: api/estimands.md
+      - Estimators: api/estimators.md
+      - Diagnostics: api/diagnostics.md
+      - Sensitivity: api/sensitivity.md
+      - Benchmarks: api/benchmarks.md
+      - Policies: api/policies.md
+      - Data: api/data.md
+      - Experiments: api/experiments.md
+  - References: references.md
+  - Project Status: project_status.md
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
 markdown_extensions:
   - admonition
   - toc:
