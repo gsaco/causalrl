@@ -1,7 +1,7 @@
 # causalrl
 
 causalrl is an estimand-first toolkit for causal reinforcement learning and
-offline policy evaluation. The API emphasizes identification assumptions,
+off-policy evaluation. The API emphasizes identification assumptions,
 automatic diagnostics, and benchmark-driven development.
 
 ## Highlights
@@ -9,12 +9,23 @@ automatic diagnostics, and benchmark-driven development.
 - Explicit estimands and assumption sets for each estimator
 - Diagnostics-first reports with overlap and ESS metrics
 - Synthetic benchmarks with known ground truth
-- Minimal dependencies with a PyTorch backend for model-based baselines
+- Focused dependencies with a PyTorch backend for model-based baselines
 
 ## Installation
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install causalrl
 ```
 
-Tutorials include minimal scripts and benchmark runs.
+Optional extras:
+
+```bash
+python -m pip install "causalrl[docs]"
+python -m pip install "causalrl[benchmarks]"
+```
+
+## Getting started
+
+- Run the quickstart scripts in `examples/quickstart/`
+- Work through the rendered notebooks under the Notebooks section
+- Browse the API reference for full docstrings

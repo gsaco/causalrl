@@ -8,9 +8,10 @@ version = "0.1.0"
 description = "Causal Reinforcement Learning (CRL) toolbox"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
-  {name = "CRL Contributors"}
+  {name = "Gabriel Saco", email = "gsacow@gmail.com"}
 ]
 dependencies = [
   "numpy>=1.23",
@@ -20,22 +21,39 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=7.4",
+  "pytest-cov>=4.1",
   "ruff>=0.4",
   "mypy>=1.6",
   "mkdocs>=1.5",
   "mkdocs-material>=9.5",
+  "mkdocs-jupyter>=0.24",
+  "mkdocstrings[python]>=0.24",
+  "jupytext>=1.16",
   "matplotlib>=3.7",
+  "build>=1.2",
+  "twine>=5.0",
 ]
 docs = [
   "mkdocs>=1.5",
   "mkdocs-material>=9.5",
+  "mkdocs-jupyter>=0.24",
+  "mkdocstrings[python]>=0.24",
+  "jupytext>=1.16",
+  "matplotlib>=3.7",
 ]
 benchmarks = [
   "matplotlib>=3.7",
 ]
 
 [project.urls]
-Homepage = "https://github.com/gabrielsaco/causalrl"
+Homepage = "https://github.com/gsaco/causalrl"
+Documentation = "https://gsaco.github.io/causalrl/"
+Repository = "https://github.com/gsaco/causalrl"
+Issues = "https://github.com/gsaco/causalrl/issues"
+Changelog = "https://github.com/gsaco/causalrl/blob/v1/CHANGELOG.md"
+
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]

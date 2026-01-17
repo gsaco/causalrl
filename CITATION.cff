@@ -2,7 +2,9 @@ cff-version: 1.2.0
 title: "causalrl"
 message: "Citation metadata for causalrl."
 authors:
-  - name: "CRL Contributors"
+  - family-names: "Saco"
+    given-names: "Gabriel"
+    email: "gsacow@gmail.com"
 version: "0.1.0"
-repository-code: "https://github.com/gabrielsaco/causalrl"
+repository-code: "https://github.com/gsaco/causalrl"
 license: "MIT"
