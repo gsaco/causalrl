@@ -44,3 +44,10 @@ def require_in_unit_interval(name: str, value: np.ndarray) -> None:
         raise ValueError(
             f"{name} must be in the interval (0, 1], got min={min_val}, max={max_val}."
         )
+
+
+def require_finite(name: str, value: np.ndarray) -> None:
+    """Validate that an array has no NaN or infinite values."""
+
+    if not np.all(np.isfinite(value)):
+        raise ValueError(f"{name} must not contain NaN or infinite values.")

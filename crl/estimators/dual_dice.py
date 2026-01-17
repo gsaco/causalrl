@@ -37,6 +37,7 @@ class DualDICEEstimator(OPEEstimator):
         self.config = config or DualDICEConfig()
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
+        self._validate_dataset(data)
         if data.state_space_n is None:
             raise ValueError("DualDICE requires discrete state_space_n.")
 

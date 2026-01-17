@@ -20,6 +20,7 @@ nav:
       - Sensitivity Bounds: how-to/sensitivity_bounds.md
   - Reference:
       - API Overview: reference/api/index.md
+      - Public API: reference/api/public_api.md
       - Core Interfaces: reference/api/core.md
       - Assumptions: reference/api/assumptions.md
       - Estimands: reference/api/estimands.md
@@ -48,6 +49,7 @@ nav:
           - Double RL: reference/estimators/double_rl.md
           - High-Confidence OPE: reference/estimators/hcope.md
       - Config Schemas: reference/configs.md
+      - Deprecation Policy: reference/deprecation.md
   - Explanation:
       - Estimator Selection Guide: explanation/estimator_selection.md
       - Assumptions & Identifiability: explanation/assumptions.md

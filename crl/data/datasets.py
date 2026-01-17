@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 
 from crl.utils.validation import (
+    require_finite,
     require_in_unit_interval,
     require_ndarray,
     require_same_length,
@@ -55,6 +56,11 @@ class LoggedBanditDataset:
         if self.behavior_action_probs is not None:
             require_ndarray("behavior_action_probs", self.behavior_action_probs)
 
+        require_finite("contexts", self.contexts)
+        require_finite("rewards", self.rewards)
+        if self.behavior_action_probs is not None:
+            require_finite("behavior_action_probs", self.behavior_action_probs)
+
         if self.contexts.ndim not in (1, 2):
             raise ValueError(
                 "contexts must have shape (n,) or (n, d), got "
@@ -64,6 +70,9 @@ class LoggedBanditDataset:
         require_shape("rewards", self.rewards, 1)
         if self.behavior_action_probs is not None:
             require_shape("behavior_action_probs", self.behavior_action_probs, 1)
+
+        if self.actions.shape[0] == 0:
+            raise ValueError("dataset must contain at least one sample.")
 
         if self.behavior_action_probs is not None:
             require_same_length(
@@ -136,6 +145,30 @@ class LoggedBanditDataset:
             "action_space_n": self.action_space_n,
             "metadata": self.metadata or {},
         }
+
+    def describe(self) -> dict[str, Any]:
+        """Return summary statistics for the dataset."""
+
+        context_dim = 1 if self.contexts.ndim == 1 else int(self.contexts.shape[1])
+        summary: dict[str, Any] = {
+            "type": "bandit",
+            "num_samples": self.num_samples,
+            "context_dim": context_dim,
+            "action_space_n": int(self.action_space_n),
+            "behavior_action_probs_present": self.behavior_action_probs is not None,
+            "reward_mean": float(np.mean(self.rewards)),
+            "reward_std": float(np.std(self.rewards)),
+            "reward_min": float(np.min(self.rewards)),
+            "reward_max": float(np.max(self.rewards)),
+        }
+        if self.behavior_action_probs is not None:
+            summary.update(
+                {
+                    "behavior_prob_min": float(np.min(self.behavior_action_probs)),
+                    "behavior_prob_max": float(np.max(self.behavior_action_probs)),
+                }
+            )
+        return summary
 
     def __repr__(self) -> str:
         return (
@@ -211,6 +244,12 @@ class TrajectoryDataset:
             require_ndarray("behavior_action_probs", self.behavior_action_probs)
         require_ndarray("mask", self.mask)
 
+        require_finite("observations", self.observations)
+        require_finite("rewards", self.rewards)
+        require_finite("next_observations", self.next_observations)
+        if self.behavior_action_probs is not None:
+            require_finite("behavior_action_probs", self.behavior_action_probs)
+
         if self.observations.ndim not in (2, 3):
             raise ValueError(
                 "observations must have shape (n, t) or (n, t, d), got "
@@ -243,6 +282,22 @@ class TrajectoryDataset:
                 "mask must share shape (n, t) with actions, got "
                 f"{self.mask.shape} vs {self.actions.shape}."
             )
+
+        if self.actions.shape[0] == 0:
+            raise ValueError("dataset must contain at least one trajectory.")
+
+        lengths = self.mask.sum(axis=1).astype(int)
+        if np.any(lengths == 0):
+            raise ValueError("mask must mark at least one valid step per trajectory.")
+        for row in self.mask:
+            false_indices = np.where(~row)[0]
+            if false_indices.size == 0:
+                continue
+            first_false = int(false_indices[0])
+            if np.any(row[first_false:]):
+                raise ValueError(
+                    "mask must be contiguous: valid steps must be a prefix of each trajectory."
+                )
 
         if self.discount < 0.0 or self.discount > 1.0:
             raise ValueError("discount must be within [0, 1].")
@@ -324,6 +379,40 @@ class TrajectoryDataset:
             "state_space_n": self.state_space_n,
             "metadata": self.metadata or {},
         }
+
+    def describe(self) -> dict[str, Any]:
+        """Return summary statistics for the dataset."""
+
+        obs_dim = 1 if self.observations.ndim == 2 else int(self.observations.shape[2])
+        lengths = self.mask.sum(axis=1).astype(int)
+        valid_rewards = self.rewards[self.mask]
+        summary: dict[str, Any] = {
+            "type": "trajectory",
+            "num_trajectories": self.num_trajectories,
+            "horizon": self.horizon,
+            "num_steps": self.num_steps,
+            "discount": float(self.discount),
+            "action_space_n": int(self.action_space_n),
+            "state_space_n": None if self.state_space_n is None else int(self.state_space_n),
+            "observation_dim": obs_dim,
+            "behavior_action_probs_present": self.behavior_action_probs is not None,
+            "trajectory_length_min": int(lengths.min()),
+            "trajectory_length_max": int(lengths.max()),
+            "trajectory_length_mean": float(np.mean(lengths)),
+            "reward_mean": float(np.mean(valid_rewards)),
+            "reward_std": float(np.std(valid_rewards)),
+            "reward_min": float(np.min(valid_rewards)),
+            "reward_max": float(np.max(valid_rewards)),
+        }
+        if self.behavior_action_probs is not None:
+            valid_probs = self.behavior_action_probs[self.mask]
+            summary.update(
+                {
+                    "behavior_prob_min": float(np.min(valid_probs)),
+                    "behavior_prob_max": float(np.max(valid_probs)),
+                }
+            )
+        return summary
 
     def __repr__(self) -> str:
         return (

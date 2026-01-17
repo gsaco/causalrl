@@ -30,6 +30,7 @@ class MarginalizedImportanceSamplingEstimator(OPEEstimator):
         self.min_prob = min_prob
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
+        self._validate_dataset(data)
         if data.state_space_n is None:
             raise ValueError("MIS requires discrete state_space_n.")
 

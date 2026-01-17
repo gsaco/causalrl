@@ -38,6 +38,7 @@ class HighConfidenceISEstimator(OPEEstimator):
         self.config = config or HighConfidenceConfig()
 
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
+        self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
             values, weights, target_probs, behavior_probs = self._bandit_values(data)
         else:
