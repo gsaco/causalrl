@@ -1,31 +1,28 @@
-# causalrl
+# CausalRL
 
-causalrl is an estimand-first toolkit for causal reinforcement learning and
-off-policy evaluation. The API emphasizes identification assumptions,
-automatic diagnostics, and benchmark-driven development.
+CausalRL is an estimand-first toolkit for causal reinforcement learning and
+off-policy evaluation, pairing identification assumptions with diagnostics and
+reproducible benchmarks.
 
-## Highlights
+## Why CausalRL
 
-- Explicit estimands and assumption sets for each estimator
-- Diagnostics-first reports with overlap and ESS metrics
-- Synthetic benchmarks with known ground truth
-- Focused dependencies with a PyTorch backend for model-based baselines
+- Diagnostics-first reporting to surface overlap and ESS issues early.
+- Synthetic benchmarks with ground truth for method selection.
+- A growing estimator suite grounded in core OPE literature.
 
-## Installation
+## When to use this library
 
-```bash
-python -m pip install causalrl
-```
+- Offline evaluation when online deployment is risky or expensive.
+- Diagnostics-first iteration before promoting policies.
+- Synthetic ground-truth experiments for estimator comparisons.
 
-Optional extras:
+## Get started
 
-```bash
-python -m pip install "causalrl[docs]"
-python -m pip install "causalrl[benchmarks]"
-```
+- Follow the [Quickstart (Bandit)](tutorials/quickstart_bandit.md) tutorial.
+- Run the [Quickstart (MDP)](tutorials/quickstart_mdp.md).
+- Browse the [Estimator Reference](reference/estimators/index.md).
 
-## Getting started
+## Estimator selection
 
-- Run the quickstart scripts in `examples/quickstart/`
-- Work through the rendered notebooks under the Notebooks section
-- Browse the API reference for full docstrings
+See the [Estimator Selection Guide](explanation/estimator_selection.md) for a
+decision tree and recommended defaults.

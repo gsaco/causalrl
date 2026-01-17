@@ -66,3 +66,11 @@ class TabularPolicy(Policy):
 
         probs = self.action_probs(observations)
         return np.array([rng.choice(self.num_actions, p=p) for p in probs])
+
+    def to_dict(self) -> dict[str, object]:
+        """Return a dictionary representation."""
+
+        return {"policy_type": "TabularPolicy", "table": self.table}
+
+    def __repr__(self) -> str:
+        return f"TabularPolicy(num_states={self.num_states}, num_actions={self.num_actions})"

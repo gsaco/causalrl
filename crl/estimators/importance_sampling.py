@@ -40,6 +40,8 @@ class ISEstimator(OPEEstimator):
         return self._estimate_trajectory(data)
 
     def _estimate_bandit(self, data: LoggedBanditDataset) -> EstimatorReport:
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for IS on bandit data.")
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         ratios = target_probs / data.behavior_action_probs
         weights = ratios.copy()
@@ -65,6 +67,8 @@ class ISEstimator(OPEEstimator):
         )
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for IS on trajectories.")
         target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
@@ -117,6 +121,8 @@ class WISEstimator(OPEEstimator):
         return self._estimate_trajectory(data)
 
     def _estimate_bandit(self, data: LoggedBanditDataset) -> EstimatorReport:
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for WIS on bandit data.")
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         ratios = target_probs / data.behavior_action_probs
         weights = ratios.copy()
@@ -140,6 +146,8 @@ class WISEstimator(OPEEstimator):
         )
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for WIS on trajectories.")
         target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
@@ -190,6 +198,8 @@ class PDISEstimator(OPEEstimator):
         return self._estimate_trajectory(data)
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs are required for PDIS on trajectories.")
         target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         cumulative = np.cumprod(ratios, axis=1)

@@ -25,6 +25,14 @@ class Assumption:
     name: str
     description: str
 
+    def to_dict(self) -> dict[str, str]:
+        """Return a dictionary representation."""
+
+        return {"name": self.name, "description": self.description}
+
+    def __repr__(self) -> str:
+        return f"Assumption(name={self.name!r})"
+
 
 class AssumptionSet:
     """Collection of assumptions used to validate estimator applicability.
@@ -62,3 +70,11 @@ class AssumptionSet:
         """Return assumption names in sorted order."""
 
         return sorted(self._assumptions.keys())
+
+    def to_dict(self) -> dict[str, dict[str, str]]:
+        """Return a dictionary keyed by assumption name."""
+
+        return {name: assumption.to_dict() for name, assumption in self._assumptions.items()}
+
+    def __repr__(self) -> str:
+        return f"AssumptionSet(names={self.names()})"

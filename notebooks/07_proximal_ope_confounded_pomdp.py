@@ -1,0 +1,69 @@
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.18.1
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
+# %% [markdown]
+# # Advanced: Proximal OPE under Confounding
+#
+# This notebook demonstrates a confounded bandit where standard OPE is biased
+# and a proximal estimator leverages proxy variables for robustness.
+
+# %%
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+
+from crl.assumptions import AssumptionSet
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.benchmarks.confounded_bandit import ConfoundedBandit, ConfoundedBanditConfig
+from crl.confounding.proximal import ProximalBanditEstimator
+from crl.estimands.policy_value import PolicyValueEstimand
+from crl.estimators.importance_sampling import ISEstimator
+from crl.viz import configure_notebook_display, save_figure
+from crl.viz.plots import plot_estimator_comparison
+
+# %%
+np.random.seed(0)
+configure_notebook_display()
+
+benchmark = ConfoundedBandit(ConfoundedBanditConfig(seed=7))
+prox_data = benchmark.sample(num_samples=2_000, seed=8)
+logged_data = prox_data.to_logged_dataset()
+true_value = benchmark.true_policy_value(benchmark.target_policy)
+
+estimand = PolicyValueEstimand(
+    policy=benchmark.target_policy,
+    discount=1.0,
+    horizon=1,
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+)
+
+is_report = ISEstimator(estimand).estimate(logged_data)
+prox_report = ProximalBanditEstimator(benchmark.target_policy).estimate(prox_data)
+
+rows = [
+    {"estimator": "IS", "value": is_report.value, "ci": is_report.ci},
+    {"estimator": "Proximal", "value": prox_report, "ci": None},
+]
+
+# %%
+fig = plot_estimator_comparison(rows, truth=true_value)
+fig
+
+# %%
+output_dir = Path("docs/assets/figures")
+output_dir.mkdir(parents=True, exist_ok=True)
+save_figure(fig, output_dir / "proximal_confounded_bandit")

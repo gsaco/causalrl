@@ -18,6 +18,7 @@ def run_diagnostics(
     behavior_action_probs: np.ndarray,
     mask: np.ndarray | None,
     config: DiagnosticsConfig,
+    model_metrics: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[str]]:
     """Run overlap and weight diagnostics and return warnings.
 
@@ -52,6 +53,8 @@ def run_diagnostics(
         "overlap": overlap,
         "ess": {"ess": ess, "ess_ratio": ess_ratio},
         "weights": tail,
+        "max_weight": tail.get("max", 0.0),
+        "model": model_metrics or {},
     }
 
     warnings: list[str] = []

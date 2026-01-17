@@ -37,6 +37,23 @@ class PolicyValueEstimand:
 
         self.assumptions.require(names)
 
+    def to_dict(self) -> dict[str, object]:
+        """Return a dictionary representation of the estimand."""
+
+        return {
+            "policy": type(self.policy).__name__,
+            "discount": self.discount,
+            "horizon": self.horizon,
+            "assumptions": self.assumptions.names(),
+        }
+
+    def __repr__(self) -> str:
+        return (
+            "PolicyValueEstimand(policy="
+            f"{type(self.policy).__name__}, discount={self.discount}, "
+            f"horizon={self.horizon}, assumptions={self.assumptions.names()})"
+        )
+
 
 @dataclass(frozen=True)
 class PolicyContrastEstimand:
@@ -57,3 +74,14 @@ class PolicyContrastEstimand:
 
     treatment: PolicyValueEstimand
     control: PolicyValueEstimand
+
+    def to_dict(self) -> dict[str, object]:
+        """Return a dictionary representation."""
+
+        return {
+            "treatment": self.treatment.to_dict(),
+            "control": self.control.to_dict(),
+        }
+
+    def __repr__(self) -> str:
+        return "PolicyContrastEstimand(treatment=..., control=...)"

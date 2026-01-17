@@ -15,6 +15,7 @@ from crl.estimators.base import (
     OPEEstimator,
     compute_ci,
 )
+from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
@@ -57,6 +58,8 @@ class FQEConfig:
     num_iterations: int = 10
     weight_decay: float = 0.0
     seed: int = 0
+    bootstrap: bool = False
+    bootstrap_config: BootstrapConfig | None = None
 
 
 class TorchQNetwork(nn.Module):
@@ -114,29 +117,43 @@ class FQEEstimator(OPEEstimator):
             value = float(np.mean(values))
             stderr = mean_stderr(values)
             q_network = None
+            model_metrics: dict[str, Any] = {}
         else:
-            q_network = self._fit_q_function(data)
+            q_network, train_mse = self._fit_q_function(data)
             initial_states = data.observations[:, 0]
             values = self._compute_state_values(
                 q_network, initial_states, data.state_space_n
             )
             value = float(np.mean(values))
             stderr = mean_stderr(values)
+            model_metrics = {"q_model_mse": train_mse}
+
+        ci = compute_ci(value, stderr)
+        if self.config.bootstrap:
+            bootstrap_config = self.config.bootstrap_config or BootstrapConfig()
+            stderr, ci = bootstrap_ci(
+                estimator_factory=self._bootstrap_factory(),
+                data=data,
+                config=bootstrap_config,
+            )
 
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []
-        if self.run_diagnostics:
+        if self.run_diagnostics and data.behavior_action_probs is not None:
             target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
             ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
             weights = np.prod(ratios, axis=1)
             diagnostics, warnings = run_diagnostics(
                 weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
             )
+            diagnostics["model"] = model_metrics if q_network is not None else {}
+        elif self.run_diagnostics:
+            warnings.append("behavior_action_probs missing; skipping weight diagnostics.")
 
         return EstimatorReport(
             value=value,
             stderr=stderr,
-            ci=compute_ci(value, stderr),
+            ci=ci,
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={
@@ -145,6 +162,30 @@ class FQEEstimator(OPEEstimator):
                 "tabular": q_network is None,
             },
         )
+
+    def _bootstrap_factory(self):
+        config = FQEConfig(
+            hidden_sizes=self.config.hidden_sizes,
+            learning_rate=self.config.learning_rate,
+            batch_size=self.config.batch_size,
+            num_epochs=self.config.num_epochs,
+            num_iterations=self.config.num_iterations,
+            weight_decay=self.config.weight_decay,
+            seed=self.config.seed,
+            bootstrap=False,
+            bootstrap_config=None,
+        )
+
+        def _factory():
+            return FQEEstimator(
+                estimand=self.estimand,
+                run_diagnostics=False,
+                diagnostics_config=self.diagnostics_config,
+                config=config,
+                device=str(self.device),
+            )
+
+        return _factory
 
     def _can_use_tabular(self, data: TrajectoryDataset) -> bool:
         if data.state_space_n is None:
@@ -193,7 +234,7 @@ class FQEEstimator(OPEEstimator):
         v0 = (policy.table * q).sum(axis=1)
         return v0[initial_states]
 
-    def _fit_q_function(self, data: TrajectoryDataset) -> TorchQNetwork:
+    def _fit_q_function(self, data: TrajectoryDataset) -> tuple[TorchQNetwork, float]:
         torch.manual_seed(self.config.seed)
         np.random.seed(self.config.seed)
 
@@ -242,7 +283,19 @@ class FQEEstimator(OPEEstimator):
                     loss.backward()
                     optimizer.step()
 
-        return q_network
+        with torch.no_grad():
+            obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(self.device)
+            rewards_tensor = torch.tensor(rewards, dtype=torch.float32).to(self.device)
+            next_tensor = torch.tensor(next_features, dtype=torch.float32).to(self.device)
+            policy_tensor = torch.tensor(next_policy_probs, dtype=torch.float32).to(self.device)
+            next_values = self._torch_policy_value(
+                q_network, next_tensor, policy_tensor, data.action_space_n
+            )
+            targets = rewards_tensor + data.discount * next_values
+            preds = q_network(obs_action_tensor)
+            train_mse = float(torch.mean((preds - targets) ** 2).cpu().item())
+
+        return q_network, train_mse
 
     def _flatten_transitions(
         self, data: TrajectoryDataset

@@ -40,6 +40,9 @@ class SyntheticMDPConfig:
     horizon: int = 5
     discount: float = 0.95
     reward_noise_std: float = 0.1
+    transition_concentration: float = 1.0
+    behavior_scale: float = 1.0
+    target_scale: float = 1.0
     seed: int = 0
 
 
@@ -63,12 +66,13 @@ class SyntheticMDP:
         rng = np.random.default_rng(config.seed)
         self.initial_state_probs = rng.dirichlet(np.ones(config.num_states))
         self.transition_probs = rng.dirichlet(
-            np.ones(config.num_states), size=(config.num_states, config.num_actions)
+            np.ones(config.num_states) * config.transition_concentration,
+            size=(config.num_states, config.num_actions),
         )
         self.reward_means = rng.normal(0.0, 1.0, size=(config.num_states, config.num_actions))
 
-        behavior_logits = rng.normal(size=(config.num_states, config.num_actions))
-        target_logits = rng.normal(size=(config.num_states, config.num_actions))
+        behavior_logits = rng.normal(size=(config.num_states, config.num_actions)) * config.behavior_scale
+        target_logits = rng.normal(size=(config.num_states, config.num_actions)) * config.target_scale
         self.behavior_policy = TabularPolicy(_softmax(behavior_logits))
         self.target_policy = TabularPolicy(_softmax(target_logits))
 

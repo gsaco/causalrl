@@ -1,0 +1,20 @@
+suite: stochasticity
+benchmarks:
+  - name: mdp_deterministic
+    type: mdp
+    num_trajectories: 200
+    estimators: ["dr", "wdr", "fqe"]
+    behavior_known: true
+    config:
+      horizon: 5
+      transition_concentration: 20.0
+      reward_noise_std: 0.0
+  - name: mdp_stochastic
+    type: mdp
+    num_trajectories: 200
+    estimators: ["dr", "wdr", "fqe"]
+    behavior_known: true
+    config:
+      horizon: 5
+      transition_concentration: 1.0
+      reward_noise_std: 0.2

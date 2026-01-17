@@ -1,0 +1,19 @@
+suite: behavior_policy
+benchmarks:
+  - name: bandit_known_behavior
+    type: bandit
+    num_samples: 2000
+    estimators: ["is", "wis", "double_rl"]
+    behavior_known: true
+  - name: bandit_unknown_behavior
+    type: bandit
+    num_samples: 2000
+    estimators: ["double_rl"]
+    behavior_known: false
+  - name: mdp_unknown_behavior
+    type: mdp
+    num_trajectories: 200
+    estimators: ["fqe", "dualdice"]
+    behavior_known: false
+    config:
+      horizon: 5

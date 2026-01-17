@@ -35,6 +35,19 @@ class SensitivityCurve:
     upper: np.ndarray
     metadata: dict[str, Any]
 
+    def to_dict(self) -> dict[str, Any]:
+        """Return a dictionary representation."""
+
+        return {
+            "gammas": self.gammas,
+            "lower": self.lower,
+            "upper": self.upper,
+            "metadata": dict(self.metadata),
+        }
+
+    def __repr__(self) -> str:
+        return f"SensitivityCurve(num_points={self.gammas.size})"
+
 
 class BanditPropensitySensitivity:
     """Bandit sensitivity analysis using multiplicative propensity bounds.

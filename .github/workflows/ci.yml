@@ -28,10 +28,12 @@ jobs:
           python -m pip install -e ".[dev,docs]"
       - name: Ruff
         run: ruff check .
+      - name: Ruff Format
+        run: ruff format --check .
       - name: Mypy
         run: mypy crl
       - name: Tests
-        run: pytest --cov=crl --cov-report=term-missing
+        run: pytest --cov=crl --cov-report=term-missing --cov-fail-under=70
       - name: Docs
         if: matrix.python-version == '3.11'
         run: mkdocs build

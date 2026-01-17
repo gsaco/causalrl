@@ -36,3 +36,11 @@ class Policy(ABC):
     @abstractmethod
     def sample_action(self, observations: np.ndarray, rng: np.random.Generator) -> np.ndarray:
         """Sample actions for observations."""
+
+    def to_dict(self) -> dict[str, object]:
+        """Return a dictionary representation."""
+
+        return {"policy_type": type(self).__name__}
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}()"
