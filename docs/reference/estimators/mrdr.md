@@ -22,4 +22,4 @@ corresponds to weighted regression with importance ratios.
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

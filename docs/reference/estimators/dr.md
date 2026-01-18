@@ -20,4 +20,4 @@ $\hat V = \frac{1}{n} \sum_i \left[ \hat V(s_{i0}) + \sum_t w_{it} \left(r_{it} 
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

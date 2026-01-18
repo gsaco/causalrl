@@ -61,6 +61,8 @@ class FQEConfig:
     seed: int = 0
     bootstrap: bool = False
     bootstrap_config: BootstrapConfig | None = None
+    uncertainty: str | None = None
+    n_bootstrap: int = 200
 
 
 class TorchQNetwork(nn.Module):
@@ -97,6 +99,8 @@ class FQEEstimator(OPEEstimator):
     """
 
     required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_fields: list[str] = []
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def __init__(
         self,
@@ -131,8 +135,10 @@ class FQEEstimator(OPEEstimator):
             model_metrics = {"q_model_mse": train_mse}
 
         ci = compute_ci(value, stderr)
-        if self.config.bootstrap:
-            bootstrap_config = self.config.bootstrap_config or BootstrapConfig()
+        if self.config.bootstrap or self.config.uncertainty == "bootstrap":
+            bootstrap_config = self.config.bootstrap_config or BootstrapConfig(
+                num_bootstrap=self.config.n_bootstrap
+            )
             stderr, ci = bootstrap_ci(
                 estimator_factory=self._bootstrap_factory(),
                 data=data,
@@ -152,7 +158,7 @@ class FQEEstimator(OPEEstimator):
         elif self.run_diagnostics:
             warnings.append("behavior_action_probs missing; skipping weight diagnostics.")
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=ci,
@@ -163,6 +169,7 @@ class FQEEstimator(OPEEstimator):
                 "config": self.config.__dict__,
                 "tabular": q_network is None,
             },
+            data=data,
         )
 
     def _bootstrap_factory(self):
@@ -176,6 +183,8 @@ class FQEEstimator(OPEEstimator):
             seed=self.config.seed,
             bootstrap=False,
             bootstrap_config=None,
+            uncertainty=None,
+            n_bootstrap=self.config.n_bootstrap,
         )
 
         def _factory():

@@ -6,6 +6,8 @@ from typing import Any
 
 import numpy as np
 
+from crl.diagnostics.ess import effective_sample_size
+
 
 def weight_tail_stats(
     weights: np.ndarray, quantile: float = 0.99, threshold: float = 10.0
@@ -63,3 +65,27 @@ def weight_tail_stats(
         "kurtosis": kurtosis,
         "tail_fraction": float(np.mean(w > threshold)),
     }
+
+
+def weight_time_diagnostics(
+    weights: np.ndarray, mask: np.ndarray | None = None
+) -> dict[str, list[float]]:
+    """Summarize weight behavior over time (per timestep)."""
+
+    w = np.asarray(weights, dtype=float)
+    if w.ndim != 2:
+        raise ValueError("weights must have shape (n, t) for time diagnostics.")
+    t = w.shape[1]
+    sums: list[float] = []
+    variances: list[float] = []
+    ess_vals: list[float] = []
+    for step in range(t):
+        if mask is not None:
+            valid = mask[:, step]
+            w_step = w[valid, step]
+        else:
+            w_step = w[:, step]
+        sums.append(float(np.sum(w_step)))
+        variances.append(float(np.var(w_step)) if w_step.size else 0.0)
+        ess_vals.append(float(effective_sample_size(w_step)))
+    return {"weight_sum": sums, "weight_variance": variances, "ess": ess_vals}

@@ -22,5 +22,5 @@ $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 
 ## Notebook
 
-- [01_quickstart_bandit_ope.ipynb](../../notebooks/01_quickstart_bandit_ope.ipynb)
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](../../notebooks/02_bandit_ope_walkthrough.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

@@ -6,6 +6,7 @@ theme:
 nav:
   - Home: index.md
   - Tutorials:
+      - Overview: tutorials/index.md
       - Quickstart (Bandit): tutorials/quickstart_bandit.md
       - Quickstart (MDP): tutorials/quickstart_mdp.md
       - Diagnostics: tutorials/diagnostics.md
@@ -32,6 +33,9 @@ nav:
       - Confounding: reference/api/confounding.md
       - Policies: reference/api/policies.md
       - Data: reference/api/data.md
+      - Behavior Policies: reference/api/behavior.md
+      - Estimator Selection: reference/api/selectors.md
+      - Adapters: reference/api/adapters.md
       - Experiments: reference/api/experiments.md
       - Visualization: reference/api/viz.md
       - Estimator Reference:
@@ -58,13 +62,15 @@ nav:
       - Proximal OPE: explanation/proximal.md
   - Notebooks:
       - Gallery: notebooks/index.md
-      - 01 Quickstart Bandit: notebooks/01_quickstart_bandit_ope.ipynb
-      - 02 Quickstart MDP: notebooks/02_quickstart_mdp_ope.ipynb
-      - 03 Diagnostics: notebooks/03_diagnostics_overlap_ess.ipynb
-      - 04 Confidence Intervals: notebooks/04_confidence_intervals_safe_selection.ipynb
-      - 05 Sensitivity Analysis: notebooks/05_sensitivity_analysis_bandits.ipynb
-      - 06 Long-Horizon MIS vs IS: notebooks/06_long_horizon_mis_vs_is.ipynb
-      - 07 Proximal OPE: notebooks/07_proximal_ope_confounded_pomdp.ipynb
+      - 00 Introduction: notebooks/00_introduction.ipynb
+      - 01 Estimands and Assumptions: notebooks/01_estimands_and_assumptions.ipynb
+      - 02 Bandit OPE Walkthrough: notebooks/02_bandit_ope_walkthrough.ipynb
+      - 03 MDP OPE Walkthrough: notebooks/03_mdp_ope_walkthrough.ipynb
+      - 04 Confidence Intervals and HCOPE: notebooks/04_confidence_intervals_and_hcope.ipynb
+      - 05 Advanced DR Family: notebooks/05_advanced_dr_family.ipynb
+      - 06 Sensitivity to Confounding: notebooks/06_sensitivity_unobserved_confounding.ipynb
+      - 07 Real Dataset (D4RL): notebooks/07_real_dataset_d4rl.ipynb
+      - 08 Estimator Selection: notebooks/08_estimator_selection_and_debugging.ipynb
   - References: references.md
   - Project Status: project_status.md
 plugins:

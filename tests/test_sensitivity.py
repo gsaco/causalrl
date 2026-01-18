@@ -6,6 +6,7 @@ from crl.data.datasets import LoggedBanditDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.policies.tabular import TabularPolicy
 from crl.sensitivity.bandit import BanditPropensitySensitivity
+from crl.sensitivity.namkoong2020 import confounded_ope_bounds
 
 
 def test_bandit_sensitivity_curve_monotone():
@@ -33,6 +34,18 @@ def test_bandit_sensitivity_curve_monotone():
     sensitivity = BanditPropensitySensitivity(estimand)
     gammas = np.array([1.0, 1.5, 2.0])
     curve = sensitivity.curve(dataset, gammas)
+
+    assert np.all(curve.lower[:-1] >= curve.lower[1:])
+    assert np.all(curve.upper[:-1] <= curve.upper[1:])
+
+
+def test_sequential_sensitivity_curve_monotone():
+    from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
+
+    benchmark = SyntheticMDP(SyntheticMDPConfig(seed=0, horizon=3))
+    dataset = benchmark.sample(num_trajectories=100, seed=1)
+    gammas = np.array([1.0, 1.5, 2.0])
+    curve = confounded_ope_bounds(dataset, benchmark.target_policy, gammas)
 
     assert np.all(curve.lower[:-1] >= curve.lower[1:])
     assert np.all(curve.upper[:-1] <= curve.upper[1:])

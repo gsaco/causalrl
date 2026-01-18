@@ -442,3 +442,9 @@ class TrajectoryDataset:
             ),
             metadata=dict(data.get("metadata", {})),
         )
+
+
+BanditDataset = LoggedBanditDataset
+
+
+__all__ = ["LoggedBanditDataset", "BanditDataset", "TrajectoryDataset"]

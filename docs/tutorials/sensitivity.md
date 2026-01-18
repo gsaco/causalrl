@@ -5,4 +5,4 @@ identification bounds across confounding strengths.
 
 ## Notebook
 
-- [05_sensitivity_analysis_bandits.ipynb](../notebooks/05_sensitivity_analysis_bandits.ipynb)
+- [06_sensitivity_unobserved_confounding.ipynb](../notebooks/06_sensitivity_unobserved_confounding.ipynb)

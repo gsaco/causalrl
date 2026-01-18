@@ -83,6 +83,8 @@ class DoubleRLEstimator(OPEEstimator):
     """Double RL estimator for contextual bandits (Kallus & Uehara, 2020)."""
 
     required_assumptions = ["sequential_ignorability", "overlap"]
+    required_fields: list[str] = []
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def __init__(
         self,
@@ -154,13 +156,14 @@ class DoubleRLEstimator(OPEEstimator):
                 ratios, target_probs, data.behavior_action_probs, None, self.diagnostics_config
             )
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "DoubleRL", "config": self.config.__dict__},
+            data=data,
         )
 
 

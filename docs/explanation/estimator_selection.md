@@ -19,3 +19,13 @@ Concern about confounding?
 
 - Bandit: WIS + Double RL for a robust baseline.
 - MDP: WDR + FQE, then check diagnostics.
+
+## Diagnostics-driven selection
+
+You can also use the selector API to rank candidates using stability heuristics:
+
+```python
+from crl.selectors import select_estimator
+
+best = select_estimator(dataset, estimand, candidates=["is", "wis", "dr", "wdr", "fqe"])
+```

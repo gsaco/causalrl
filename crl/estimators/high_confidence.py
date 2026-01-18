@@ -26,6 +26,8 @@ class HighConfidenceISEstimator(OPEEstimator):
     """High-confidence lower bound based on IS (Thomas et al., 2015)."""
 
     required_assumptions = ["sequential_ignorability", "overlap", "bounded_rewards"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def __init__(
         self,
@@ -57,7 +59,7 @@ class HighConfidenceISEstimator(OPEEstimator):
                 weights, target_probs, behavior_probs, mask, self.diagnostics_config
             )
 
-        return EstimatorReport(
+        return self._build_report(
             value=lcb,
             stderr=None,
             ci=(lcb, float(np.mean(values))),
@@ -68,6 +70,9 @@ class HighConfidenceISEstimator(OPEEstimator):
                 "delta": self.config.delta,
                 "reward_bound": bound,
             },
+            data=data,
+            lower_bound=lcb,
+            upper_bound=float(np.mean(values)),
         )
 
     def _bandit_values(self, data: LoggedBanditDataset):

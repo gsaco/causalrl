@@ -11,4 +11,4 @@ trusting an off-policy estimate.
 
 ## Notebook
 
-- [03_diagnostics_overlap_ess.ipynb](../notebooks/03_diagnostics_overlap_ess.ipynb)
+- [08_estimator_selection_and_debugging.ipynb](../notebooks/08_estimator_selection_and_debugging.ipynb)

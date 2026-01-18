@@ -25,6 +25,8 @@ class DualDICEEstimator(OPEEstimator):
     """DualDICE estimator (Nachum et al., 2019) for discrete MDPs."""
 
     required_assumptions = ["sequential_ignorability", "markov"]
+    required_fields = ["state_space_n"]
+    diagnostics_keys: list[str] = []
 
     def __init__(
         self,
@@ -87,13 +89,14 @@ class DualDICEEstimator(OPEEstimator):
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "DualDICE", "config": self.config.__dict__},
+            data=data,
         )
 
     def _initial_feature_mean(

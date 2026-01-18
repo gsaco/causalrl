@@ -18,6 +18,8 @@ class MarginalizedImportanceSamplingEstimator(OPEEstimator):
     """MIS estimator (Xie et al., 2019) for discrete state-action spaces."""
 
     required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_fields = ["state_space_n"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def __init__(
         self,
@@ -77,11 +79,12 @@ class MarginalizedImportanceSamplingEstimator(OPEEstimator):
                 weights, target_probs, behavior_probs, mask, self.diagnostics_config
             )
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "MIS", "min_prob": self.min_prob},
+            data=data,
         )

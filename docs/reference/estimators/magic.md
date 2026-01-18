@@ -24,4 +24,4 @@ $\hat V_{\text{MAGIC}} = \sum_j \alpha_j \hat V_j$ with $\sum_j \alpha_j = 1$.
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

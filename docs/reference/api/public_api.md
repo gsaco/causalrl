@@ -19,8 +19,25 @@ listed here may change without notice.
 
 ## Datasets
 
+- `crl.data.BanditDataset`
 - `crl.data.LoggedBanditDataset`
 - `crl.data.TrajectoryDataset`
+- `crl.data.TransitionDataset`
+
+## Behavior policy estimation
+
+- `crl.fit_behavior_policy`
+- `crl.BehaviorPolicyFit`
+
+## Estimator selection
+
+- `crl.select_estimator`
+- `crl.SelectionResult`
+
+## Dataset adapters
+
+- `crl.load_d4rl_dataset`
+- `crl.load_rl_unplugged_dataset`
 
 ## Estimators and reports
 

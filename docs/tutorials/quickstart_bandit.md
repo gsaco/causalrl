@@ -32,4 +32,4 @@ report.save_html("report.html")
 
 ## Notebook
 
-- [01_quickstart_bandit_ope.ipynb](../notebooks/01_quickstart_bandit_ope.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](../notebooks/02_bandit_ope_walkthrough.ipynb)

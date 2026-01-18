@@ -23,4 +23,4 @@ $\hat V = \sum_i \bar w_{i0} \hat V(s_{i0}) + \sum_t \sum_i \bar w_{it} \left(r_
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

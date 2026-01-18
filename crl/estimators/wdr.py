@@ -15,6 +15,7 @@ from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
+from crl.diagnostics.weights import weight_time_diagnostics
 
 
 @dataclass
@@ -31,6 +32,8 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
     """Weighted doubly robust estimator (Thomas & Brunskill, 2016)."""
 
     required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model", "weight_time"]
 
     def __init__(
         self,
@@ -74,14 +77,18 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
             )
             if model_mse:
                 diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
+            diagnostics["weight_time"] = weight_time_diagnostics(
+                np.cumprod(ratios, axis=1), data.mask
+            )
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "WDR", "config": self.config.__dict__},
+            data=data,
         )
 
     def _fit_q_model(self, data: TrajectoryDataset, indices: np.ndarray) -> LinearQModel:

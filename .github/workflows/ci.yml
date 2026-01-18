@@ -35,6 +35,12 @@ jobs:
         run: mypy crl
       - name: Tests
         run: pytest --cov=crl --cov-report=term-missing --cov-fail-under=70
+      - name: Benchmarks smoke
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        run: make benchmarks-smoke
+      - name: Notebooks smoke
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        run: make notebooks-smoke
       - name: Docs
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
         run: mkdocs build

@@ -23,4 +23,4 @@ $V^\pi \approx \frac{1}{1-\gamma} \mathbb{E}_{d_\mu}[w(s,a) r(s,a)]$.
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

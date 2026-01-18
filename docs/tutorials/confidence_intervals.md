@@ -5,4 +5,4 @@ bounds, and bootstrap intervals for safe policy selection.
 
 ## Notebook
 
-- [04_confidence_intervals_safe_selection.ipynb](../notebooks/04_confidence_intervals_safe_selection.ipynb)
+- [04_confidence_intervals_and_hcope.ipynb](../notebooks/04_confidence_intervals_and_hcope.ipynb)

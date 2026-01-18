@@ -24,4 +24,4 @@ with cross-fitting for nuisance models.
 
 ## Notebook
 
-- [01_quickstart_bandit_ope.ipynb](../../notebooks/01_quickstart_bandit_ope.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](../../notebooks/02_bandit_ope_walkthrough.ipynb)

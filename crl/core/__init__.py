@@ -1,7 +1,7 @@
 """Core interfaces for CRL."""
 
 from crl.core.diagnostics import Diagnostics
-from crl.core.datasets import BanditDataset, TrajectoryDataset
+from crl.core.datasets import BanditDataset, TrajectoryDataset, TransitionDataset
 from crl.core.policy import Policy
 from crl.core.reports import EstimationReport
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
@@ -13,6 +13,7 @@ __all__ = [
     "Diagnostics",
     "BanditDataset",
     "TrajectoryDataset",
+    "TransitionDataset",
     "Policy",
     "EstimationReport",
     "EstimatorReport",

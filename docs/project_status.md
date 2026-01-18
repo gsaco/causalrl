@@ -1,10 +1,16 @@
 # Project Status
 
+## Release status
+
+- Current release: v0.1.0 (research preview, alpha quality).
+- API may evolve as estimator coverage and diagnostics expand.
+
 ## Current scope
 
 - Unconfounded OPE with explicit estimands, diagnostics, and synthetic benchmarks
-- Bandit propensity sensitivity analysis under bounded confounding assumptions
-- Baseline estimators for IS, WIS, PDIS, DR, and FQE
+- Bandit and sequential propensity sensitivity analysis under bounded confounding
+- Baseline and advanced estimators for IS, WIS, PDIS, DR, WDR, MAGIC, MRDR, FQE
+- Estimator selection heuristics and behavior policy estimation
 
 ## Experimental and non-goals
 

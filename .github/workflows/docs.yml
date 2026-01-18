@@ -28,6 +28,10 @@ jobs:
           python -m pip install -e ".[docs]"
       - name: Build docs
         run: mkdocs build --strict
+      - name: Link check
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --offline --no-progress --verbose --exclude-mail "site/**/*.html"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

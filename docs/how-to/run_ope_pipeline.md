@@ -12,6 +12,15 @@ report.to_dataframe()
 report.save_html("report.html")
 ```
 
+## Estimated behavior policy
+
+```python
+from crl.behavior import fit_behavior_policy
+
+fit = fit_behavior_policy(dataset, method="logit")
+dataset = fit.apply(dataset)
+```
+
 ## CLI
 
 ```bash

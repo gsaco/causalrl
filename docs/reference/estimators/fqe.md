@@ -28,5 +28,5 @@ estimates $V^\pi$ by averaging $\hat V(s_0)$ under the target policy.
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
-- [04_confidence_intervals_safe_selection.ipynb](../../notebooks/04_confidence_intervals_safe_selection.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)
+- [04_confidence_intervals_and_hcope.ipynb](../../notebooks/04_confidence_intervals_and_hcope.ipynb)

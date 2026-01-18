@@ -9,7 +9,7 @@ import numpy as np
 
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
-from crl.core.datasets import BanditDataset, TrajectoryDataset
+from crl.core.datasets import BanditDataset, TrajectoryDataset, TransitionDataset
 from crl.core.policy import Policy
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.base import EstimatorReport, OPEEstimator
@@ -106,6 +106,30 @@ class OpeReport:
             self.summary_table().to_html(index=False, escape=False),
         ]
 
+        if any(report.assumptions_checked for report in self.reports.values()):
+            html_parts.append("<h2>Assumptions</h2>")
+            for name, report in self.reports.items():
+                html_parts.append(f"<h3>{name}</h3>")
+                html_parts.append("<ul>")
+                html_parts.append(
+                    f"<li>Checked: {', '.join(report.assumptions_checked) or 'None'}</li>"
+                )
+                html_parts.append(
+                    f"<li>Flagged: {', '.join(report.assumptions_flagged) or 'None'}</li>"
+                )
+                html_parts.append("</ul>")
+
+        if any(report.warnings for report in self.reports.values()):
+            html_parts.append("<h2>Warnings</h2>")
+            for name, report in self.reports.items():
+                if not report.warnings:
+                    continue
+                html_parts.append(f"<h3>{name}</h3>")
+                html_parts.append("<ul>")
+                for warning in report.warnings:
+                    html_parts.append(f"<li>{warning}</li>")
+                html_parts.append("</ul>")
+
         if self.diagnostics:
             html_parts.append("<h2>Diagnostics</h2>")
             html_parts.append("<pre>")
@@ -128,7 +152,7 @@ class OpeReport:
 
 
 def evaluate(
-    dataset: BanditDataset | TrajectoryDataset,
+    dataset: BanditDataset | TrajectoryDataset | TransitionDataset,
     policy: Policy,
     estimand: PolicyValueEstimand | None = None,
     estimators: Iterable[str | OPEEstimator] | str = "default",
@@ -143,7 +167,7 @@ def evaluate(
     Assumptions:
         Sequential ignorability and overlap by default (plus Markov for MDPs).
     Inputs:
-        dataset: Logged bandit or trajectory dataset.
+        dataset: Logged bandit, trajectory, or transition dataset.
         policy: Target policy to evaluate.
         estimand: Optional PolicyValueEstimand override.
         estimators: List of estimator instances or names (or "default").
@@ -157,6 +181,9 @@ def evaluate(
     """
 
     set_seed(seed)
+    if isinstance(dataset, TransitionDataset):
+        dataset = dataset.to_trajectory()
+
     if estimand is None:
         assumptions = [SEQUENTIAL_IGNORABILITY, OVERLAP]
         if isinstance(dataset, TrajectoryDataset):
@@ -258,6 +285,14 @@ def _compute_dataset_diagnostics(
             None,
             config=_default_diagnostics_config(),
         )
+        try:
+            from crl.diagnostics.shift import state_shift_diagnostics
+
+            diagnostics["shift"] = state_shift_diagnostics(
+                dataset.contexts, weights=ratios
+            )
+        except Exception:
+            diagnostics["shift"] = {"error": "shift diagnostics failed"}
         return diagnostics
 
     target_probs = compute_action_probs(policy, dataset.observations, dataset.actions)
@@ -270,6 +305,14 @@ def _compute_dataset_diagnostics(
         dataset.mask,
         config=_default_diagnostics_config(),
     )
+    try:
+        from crl.diagnostics.shift import state_shift_diagnostics
+
+        flat_states = dataset.observations[dataset.mask]
+        flat_weights = ratios[dataset.mask]
+        diagnostics["shift"] = state_shift_diagnostics(flat_states, weights=flat_weights)
+    except Exception:
+        diagnostics["shift"] = {"error": "shift diagnostics failed"}
     return diagnostics
 
 

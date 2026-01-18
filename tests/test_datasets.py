@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
+from crl.data.transition import TransitionDataset
 
 
 def test_logged_bandit_validation_passes():
@@ -169,3 +170,65 @@ def test_trajectory_describe():
     assert summary["num_trajectories"] == 2
     assert summary["horizon"] == 3
     assert summary["behavior_action_probs_present"] is True
+
+
+def test_transition_validation_passes():
+    states = np.zeros((4, 2))
+    actions = np.array([0, 1, 0, 1])
+    rewards = np.ones(4)
+    next_states = np.zeros((4, 2))
+    dones = np.array([False, False, True, True])
+    dataset = TransitionDataset(
+        states=states,
+        actions=actions,
+        rewards=rewards,
+        next_states=next_states,
+        dones=dones,
+        behavior_action_probs=np.full(4, 0.5),
+        discount=0.9,
+        action_space_n=2,
+        episode_ids=np.array([0, 0, 1, 1]),
+        timesteps=np.array([0, 1, 0, 1]),
+    )
+    assert dataset.num_steps == 4
+
+
+def test_transition_validation_fails_on_action_range():
+    states = np.zeros((3, 1))
+    actions = np.array([0, 2, 1])
+    rewards = np.ones(3)
+    next_states = np.zeros((3, 1))
+    dones = np.array([False, False, True])
+    with pytest.raises(ValueError):
+        TransitionDataset(
+            states=states,
+            actions=actions,
+            rewards=rewards,
+            next_states=next_states,
+            dones=dones,
+            behavior_action_probs=np.full(3, 0.5),
+            discount=0.9,
+            action_space_n=2,
+        )
+
+
+def test_transition_to_trajectory():
+    states = np.array([0, 1, 0, 1])
+    actions = np.array([0, 1, 0, 1])
+    rewards = np.ones(4)
+    next_states = np.array([1, 0, 1, 0])
+    dones = np.array([False, True, False, True])
+    dataset = TransitionDataset(
+        states=states,
+        actions=actions,
+        rewards=rewards,
+        next_states=next_states,
+        dones=dones,
+        behavior_action_probs=np.full(4, 0.5),
+        discount=0.9,
+        action_space_n=2,
+        episode_ids=np.array([0, 0, 1, 1]),
+        timesteps=np.array([0, 1, 0, 1]),
+    )
+    traj = dataset.to_trajectory()
+    assert traj.num_trajectories == 2

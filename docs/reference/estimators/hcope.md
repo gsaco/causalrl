@@ -24,4 +24,4 @@ $\text{LCB} = \bar X - \sqrt{\frac{2 \hat\sigma^2 \log(2/\delta)}{n}} - \frac{7 
 
 ## Notebook
 
-- [04_confidence_intervals_safe_selection.ipynb](../../notebooks/04_confidence_intervals_safe_selection.ipynb)
+- [04_confidence_intervals_and_hcope.ipynb](../../notebooks/04_confidence_intervals_and_hcope.ipynb)

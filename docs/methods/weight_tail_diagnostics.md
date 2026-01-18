@@ -23,4 +23,4 @@
 
 ## Example (synthetic benchmark)
 
-![](../assets/figures/weights_hist.png)
+![](../assets/figures/quickstart_bandit_weights.png)

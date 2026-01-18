@@ -19,4 +19,4 @@ $\hat V = \frac{1}{n} \sum_i \sum_t \left( \prod_{k \le t} \frac{\pi(a_{ik}|s_{i
 
 ## Notebook
 
-- [02_quickstart_mdp_ope.ipynb](../../notebooks/02_quickstart_mdp_ope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)

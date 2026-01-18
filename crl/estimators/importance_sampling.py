@@ -31,6 +31,8 @@ class ISEstimator(OPEEstimator):
     """
 
     required_assumptions = ["sequential_ignorability", "overlap"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via IS."""
@@ -58,13 +60,14 @@ class ISEstimator(OPEEstimator):
             if self.run_diagnostics
             else ({}, [])
         )
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "IS", "num_samples": data.num_samples},
+            data=data,
         )
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
@@ -87,13 +90,14 @@ class ISEstimator(OPEEstimator):
             if self.run_diagnostics
             else ({}, [])
         )
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "IS", "num_trajectories": data.num_trajectories},
+            data=data,
         )
 
 
@@ -113,6 +117,8 @@ class WISEstimator(OPEEstimator):
     """
 
     required_assumptions = ["sequential_ignorability", "overlap"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via WIS."""
@@ -138,13 +144,14 @@ class WISEstimator(OPEEstimator):
             if self.run_diagnostics
             else ({}, [])
         )
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "WIS", "num_samples": data.num_samples},
+            data=data,
         )
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
@@ -165,13 +172,14 @@ class WISEstimator(OPEEstimator):
             if self.run_diagnostics
             else ({}, [])
         )
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "WIS", "num_trajectories": data.num_trajectories},
+            data=data,
         )
 
 
@@ -191,6 +199,8 @@ class PDISEstimator(OPEEstimator):
     """
 
     required_assumptions = ["sequential_ignorability", "overlap"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via PDIS."""
@@ -223,11 +233,12 @@ class PDISEstimator(OPEEstimator):
             if self.run_diagnostics
             else ({}, [])
         )
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "PDIS", "num_trajectories": data.num_trajectories},
+            data=data,
         )

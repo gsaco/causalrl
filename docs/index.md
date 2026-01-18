@@ -21,6 +21,7 @@ reproducible benchmarks.
 - Follow the [Quickstart (Bandit)](tutorials/quickstart_bandit.md) tutorial.
 - Run the [Quickstart (MDP)](tutorials/quickstart_mdp.md).
 - Browse the [Estimator Reference](reference/estimators/index.md).
+- View a [sample HTML report](assets/reports/intro_bandit_report.html).
 
 ## Estimator selection
 

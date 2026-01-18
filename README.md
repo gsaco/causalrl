@@ -11,6 +11,8 @@ CausalRL is an estimand-first toolkit for causal reinforcement learning and
 off-policy evaluation that pairs identification assumptions with diagnostics so
 you can trust or debug a policy value estimate.
 
+Release status: v0.1.0 (research preview, alpha quality).
+
 ## Why CausalRL
 
 - Explicit estimands and assumptions make causal guarantees clear and auditable.
@@ -37,6 +39,9 @@ Optional extras:
 python -m pip install "causalrl[docs]"
 python -m pip install "causalrl[benchmarks]"
 python -m pip install "causalrl[notebooks]"
+python -m pip install "causalrl[behavior]"
+python -m pip install "causalrl[d4rl]"
+python -m pip install "causalrl[rlu]"
 ```
 
 ## Quickstart
@@ -116,6 +121,12 @@ report.to_dataframe()
 report.save_html("report.html")
 ```
 
+## Data contracts
+
+- `BanditDataset`: i.i.d. contexts with one action and reward (+ optional propensities).
+- `TrajectoryDataset`: finite-horizon episodes with masks and propensities.
+- `TransitionDataset`: (s, a, r, s', done) tuples with optional episode id/timestep.
+
 ## Estimator selection guide
 
 ```text
@@ -128,7 +139,7 @@ Concern about overlap? -> inspect ESS and weight diagnostics first
 ```
 
 See the estimator docs for method assumptions and failure modes:
-https://gsaco.github.io/causalrl/api/estimators/
+https://gsaco.github.io/causalrl/reference/estimators/
 
 ## Benchmarks and reproducibility
 

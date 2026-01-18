@@ -6,8 +6,9 @@ from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 
-from crl.data.datasets import LoggedBanditDataset as BanditDataset
-from crl.data.datasets import TrajectoryDataset as TrajectoryDataset
+from crl.data.bandit import BanditDataset
+from crl.data.trajectory import TrajectoryDataset
+from crl.data.transition import TransitionDataset
 
 
 @runtime_checkable
@@ -27,4 +28,4 @@ class Dataset(Protocol):
         """Return a dictionary representation."""
 
 
-__all__ = ["Dataset", "BanditDataset", "TrajectoryDataset"]
+__all__ = ["Dataset", "BanditDataset", "TrajectoryDataset", "TransitionDataset"]

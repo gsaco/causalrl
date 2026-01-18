@@ -1,0 +1,82 @@
+<html><head><meta charset='utf-8'><title>CRL OPE Report</title></head><body>
+<h1>Off-Policy Evaluation Report</h1>
+<h2>Summary</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>value</th>
+      <th>stderr</th>
+      <th>ci</th>
+      <th>diagnostics</th>
+      <th>assumptions_checked</th>
+      <th>assumptions_flagged</th>
+      <th>warnings</th>
+      <th>metadata</th>
+      <th>lower_bound</th>
+      <th>upper_bound</th>
+      <th>estimator</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-0.546211</td>
+      <td>0.049878</td>
+      <td>(-0.6439728145402931, -0.44844967092982324)</td>
+      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.5927913227352017, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 301.5939969290254, 'ess_ratio': 0.6031879938580509}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9505441891756402, 'std': 0.7709715797013654, 'q95': 2.198968994213679, 'q99': 2.556018042816583, 'skew': 0.36620382199620793, 'kurtosis': -1.1920857313168414, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
+      <td>[sequential_ignorability, overlap]</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>{'estimator': 'IS', 'num_samples': 500, 'required_fields': ['behavior_action_probs'], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
+      <td>-0.643973</td>
+      <td>-0.448450</td>
+      <td>IS</td>
+    </tr>
+    <tr>
+      <td>-0.574630</td>
+      <td>0.056693</td>
+      <td>(-0.6857486159998778, -0.4635114582924283)</td>
+      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.5927913227352017, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 301.5939969290254, 'ess_ratio': 0.6031879938580509}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9505441891756402, 'std': 0.7709715797013654, 'q95': 2.198968994213679, 'q99': 2.556018042816583, 'skew': 0.36620382199620793, 'kurtosis': -1.1920857313168414, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
+      <td>[sequential_ignorability, overlap]</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>{'estimator': 'WIS', 'num_samples': 500, 'required_fields': ['behavior_action_probs'], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
+      <td>-0.685749</td>
+      <td>-0.463511</td>
+      <td>WIS</td>
+    </tr>
+    <tr>
+      <td>-0.440614</td>
+      <td>0.044899</td>
+      <td>(-0.5286173870969266, -0.35261153392936645)</td>
+      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.5927913227352017, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 301.5939969290254, 'ess_ratio': 0.6031879938580509}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9505441891756402, 'std': 0.7709715797013654, 'q95': 2.198968994213679, 'q99': 2.556018042816583, 'skew': 0.36620382199620793, 'kurtosis': -1.1920857313168414, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
+      <td>[sequential_ignorability, overlap]</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>{'estimator': 'DoubleRL', 'config': {'num_folds': 2, 'ridge': 0.001, 'seed': 0, 'min_prob': 1e-06, 'reward_model_factory': None, 'behavior_model_factory': None}, 'required_fields': [], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
+      <td>-0.528617</td>
+      <td>-0.352612</td>
+      <td>DoubleRL</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Assumptions</h2>
+<h3>IS</h3>
+<ul>
+<li>Checked: sequential_ignorability, overlap</li>
+<li>Flagged: None</li>
+</ul>
+<h3>WIS</h3>
+<ul>
+<li>Checked: sequential_ignorability, overlap</li>
+<li>Flagged: None</li>
+</ul>
+<h3>DoubleRL</h3>
+<ul>
+<li>Checked: sequential_ignorability, overlap</li>
+<li>Flagged: None</li>
+</ul>
+<h2>Diagnostics</h2>
+<pre>
+{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.5927913227352017, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 301.5939969290254, 'ess_ratio': 0.6031879938580509}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9505441891756402, 'std': 0.7709715797013654, 'q95': 2.198968994213679, 'q99': 2.556018042816583, 'skew': 0.36620382199620793, 'kurtosis': -1.1920857313168414, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}, 'shift': {'mmd_rbf': 0.0033350266151128682, 'mean_shift_norm': 0.08081281418749908, 'cov_shift_fro': 0.09506699106982497, 'ess': 301.5939969290254}}
+</pre>
+</body></html>

@@ -140,6 +140,8 @@ class DoublyRobustEstimator(OPEEstimator):
     """
 
     required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_fields = ["behavior_action_probs"]
+    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
     def __init__(
         self,
@@ -185,13 +187,14 @@ class DoublyRobustEstimator(OPEEstimator):
             if model_mse:
                 diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
 
-        return EstimatorReport(
+        return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={"estimator": "DR", "config": self.config.__dict__},
+            data=data,
         )
 
     def _fit_q_model(self, data: TrajectoryDataset, indices: np.ndarray) -> LinearQModel:

@@ -19,3 +19,13 @@ rows = [
 ]
 plot_sensitivity_curve(rows)
 ```
+
+## Sequential sensitivity (Gamma model)
+
+For trajectories, use the Namkoong-style bounds:
+
+```python
+from crl.sensitivity.namkoong2020 import confounded_ope_bounds
+
+curve = confounded_ope_bounds(dataset, policy, gammas=[1.0, 1.25, 1.5, 2.0])
+```
