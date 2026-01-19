@@ -15,7 +15,7 @@ from crl.estimators.base import (
     OPEEstimator,
     compute_ci,
 )
-from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
+from crl.estimators.bootstrap import BootstrapConfig
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
@@ -109,10 +109,34 @@ class FQEEstimator(OPEEstimator):
         diagnostics_config: DiagnosticsConfig | None = None,
         config: FQEConfig | None = None,
         device: str = "cpu",
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
-        super().__init__(estimand, run_diagnostics, diagnostics_config)
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
         self.config = config or FQEConfig()
         self.device = torch.device(device)
+        if self.config.bootstrap or self.config.uncertainty == "bootstrap":
+            self.bootstrap = True
+            if self.config.bootstrap_config is not None:
+                self.bootstrap_config = self.config.bootstrap_config
+            else:
+                self.bootstrap_config = BootstrapConfig(
+                    num_bootstrap=self.config.n_bootstrap
+                )
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "device": str(self.device),
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via FQE."""
@@ -135,15 +159,6 @@ class FQEEstimator(OPEEstimator):
             model_metrics = {"q_model_mse": train_mse}
 
         ci = compute_ci(value, stderr)
-        if self.config.bootstrap or self.config.uncertainty == "bootstrap":
-            bootstrap_config = self.config.bootstrap_config or BootstrapConfig(
-                num_bootstrap=self.config.n_bootstrap
-            )
-            stderr, ci = bootstrap_ci(
-                estimator_factory=self._bootstrap_factory(),
-                data=data,
-                config=bootstrap_config,
-            )
 
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []

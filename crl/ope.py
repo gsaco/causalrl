@@ -26,6 +26,7 @@ from crl.estimators.mrdr import MRDREstimator
 from crl.estimators.utils import compute_action_probs
 from crl.estimators.wdr import WeightedDoublyRobustEstimator
 from crl.utils.seeding import set_seed
+from crl.utils.validation import validate_dataset
 
 
 @dataclass
@@ -185,6 +186,7 @@ def evaluate(
     set_seed(seed)
     if isinstance(dataset, TransitionDataset):
         dataset = dataset.to_trajectory()
+    validate_dataset(dataset)
 
     if estimand is None:
         assumptions = [SEQUENTIAL_IGNORABILITY, OVERLAP]
@@ -198,6 +200,24 @@ def evaluate(
         )
 
     estimator_list = _resolve_estimators(estimators, estimand, dataset)
+    warnings: list[str] = []
+    if getattr(dataset, "behavior_action_probs", None) is None:
+        skipped = []
+        filtered: list[OPEEstimator] = []
+        for estimator in estimator_list:
+            if "behavior_action_probs" in getattr(estimator, "required_fields", []):
+                skipped.append(type(estimator).__name__)
+                continue
+            filtered.append(estimator)
+        if skipped:
+            warnings.append(
+                "Skipped estimators requiring behavior_action_probs: "
+                + ", ".join(skipped)
+                + "."
+            )
+        estimator_list = filtered
+    if not estimator_list:
+        raise ValueError("No compatible estimators available for this dataset.")
     reports: dict[str, EstimatorReport] = {}
     for estimator in estimator_list:
         report = estimator.estimate(dataset)
@@ -220,6 +240,7 @@ def evaluate(
             "seed": seed,
             "inference": inference or {},
             "diagnostics": diagnostics,
+            "warnings": warnings,
         },
     )
 

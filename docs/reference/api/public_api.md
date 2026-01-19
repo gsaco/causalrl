@@ -29,6 +29,14 @@ listed here may change without notice.
 - `crl.fit_behavior_policy`
 - `crl.BehaviorPolicyFit`
 
+## Policies
+
+- `crl.policies.Policy`
+- `crl.policies.StochasticPolicy`
+- `crl.policies.CallablePolicy`
+- `crl.policies.TabularPolicy`
+- `crl.policies.TorchMLPPolicy`
+
 ## Estimator selection
 
 - `crl.select_estimator`

@@ -5,16 +5,35 @@
 - Sequential ignorability
 - Overlap/positivity
 
+## Requires
+
+- LoggedBanditDataset or TrajectoryDataset
+- `behavior_action_probs` for logged actions
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
+- `weights.tail_fraction`
+
 ## Formula
 
 With weights $w_i$ and returns $G_i$,
 
 $\hat V = \frac{\sum_i w_i G_i}{\sum_i w_i}$.
 
-## Failure modes
+## Fails when
 
 - Bias in small samples due to normalization.
 - Still sensitive to extreme weights.
+
+## Minimal example
+
+```python
+from crl.estimators.importance_sampling import WISEstimator
+
+report = WISEstimator(estimand).estimate(dataset)
+```
 
 ## References
 

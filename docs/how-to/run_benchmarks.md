@@ -3,7 +3,13 @@
 Benchmarks are configured with YAML files under `configs/benchmarks/`.
 
 ```bash
-python -m experiments.run_benchmarks --suite all --out results/
+python -m experiments.run_benchmarks --suite all --output-dir results/
 ```
 
-Outputs include `results.csv`, `aggregate.csv`, figures, and an HTML summary.
+To run a pinned suite:
+
+```bash
+python -m experiments.run_benchmarks --config configs/benchmark_suites/default.yaml --seed 0
+```
+
+Outputs include `results.csv`, `aggregate.csv`, figures, `metadata.json`, and an HTML summary.

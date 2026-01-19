@@ -5,6 +5,17 @@
 - Sequential ignorability
 - Overlap/positivity
 
+## Requires
+
+- LoggedBanditDataset
+- `behavior_action_probs` optional (can be estimated for discrete contexts)
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
+- `model` diagnostics from reward/behavior models
+
 ## Formula
 
 For bandits, the orthogonalized estimator is
@@ -13,10 +24,18 @@ $\hat V = \frac{1}{n} \sum_i \left[ \hat m(x_i) + \frac{\pi(a_i|x_i)}{\hat\mu(a_
 
 with cross-fitting for nuisance models.
 
-## Failure modes
+## Fails when
 
 - Bias if nuisance models are poor.
 - Requires sufficient overlap for stable reweighting.
+
+## Minimal example
+
+```python
+from crl.estimators.double_rl import DoubleRLEstimator
+
+report = DoubleRLEstimator(estimand).estimate(dataset)
+```
 
 ## References
 

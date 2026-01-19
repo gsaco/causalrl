@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Any, Iterable
 
 import numpy as np
+
+from crl.data.base import require_fields
 
 
 def require_ndarray(name: str, value: np.ndarray) -> None:
@@ -51,3 +53,13 @@ def require_finite(name: str, value: np.ndarray) -> None:
 
     if not np.all(np.isfinite(value)):
         raise ValueError(f"{name} must not contain NaN or infinite values.")
+
+
+def validate_dataset(dataset: Any, required: Iterable[str] | None = None) -> None:
+    """Validate a dataset object and required fields if provided."""
+
+    validator = getattr(dataset, "validate", None)
+    if callable(validator):
+        validator()
+    if required:
+        require_fields(dataset, required)

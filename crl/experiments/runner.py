@@ -5,6 +5,10 @@ from __future__ import annotations
 import base64
 import csv
 import json
+import platform
+import subprocess
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +23,7 @@ from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.ope import evaluate
+from crl.version import __version__
 from crl.viz.plots import plot_bias_variance_tradeoff, plot_estimator_comparison
 
 
@@ -70,6 +75,7 @@ def run_benchmark_suite(
     output_dir: str | Path,
     seeds: list[int],
     config_dir: str | Path = "configs/benchmarks",
+    config_path: str | Path | None = None,
 ) -> pd.DataFrame:
     """Run a benchmark suite defined by YAML configs."""
 
@@ -78,7 +84,7 @@ def run_benchmark_suite(
     figures_dir = output_dir / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    specs = _load_suite_specs(suite, config_dir)
+    specs = _load_suite_specs(suite, config_dir, config_path)
     results: list[dict[str, Any]] = []
     for seed in seeds:
         for spec in specs:
@@ -92,11 +98,28 @@ def run_benchmark_suite(
 
     _write_figures(aggregate, figures_dir)
     _write_html_report(aggregate, figures_dir, output_dir / "report.html")
+    _write_metadata(
+        output_dir,
+        suite=suite,
+        seeds=seeds,
+        config_dir=config_dir,
+        config_path=config_path,
+        num_specs=len(specs),
+    )
 
     return df
 
 
-def _load_suite_specs(suite: str, config_dir: str | Path) -> list[dict[str, Any]]:
+def _load_suite_specs(
+    suite: str, config_dir: str | Path, config_path: str | Path | None
+) -> list[dict[str, Any]]:
+    if config_path is not None:
+        path = Path(config_path)
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return [
+            dict(spec, suite=data.get("suite", suite))
+            for spec in data.get("benchmarks", [])
+        ]
     config_dir = Path(config_dir)
     if suite == "all":
         all_path = config_dir / "all.yaml"
@@ -237,6 +260,62 @@ def _write_html_report(
         html_parts.append(f"<img src='data:image/png;base64,{img}' />")
     html_parts.append("</body></html>")
     output_path.write_text("\n".join(html_parts), encoding="utf-8")
+
+
+def _write_metadata(
+    output_dir: Path,
+    *,
+    suite: str,
+    seeds: list[int],
+    config_dir: str | Path,
+    config_path: str | Path | None,
+    num_specs: int,
+) -> None:
+    metadata = {
+        "suite": suite,
+        "seeds": seeds,
+        "num_specs": num_specs,
+        "config_dir": str(config_dir),
+        "config_path": None if config_path is None else str(config_path),
+        "crl_version": __version__,
+        "python_version": sys.version,
+        "platform": platform.platform(),
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "git_sha": _git_sha(),
+        "package_versions": _package_versions(
+            ["numpy", "pandas", "torch", "pyyaml", "causalrl"]
+        ),
+    }
+    (output_dir / "metadata.json").write_text(
+        json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8"
+    )
+
+
+def _git_sha() -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+    return result.stdout.strip() or None
+
+
+def _package_versions(names: list[str]) -> dict[str, str | None]:
+    try:
+        from importlib import metadata
+    except Exception:
+        return {name: None for name in names}
+    versions: dict[str, str | None] = {}
+    for name in names:
+        try:
+            versions[name] = metadata.version(name)
+        except Exception:
+            versions[name] = None
+    return versions
 
 
 def _to_base64(path: Path) -> str:

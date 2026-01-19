@@ -27,6 +27,7 @@
 </p>
 
 > Release status: v0.1.0 (research preview, alpha quality).
+> PyPI package: `causalrl` | Import name: `crl`
 
 If CausalRL helps your work, please consider starring the repo.
 

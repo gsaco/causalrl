@@ -5,6 +5,10 @@ theme:
   name: material
 nav:
   - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart (Bandit): getting-started/quickstart_bandit.md
+      - Quickstart (MDP): getting-started/quickstart_mdp.md
   - Tutorials:
       - Overview: tutorials/index.md
       - Quickstart (Bandit): tutorials/quickstart_bandit.md
@@ -15,11 +19,27 @@ nav:
       - Long-Horizon MIS vs IS: tutorials/long_horizon_mis.md
       - Proximal OPE (Advanced): tutorials/proximal_ope.md
   - How-to:
+      - Integrate Logged Data: how-to/integrate_logged_data.md
+      - Logged Bandit from DataFrame: how-to/logged_bandit_from_dataframe.md
+      - Trajectory Dataset from Parquet: how-to/trajectory_dataset_from_parquet.md
+      - Behavior Propensities Missing: how-to/behavior_propensities_missing.md
+      - Custom Policy Wrapper: how-to/custom_policy_wrapper.md
+      - Diagnostics Interpretation: how-to/diagnostics_interpretation.md
+      - Export and Reporting: how-to/export_and_reporting.md
+      - Benchmarking and Model Selection: how-to/benchmarking_and_model_selection.md
+      - Performance Tuning: how-to/performance_tuning.md
       - Run OPE Pipeline: how-to/run_ope_pipeline.md
       - Generate Reports: how-to/generate_reports.md
       - Run Benchmarks: how-to/run_benchmarks.md
       - Sensitivity Bounds: how-to/sensitivity_bounds.md
       - Release Process: how-to/release.md
+  - Concepts:
+      - Dataset Format: concepts/dataset_format.md
+      - Estimands: concepts/estimands.md
+      - Assumptions and Identification: concepts/assumptions_identification.md
+      - Diagnostics: concepts/diagnostics.md
+      - Sensitivity: concepts/sensitivity.md
+      - Limitations: concepts/limitations.md
   - Reference:
       - API Overview: reference/api/index.md
       - Public API: reference/api/public_api.md
@@ -61,6 +81,10 @@ nav:
       - Bias-Variance Tradeoffs: explanation/bias_variance.md
       - Confounding & Sensitivity: explanation/confounding.md
       - Proximal OPE: explanation/proximal.md
+  - Reproducibility:
+      - Seeds and Configs: reproducibility/seeds_and_configs.md
+      - Benchmark Suites: reproducibility/benchmark_suites.md
+      - Environment: reproducibility/environment.md
   - Notebooks:
       - Gallery: notebooks/index.md
       - 00 Introduction: notebooks/00_introduction.ipynb
@@ -72,13 +96,20 @@ nav:
       - 06 Sensitivity to Confounding: notebooks/06_sensitivity_unobserved_confounding.ipynb
       - 07 Real Dataset (D4RL): notebooks/07_real_dataset_d4rl.ipynb
       - 08 Estimator Selection: notebooks/08_estimator_selection_and_debugging.ipynb
+      - 05 Dataset Schema and Validation: notebooks/05_dataset_schema_and_validation.ipynb
+      - 06 Missing Propensities (FQE): notebooks/06_missing_propensities_fqe_path.ipynb
+      - 07 Uncertainty Intervals (Bootstrap): notebooks/07_uncertainty_intervals_bootstrap.ipynb
+      - 08 Benchmark Runner End-to-End: notebooks/08_benchmark_runner_end_to_end.ipynb
   - References: references.md
-  - Project Status: project_status.md
+  - Project:
+      - Project Status: project_status.md
+      - Changelog: changelog.md
+      - Contributing: contributing.md
 plugins:
   - search
   - mkdocs-jupyter:
       include_source: true
-      execute: true
+      execute: false
       allow_errors: false
   - mkdocstrings:
       handlers:

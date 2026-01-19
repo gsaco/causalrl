@@ -35,9 +35,24 @@ class HighConfidenceISEstimator(OPEEstimator):
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
         config: HighConfidenceConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
-        super().__init__(estimand, run_diagnostics, diagnostics_config)
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
         self.config = config or HighConfidenceConfig()
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
 
     def estimate(
         self, data: LoggedBanditDataset | TrajectoryDataset

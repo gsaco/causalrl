@@ -9,20 +9,23 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
       - name: Build
         run: |
-          python -m pip install --upgrade pip build
+          rm -rf dist
           python -m build
+          twine check dist/*
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-      - name: GitHub Release
-        uses: softprops/action-gh-release@v2
         with:
-          files: dist/*
+          print-hash: true

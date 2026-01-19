@@ -10,12 +10,26 @@ from crl.experiments.runner import run_benchmark_suite
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run CRL synthetic benchmarks.")
     parser.add_argument("--suite", type=str, default="all")
-    parser.add_argument("--out", type=str, default="results")
+    parser.add_argument("--config", type=str, default=None)
+    parser.add_argument("--config-dir", type=str, default="configs/benchmarks")
+    parser.add_argument("--output-dir", type=str, default=None)
+    parser.add_argument("--out", type=str, dest="output_dir", default=None)
     parser.add_argument("--seeds", type=str, default="0,1,2")
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
-    seeds = [int(s.strip()) for s in args.seeds.split(",") if s.strip()]
-    run_benchmark_suite(args.suite, args.out, seeds)
+    if args.seed is not None:
+        seeds = [int(args.seed)]
+    else:
+        seeds = [int(s.strip()) for s in args.seeds.split(",") if s.strip()]
+    output_dir = args.output_dir or "results"
+    run_benchmark_suite(
+        args.suite,
+        output_dir,
+        seeds,
+        config_dir=args.config_dir,
+        config_path=args.config,
+    )
 
 
 if __name__ == "__main__":

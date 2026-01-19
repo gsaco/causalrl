@@ -45,6 +45,45 @@ class StochasticPolicy(Policy):
         }
 
 
+@dataclass
+class CallablePolicy(Policy):
+    """Wrap a callable that returns actions or action probabilities."""
+
+    action_fn: Callable[[np.ndarray], np.ndarray]
+    action_space_n: int
+    returns: str = "actions"
+    name: str | None = None
+
+    def action_probs(self, observations: np.ndarray) -> np.ndarray:
+        output = np.asarray(self.action_fn(observations))
+        if self.returns == "actions":
+            actions = output.reshape(-1).astype(int)
+            probs = np.zeros((actions.size, self.action_space_n), dtype=float)
+            probs[np.arange(actions.size), actions] = 1.0
+            return probs
+        if self.returns == "probs":
+            probs = output.astype(float)
+            if probs.ndim != 2 or probs.shape[1] != self.action_space_n:
+                raise ValueError(
+                    f"action_fn must return shape (n, action_space_n), got {probs.shape}."
+                )
+            if np.any(probs < 0.0):
+                raise ValueError("probabilities must be non-negative.")
+            row_sums = probs.sum(axis=1)
+            if not np.allclose(row_sums, 1.0, atol=1e-6):
+                raise ValueError("probabilities must sum to 1 across actions.")
+            return probs
+        raise ValueError("returns must be 'actions' or 'probs'.")
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "policy_type": "CallablePolicy",
+            "action_space_n": self.action_space_n,
+            "returns": self.returns,
+            "name": self.name or "callable_policy",
+        }
+
+
 class UniformPolicy(Policy):
     """Uniform random policy over discrete actions."""
 
@@ -66,3 +105,6 @@ class UniformPolicy(Policy):
 
     def to_dict(self) -> dict[str, object]:
         return {"policy_type": "UniformPolicy", "action_space_n": self.action_space_n}
+
+
+__all__ = ["CallablePolicy", "StochasticPolicy", "UniformPolicy"]

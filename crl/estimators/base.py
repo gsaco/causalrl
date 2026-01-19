@@ -4,11 +4,15 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+import json
+from pathlib import Path
 from statistics import NormalDist
-from typing import Any
+from typing import Any, Callable
 
-from crl.data.base import require_fields
+from crl.utils.validation import validate_dataset
 from crl.estimands.policy_value import PolicyValueEstimand
+
+REPORT_SCHEMA_VERSION = 1
 
 
 @dataclass
@@ -81,6 +85,7 @@ class EstimatorReport:
             upper = self.ci[1]
 
         return {
+            "schema_version": REPORT_SCHEMA_VERSION,
             "value": self.value,
             "stderr": self.stderr,
             "ci": self.ci,
@@ -101,6 +106,32 @@ class EstimatorReport:
         except ImportError as exc:  # pragma: no cover - optional dependency
             raise ImportError("pandas is required for to_dataframe().") from exc
         return pd.DataFrame([self.to_dict()])
+
+    def to_json(self) -> str:
+        """Return a JSON string representation."""
+
+        return json.dumps(self.to_dict(), default=_to_jsonable, indent=2, sort_keys=True)
+
+    def save_json(self, path: str | Path) -> None:
+        """Write report contents to a JSON file."""
+
+        path_obj = Path(path)
+        path_obj.write_text(self.to_json(), encoding="utf-8")
+
+    def to_html(self) -> str:
+        """Return a self-contained HTML table representation."""
+
+        try:
+            import pandas as pd  # noqa: F401
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for to_html().") from exc
+        return self.to_dataframe().to_html(index=False, escape=False)
+
+    def save_html(self, path: str | Path) -> None:
+        """Write report contents to an HTML file."""
+
+        path_obj = Path(path)
+        path_obj.write_text(self.to_html(), encoding="utf-8")
 
     def __repr__(self) -> str:
         return (
@@ -135,11 +166,22 @@ class OPEEstimator(ABC):
         estimand: PolicyValueEstimand,
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
         self.estimand = estimand
         self.run_diagnostics = run_diagnostics
         self.diagnostics_config = diagnostics_config or DiagnosticsConfig()
+        self.bootstrap = bootstrap
+        self.bootstrap_config = bootstrap_config
         self.estimand.require(self.required_assumptions)
+        self._bootstrap_params: dict[str, Any] = {
+            "estimand": estimand,
+            "run_diagnostics": False,
+            "diagnostics_config": self.diagnostics_config,
+            "bootstrap": False,
+            "bootstrap_config": None,
+        }
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(run_diagnostics={self.run_diagnostics})"
@@ -147,11 +189,7 @@ class OPEEstimator(ABC):
     def _validate_dataset(self, data: Any) -> None:
         """Run dataset validation if available."""
 
-        validator = getattr(data, "validate", None)
-        if callable(validator):
-            validator()
-        if self.required_fields:
-            require_fields(data, self.required_fields)
+        validate_dataset(data, self.required_fields)
 
     def _behavior_policy_source(self, data: Any) -> str | None:
         source = getattr(data, "behavior_policy_source", None)
@@ -216,7 +254,7 @@ class OPEEstimator(ABC):
         metadata_out.setdefault("diagnostics_keys", list(self.diagnostics_keys))
         if behavior_source is not None:
             metadata_out.setdefault("behavior_policy_source", behavior_source)
-        return EstimatorReport(
+        report = EstimatorReport(
             value=value,
             stderr=stderr,
             ci=ci,
@@ -228,6 +266,53 @@ class OPEEstimator(ABC):
             lower_bound=lower_bound,
             upper_bound=upper_bound,
         )
+        return self._apply_bootstrap(report, data)
+
+    def _bootstrap_factory(self) -> Callable[[], "OPEEstimator"]:
+        params = dict(self._bootstrap_params)
+
+        def _factory() -> OPEEstimator:
+            return type(self)(**params)
+
+        return _factory
+
+    def _apply_bootstrap(
+        self, report: EstimatorReport, data: Any | None
+    ) -> EstimatorReport:
+        if not self.bootstrap:
+            return report
+        if data is None:
+            report.warnings.append(
+                "Bootstrap CI requested but no dataset was provided."
+            )
+            return report
+        from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
+        from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
+
+        if not isinstance(data, (LoggedBanditDataset, TrajectoryDataset)):
+            report.warnings.append(
+                "Bootstrap CI requested but dataset type is unsupported."
+            )
+            return report
+
+        config = (
+            self.bootstrap_config
+            if isinstance(self.bootstrap_config, BootstrapConfig)
+            else BootstrapConfig()
+        )
+        stderr, ci = bootstrap_ci(self._bootstrap_factory(), data, config)
+        report.stderr = stderr
+        report.ci = ci
+        report.metadata = dict(report.metadata)
+        report.metadata.setdefault(
+            "bootstrap",
+            {
+                "num_bootstrap": config.num_bootstrap,
+                "method": config.method,
+                "alpha": config.alpha,
+            },
+        )
+        return report
 
     @abstractmethod
     def estimate(self, data: Any) -> EstimatorReport:
@@ -246,3 +331,14 @@ def compute_ci(
 
 
 EstimationReport = EstimatorReport
+
+
+def _to_jsonable(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _to_jsonable(val) for key, val in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_to_jsonable(val) for val in value]
+    tolist = getattr(value, "tolist", None)
+    if callable(tolist):
+        return tolist()
+    return str(value)

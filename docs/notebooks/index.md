@@ -9,3 +9,7 @@
 - [06_sensitivity_unobserved_confounding.ipynb](06_sensitivity_unobserved_confounding.ipynb)
 - [07_real_dataset_d4rl.ipynb](07_real_dataset_d4rl.ipynb)
 - [08_estimator_selection_and_debugging.ipynb](08_estimator_selection_and_debugging.ipynb)
+- [05_dataset_schema_and_validation.ipynb](05_dataset_schema_and_validation.ipynb)
+- [06_missing_propensities_fqe_path.ipynb](06_missing_propensities_fqe_path.ipynb)
+- [07_uncertainty_intervals_bootstrap.ipynb](07_uncertainty_intervals_bootstrap.ipynb)
+- [08_benchmark_runner_end_to_end.ipynb](08_benchmark_runner_end_to_end.ipynb)

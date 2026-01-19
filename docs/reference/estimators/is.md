@@ -5,16 +5,35 @@
 - Sequential ignorability
 - Overlap/positivity
 
+## Requires
+
+- LoggedBanditDataset or TrajectoryDataset
+- `behavior_action_probs` for logged actions
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
+- `weights.tail_fraction`
+
 ## Formula
 
 For trajectory return $G_i$ and importance weight $w_i = \prod_t \pi(a_t|s_t) / \mu(a_t|s_t)$,
 
 $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 
-## Failure modes
+## Fails when
 
 - High variance with weak overlap or long horizons.
 - Heavy-tailed weights can dominate the estimate.
+
+## Minimal example
+
+```python
+from crl.estimators.importance_sampling import ISEstimator
+
+report = ISEstimator(estimand).estimate(dataset)
+```
 
 ## References
 

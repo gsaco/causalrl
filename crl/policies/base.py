@@ -59,6 +59,90 @@ class Policy:
 
         raise NotImplementedError("sample_action is not implemented for this policy.")
 
+    @classmethod
+    def from_sklearn(
+        cls,
+        model: object,
+        action_space_n: int,
+        *,
+        deterministic: bool | None = None,
+        name: str | None = None,
+    ) -> "Policy":
+        """Wrap a scikit-learn model as a policy.
+
+        If deterministic is True, uses model.predict and treats outputs as actions.
+        Otherwise uses model.predict_proba for action probabilities.
+        """
+
+        if deterministic is None:
+            deterministic = not hasattr(model, "predict_proba")
+        if deterministic:
+            if not hasattr(model, "predict"):
+                raise ValueError("model must implement predict for deterministic use.")
+
+            def action_fn(obs: np.ndarray) -> np.ndarray:
+                return np.asarray(model.predict(obs))
+
+            from crl.policies.discrete import CallablePolicy
+
+            return CallablePolicy(
+                action_fn=action_fn,
+                action_space_n=action_space_n,
+                returns="actions",
+                name=name or type(model).__name__,
+            )
+
+        if not hasattr(model, "predict_proba"):
+            raise ValueError("model must implement predict_proba for stochastic use.")
+
+        def prob_fn(obs: np.ndarray) -> np.ndarray:
+            return np.asarray(model.predict_proba(obs))
+
+        from crl.policies.discrete import StochasticPolicy
+
+        return StochasticPolicy(
+            prob_fn=prob_fn,
+            action_space_n=action_space_n,
+            name=name or type(model).__name__,
+        )
+
+    @classmethod
+    def from_torch(
+        cls,
+        model: object,
+        action_space_n: int,
+        *,
+        device: str = "cpu",
+        name: str | None = None,
+    ) -> "Policy":
+        """Wrap a torch model that outputs action logits."""
+
+        try:
+            import torch
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("torch is required for from_torch().") from exc
+
+        torch_model = model
+        torch_model.to(torch.device(device))
+        torch_model.eval()
+
+        def prob_fn(obs: np.ndarray) -> np.ndarray:
+            obs_arr = np.asarray(obs, dtype=np.float32)
+            if obs_arr.ndim == 1:
+                obs_arr = obs_arr.reshape(-1, 1)
+            with torch.no_grad():
+                logits = torch_model(torch.from_numpy(obs_arr).to(device))
+                probs = torch.softmax(logits, dim=-1).cpu().numpy()
+            return probs
+
+        from crl.policies.discrete import StochasticPolicy
+
+        return StochasticPolicy(
+            prob_fn=prob_fn,
+            action_space_n=action_space_n,
+            name=name or type(model).__name__,
+        )
+
     def to_dict(self) -> dict[str, object]:
         """Return a dictionary representation."""
 
