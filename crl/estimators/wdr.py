@@ -8,14 +8,19 @@ from typing import Any
 import numpy as np
 
 from crl.data.datasets import TrajectoryDataset
+from crl.diagnostics.weights import weight_time_diagnostics
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.estimators.base import DiagnosticsConfig, EstimatorReport, OPEEstimator, compute_ci
+from crl.estimators.base import (
+    DiagnosticsConfig,
+    EstimatorReport,
+    OPEEstimator,
+    compute_ci,
+)
 from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
-from crl.diagnostics.weights import weight_time_diagnostics
 
 
 @dataclass
@@ -33,7 +38,14 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
 
     required_assumptions = ["sequential_ignorability", "overlap", "markov"]
     required_fields = ["behavior_action_probs"]
-    diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model", "weight_time"]
+    diagnostics_keys = [
+        "overlap",
+        "ess",
+        "weights",
+        "max_weight",
+        "model",
+        "weight_time",
+    ]
 
     def __init__(
         self,
@@ -49,9 +61,12 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
         self._validate_dataset(data)
         if data.behavior_action_probs is None:
             raise ValueError("behavior_action_probs are required for WDR.")
+        behavior_action_probs = data.behavior_action_probs
 
         indices = np.arange(data.num_trajectories)
-        folds = make_folds(data.num_trajectories, self.config.num_folds, self.config.seed)
+        folds = make_folds(
+            data.num_trajectories, self.config.num_folds, self.config.seed
+        )
 
         fold_values = np.zeros(data.num_trajectories, dtype=float)
         model_mse: list[float] = []
@@ -69,11 +84,17 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []
         if self.run_diagnostics:
-            target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
-            ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
+            target_probs = compute_action_probs(
+                self.estimand.policy, data.observations, data.actions
+            )
+            ratios = np.where(data.mask, target_probs / behavior_action_probs, 1.0)
             weights = np.prod(ratios, axis=1)
             diagnostics, warnings = run_diagnostics(
-                weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
+                weights,
+                target_probs,
+                behavior_action_probs,
+                data.mask,
+                self.diagnostics_config,
             )
             if model_mse:
                 diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
@@ -91,7 +112,9 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
             data=data,
         )
 
-    def _fit_q_model(self, data: TrajectoryDataset, indices: np.ndarray) -> LinearQModel:
+    def _fit_q_model(
+        self, data: TrajectoryDataset, indices: np.ndarray
+    ) -> LinearQModel:
         obs = data.observations[indices][data.mask[indices]]
         next_obs = data.next_observations[indices][data.mask[indices]]
         actions = data.actions[indices][data.mask[indices]]
@@ -122,9 +145,11 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
         actions = data.actions[indices]
         rewards = data.rewards[indices]
         mask = data.mask[indices]
+        behavior_action_probs = data.behavior_action_probs
+        assert behavior_action_probs is not None
 
         target_probs = compute_action_probs(self.estimand.policy, obs, actions)
-        ratios = np.where(mask, target_probs / data.behavior_action_probs[indices], 1.0)
+        ratios = np.where(mask, target_probs / behavior_action_probs[indices], 1.0)
         cumulative = np.cumprod(ratios, axis=1)
 
         obs_flat = obs[mask]
@@ -149,5 +174,7 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
         with np.errstate(divide="ignore", invalid="ignore"):
             weights_norm = np.divide(weights, weights_sum, where=weights_sum > 0)
 
-        values = weights_norm[:, 0] * v_matrix[:, 0] + np.sum(weights_norm * td_matrix, axis=1)
+        values = weights_norm[:, 0] * v_matrix[:, 0] + np.sum(
+            weights_norm * td_matrix, axis=1
+        )
         return values

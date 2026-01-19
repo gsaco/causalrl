@@ -9,7 +9,12 @@ import numpy as np
 
 from crl.data.datasets import TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.estimators.base import DiagnosticsConfig, EstimatorReport, OPEEstimator, compute_ci
+from crl.estimators.base import (
+    DiagnosticsConfig,
+    EstimatorReport,
+    OPEEstimator,
+    compute_ci,
+)
 from crl.estimators.stats import mean_stderr
 
 
@@ -56,7 +61,7 @@ class DualDICEEstimator(OPEEstimator):
         idx = idx[mask]
 
         time_steps = np.tile(np.arange(data.horizon), (data.num_trajectories, 1))[mask]
-        discounts = gamma ** time_steps
+        discounts = gamma**time_steps
 
         phi = np.zeros((idx.shape[0], num_features), dtype=float)
         phi[np.arange(idx.shape[0]), idx] = 1.0
@@ -65,7 +70,9 @@ class DualDICEEstimator(OPEEstimator):
         policy_probs_next = self.estimand.policy.action_probs(next_obs)
         phi_next = np.zeros((idx.shape[0], num_features), dtype=float)
         for a in range(num_actions):
-            phi_next[np.arange(idx.shape[0]), next_obs * num_actions + a] = policy_probs_next[:, a]
+            phi_next[np.arange(idx.shape[0]), next_obs * num_actions + a] = (
+                policy_probs_next[:, a]
+            )
 
         weights = discounts / max(np.mean(discounts), 1e-8)
         a_mat = (phi.T * weights) @ (phi - gamma * phi_next) / phi.shape[0]

@@ -148,15 +148,23 @@ class FQEEstimator(OPEEstimator):
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []
         if self.run_diagnostics and data.behavior_action_probs is not None:
-            target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
+            target_probs = compute_action_probs(
+                self.estimand.policy, data.observations, data.actions
+            )
             ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
             weights = np.prod(ratios, axis=1)
             diagnostics, warnings = run_diagnostics(
-                weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
+                weights,
+                target_probs,
+                data.behavior_action_probs,
+                data.mask,
+                self.diagnostics_config,
             )
             diagnostics["model"] = model_metrics if q_network is not None else {}
         elif self.run_diagnostics:
-            warnings.append("behavior_action_probs missing; skipping weight diagnostics.")
+            warnings.append(
+                "behavior_action_probs missing; skipping weight diagnostics."
+            )
 
         return self._build_report(
             value=value,
@@ -260,7 +268,9 @@ class FQEEstimator(OPEEstimator):
         input_dim = obs_action.shape[1]
         q_network = TorchQNetwork(input_dim, self.config.hidden_sizes).to(self.device)
         optimizer = torch.optim.Adam(
-            q_network.parameters(), lr=self.config.learning_rate, weight_decay=self.config.weight_decay
+            q_network.parameters(),
+            lr=self.config.learning_rate,
+            weight_decay=self.config.weight_decay,
         )
         loss_fn = nn.MSELoss()
 
@@ -274,7 +284,12 @@ class FQEEstimator(OPEEstimator):
 
         for _ in range(self.config.num_iterations):
             for _ in range(self.config.num_epochs):
-                for batch_obs_action, batch_rewards, batch_next, batch_policy_probs in loader:
+                for (
+                    batch_obs_action,
+                    batch_rewards,
+                    batch_next,
+                    batch_policy_probs,
+                ) in loader:
                     batch_obs_action = batch_obs_action.to(self.device)
                     batch_rewards = batch_rewards.to(self.device)
                     batch_next = batch_next.to(self.device)
@@ -282,7 +297,10 @@ class FQEEstimator(OPEEstimator):
 
                     with torch.no_grad():
                         next_values = self._torch_policy_value(
-                            q_network, batch_next, batch_policy_probs, data.action_space_n
+                            q_network,
+                            batch_next,
+                            batch_policy_probs,
+                            data.action_space_n,
                         )
                         targets = batch_rewards + data.discount * next_values
 
@@ -294,10 +312,16 @@ class FQEEstimator(OPEEstimator):
                     optimizer.step()
 
         with torch.no_grad():
-            obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(self.device)
+            obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(
+                self.device
+            )
             rewards_tensor = torch.tensor(rewards, dtype=torch.float32).to(self.device)
-            next_tensor = torch.tensor(next_features, dtype=torch.float32).to(self.device)
-            policy_tensor = torch.tensor(next_policy_probs, dtype=torch.float32).to(self.device)
+            next_tensor = torch.tensor(next_features, dtype=torch.float32).to(
+                self.device
+            )
+            policy_tensor = torch.tensor(next_policy_probs, dtype=torch.float32).to(
+                self.device
+            )
             next_values = self._torch_policy_value(
                 q_network, next_tensor, policy_tensor, data.action_space_n
             )
@@ -318,7 +342,9 @@ class FQEEstimator(OPEEstimator):
         next_policy_probs = self.estimand.policy.action_probs(next_obs)
         return obs, next_obs, actions, rewards, next_policy_probs
 
-    def _features(self, observations: np.ndarray, state_space_n: int | None) -> np.ndarray:
+    def _features(
+        self, observations: np.ndarray, state_space_n: int | None
+    ) -> np.ndarray:
         obs = np.asarray(observations)
         if obs.ndim == 1:
             if state_space_n is not None:
@@ -349,17 +375,24 @@ class FQEEstimator(OPEEstimator):
         actions = np.tile(np.arange(action_space_n), obs_np.shape[0])
         action_one_hot = self._one_hot(actions, action_space_n)
         obs_action = np.concatenate([obs_rep, action_one_hot], axis=1)
-        obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(self.device)
+        obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(
+            self.device
+        )
         q_values = q_network(obs_action_tensor).view(obs_np.shape[0], action_space_n)
         return torch.sum(policy_probs * q_values, dim=1)
 
     def _compute_state_values(
-        self, q_network: TorchQNetwork, observations: np.ndarray, state_space_n: int | None
+        self,
+        q_network: TorchQNetwork,
+        observations: np.ndarray,
+        state_space_n: int | None,
     ) -> np.ndarray:
         obs_features = self._features(observations, state_space_n)
         policy_probs = self.estimand.policy.action_probs(observations)
         action_space_n = policy_probs.shape[1]
         obs_tensor = torch.tensor(obs_features, dtype=torch.float32).to(self.device)
         policy_tensor = torch.tensor(policy_probs, dtype=torch.float32).to(self.device)
-        values = self._torch_policy_value(q_network, obs_tensor, policy_tensor, action_space_n)
+        values = self._torch_policy_value(
+            q_network, obs_tensor, policy_tensor, action_space_n
+        )
         return values.detach().cpu().numpy()

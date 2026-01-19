@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 
+from crl.data.trajectory import TrajectoryDataset
 from crl.data.transition import TransitionDataset
 
 
@@ -15,12 +14,12 @@ def load_d4rl_dataset(
     discount: float = 0.99,
     include_timeouts: bool = True,
     return_type: str = "transition",
-) -> TransitionDataset:
+) -> TransitionDataset | TrajectoryDataset:
     """Load a D4RL dataset and map it to a TransitionDataset."""
 
     try:
-        import gym
         import d4rl  # noqa: F401
+        import gym
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError(
             "d4rl and gym are required for D4RL dataset loading."

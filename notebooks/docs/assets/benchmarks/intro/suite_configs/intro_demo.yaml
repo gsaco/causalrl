@@ -1,0 +1,9 @@
+benchmarks:
+- behavior_known: true
+  estimators:
+  - is
+  - wis
+  name: bandit_tiny
+  num_samples: 200
+  type: bandit
+suite: intro_demo

@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "causalrl"
-version = "0.1.0"
 description = "Causal Reinforcement Learning (CRL) toolbox"
 readme = "README.md"
 requires-python = ">=3.10"
+dynamic = ["version"]
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
@@ -42,6 +42,7 @@ dev = [
   "hypothesis>=6.95",
   "ruff>=0.4",
   "mypy>=1.6",
+  "types-PyYAML>=6.0",
   "mkdocs>=1.5",
   "mkdocs-material>=9.5",
   "mkdocs-jupyter>=0.24",
@@ -86,19 +87,38 @@ rlu = [
 dice-torch = [
   "torch>=2.0",
 ]
+all = [
+  "matplotlib>=3.7",
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.5",
+  "mkdocs-jupyter>=0.24",
+  "mkdocstrings[python]>=0.24",
+  "jupytext>=1.16",
+  "scienceplots>=2.1",
+  "ipykernel>=6.29",
+  "jupyterlab>=4.0",
+  "scikit-learn>=1.3",
+  "d4rl>=1.1",
+  "gym>=0.26",
+  "tensorflow>=2.11",
+  "tensorflow-datasets>=4.9",
+]
 
 [project.urls]
 Homepage = "https://github.com/gsaco/causalrl"
 Documentation = "https://gsaco.github.io/causalrl/"
 Repository = "https://github.com/gsaco/causalrl"
 Issues = "https://github.com/gsaco/causalrl/issues"
-Changelog = "https://github.com/gsaco/causalrl/blob/v1/CHANGELOG.md"
+Changelog = "https://github.com/gsaco/causalrl/blob/main/CHANGELOG.md"
 
 [project.scripts]
 crl = "crl.cli:app"
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "crl.version.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -110,10 +130,16 @@ crl = ["py.typed"]
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+extend-exclude = ["docs/notebooks/**/*.ipynb", "notebooks/**/*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"notebooks/**/*.py" = ["B018", "B905", "F401", "I001"]
+"notebooks/**/*.ipynb" = ["B018", "B905", "F401", "I001"]
+"docs/notebooks/**/*.ipynb" = ["B018", "B905", "F401", "I001"]
 
 [tool.ruff.format]
 quote-style = "double"

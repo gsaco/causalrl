@@ -1,36 +1,72 @@
 # CausalRL
 
-[![CI](https://github.com/gsaco/causalrl/actions/workflows/ci.yml/badge.svg)](https://github.com/gsaco/causalrl/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-online-brightgreen)](https://gsaco.github.io/causalrl/)
-[![Coverage](https://codecov.io/gh/gsaco/causalrl/branch/main/graph/badge.svg)](https://codecov.io/gh/gsaco/causalrl)
-[![PyPI](https://img.shields.io/badge/PyPI-coming%20soon-lightgrey)](https://pypi.org/project/causalrl/)
-[![License](https://img.shields.io/github/license/gsaco/causalrl)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+<p align="center">
+  <strong>Estimand-first causal reinforcement learning & off-policy evaluation</strong><br />
+  Assumptions in the open. Diagnostics by default. Reproducible benchmarks.
+</p>
 
-CausalRL is an estimand-first toolkit for causal reinforcement learning and
-off-policy evaluation that pairs identification assumptions with diagnostics so
-you can trust or debug a policy value estimate.
+<p align="center">
+  <a href="https://github.com/gsaco/causalrl/actions/workflows/ci.yml"><img src="https://github.com/gsaco/causalrl/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://gsaco.github.io/causalrl/"><img src="https://img.shields.io/badge/docs-online-brightgreen" alt="Docs" /></a>
+  <a href="https://codecov.io/gh/gsaco/causalrl"><img src="https://codecov.io/gh/gsaco/causalrl/branch/main/graph/badge.svg" alt="Coverage" /></a>
+  <a href="https://pypi.org/project/causalrl/"><img src="https://img.shields.io/badge/PyPI-coming%20soon-lightgrey" alt="PyPI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/gsaco/causalrl" alt="License" /></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python" /></a>
+</p>
 
-Release status: v0.1.0 (research preview, alpha quality).
+<p align="center">
+  <a href="https://gsaco.github.io/causalrl/">Docs</a> |
+  <a href="https://gsaco.github.io/causalrl/tutorials/">Tutorials</a> |
+  <a href="examples/README.md">Examples</a> |
+  <a href="docs/project_status.md">Project status</a> |
+  <a href="CITATION.cff">Cite</a>
+</p>
+
+> Release status: v0.1.0 (research preview, alpha quality).
+
+If CausalRL helps your work, please consider starring the repo.
+
+---
+
+## At a glance
+
+| Focus | What you get |
+| --- | --- |
+| Estimands & assumptions | A clear, auditable story for what you can identify and why. |
+| Diagnostics-first | Overlap, ESS, and weight pathologies surfaced early. |
+| Benchmarks | Synthetic bandit and MDP suites with ground-truth values. |
+| Sensitivity | Bounded-confounding analysis for bandits and sequential settings. |
+| Reports | Reproducible tables and exportable HTML artifacts. |
 
 ## Why CausalRL
 
-- Explicit estimands and assumptions make causal guarantees clear and auditable.
-- Diagnostics-first reports surface overlap, ESS, and weight pathologies early.
-- Synthetic benchmarks with ground truth support method selection and regression
-  tests.
+- Estimand-first API: make causal guarantees explicit and traceable.
+- Diagnostics as a first-class output, not an afterthought.
+- Synthetic benchmarks for fast comparisons and regression tests.
+- Clean data contracts for bandit, trajectory, and transition logs.
 
 ## When to use this library
 
 - Offline evaluation when online deployment is risky, expensive, or impossible.
-- Diagnostics-first iteration when you need to validate overlap and stability
-  before trusting an estimate.
+- Diagnostics-first iteration when you need to validate overlap and stability.
 - Synthetic ground-truth settings to compare estimators and tune workflows.
+
+---
 
 ## Installation
 
+PyPI (when available):
+
 ```bash
 python -m pip install causalrl
+```
+
+From source:
+
+```bash
+git clone https://github.com/gsaco/causalrl
+cd causalrl
+python -m pip install -e .
 ```
 
 Optional extras:
@@ -43,6 +79,8 @@ python -m pip install "causalrl[behavior]"
 python -m pip install "causalrl[d4rl]"
 python -m pip install "causalrl[rlu]"
 ```
+
+---
 
 ## Quickstart
 
@@ -121,11 +159,23 @@ report.to_dataframe()
 report.save_html("report.html")
 ```
 
+---
+
+## CLI
+
+```bash
+crl ope --config configs/ope.yaml --out results/
+```
+
+---
+
 ## Data contracts
 
 - `BanditDataset`: i.i.d. contexts with one action and reward (+ optional propensities).
 - `TrajectoryDataset`: finite-horizon episodes with masks and propensities.
 - `TransitionDataset`: (s, a, r, s', done) tuples with optional episode id/timestep.
+
+---
 
 ## Estimator selection guide
 
@@ -141,21 +191,72 @@ Concern about overlap? -> inspect ESS and weight diagnostics first
 See the estimator docs for method assumptions and failure modes:
 https://gsaco.github.io/causalrl/reference/estimators/
 
+---
+
+## Estimator coverage
+
+- Importance sampling: IS, WIS, PDIS, MIS.
+- Doubly robust family: DR, WDR, MRDR, MAGIC.
+- Model-based: FQE.
+- Alternative estimators: DualDICE, DoubleRL.
+- High-confidence bounds: HCOPE.
+
+---
+
+## Diagnostics and reporting
+
+- Overlap, effective sample size, and weight tail diagnostics.
+- Shift diagnostics when behavior propensities are available.
+- HTML reports with embedded figures for sharing and review.
+
+---
+
 ## Benchmarks and reproducibility
 
-- Synthetic benchmarks with known ground truth are built in for bandits and MDPs.
+- Synthetic benchmarks with known ground truth for bandits and MDPs.
 - Reproduce runs with `python -m experiments.run_benchmarks --suite all --out results/`.
 - Benchmark tutorials live in https://gsaco.github.io/causalrl/tutorials/.
+
+---
+
+## Notebooks and examples
+
+- Walkthrough notebooks in `notebooks/` and `docs/notebooks/`.
+- Runnable scripts in `examples/` (see `examples/README.md`).
+
+---
 
 ## Documentation
 
 - Live docs: https://gsaco.github.io/causalrl/
 - Build locally: `mkdocs serve`
 
+---
+
+## Project status
+
+CausalRL is a research preview (alpha). Confounding and transport settings are
+exposed as experimental interfaces and may change.
+
+---
+
 ## Citing
 
 If you use CausalRL in your research, please cite it using
-[`CITATION.cff`](CITATION.cff).
+[`CITATION.cff`](CITATION.cff) or [`CITATION.bib`](CITATION.bib).
+
+```bibtex
+@software{causalrl,
+  title = {causalrl: Causal Reinforcement Learning (CRL) toolbox},
+  author = {Saco, Gabriel},
+  year = {2026},
+  version = {0.1.0},
+  url = {https://github.com/gsaco/causalrl},
+  note = {Research preview},
+}
+```
+
+---
 
 ## Roadmap
 

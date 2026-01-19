@@ -63,8 +63,7 @@ class LoggedBanditDataset:
 
         if self.contexts.ndim not in (1, 2):
             raise ValueError(
-                "contexts must have shape (n,) or (n, d), got "
-                f"{self.contexts.shape}."
+                f"contexts must have shape (n,) or (n, d), got {self.contexts.shape}."
             )
         require_shape("actions", self.actions, 1)
         require_shape("rewards", self.rewards, 1)
@@ -79,7 +78,9 @@ class LoggedBanditDataset:
                 ["contexts", "actions", "rewards", "behavior_action_probs"],
                 [self.contexts, self.actions, self.rewards, self.behavior_action_probs],
             )
-            require_in_unit_interval("behavior_action_probs", self.behavior_action_probs)
+            require_in_unit_interval(
+                "behavior_action_probs", self.behavior_action_probs
+            )
         else:
             require_same_length(
                 ["contexts", "actions", "rewards"],
@@ -272,7 +273,10 @@ class TrajectoryDataset:
                 "actions and rewards must share shape (n, t), got "
                 f"{self.actions.shape} vs {self.rewards.shape}."
             )
-        if self.behavior_action_probs is not None and self.actions.shape != self.behavior_action_probs.shape:
+        if (
+            self.behavior_action_probs is not None
+            and self.actions.shape != self.behavior_action_probs.shape
+        ):
             raise ValueError(
                 "behavior_action_probs must share shape (n, t) with actions, got "
                 f"{self.behavior_action_probs.shape} vs {self.actions.shape}."
@@ -393,7 +397,9 @@ class TrajectoryDataset:
             "num_steps": self.num_steps,
             "discount": float(self.discount),
             "action_space_n": int(self.action_space_n),
-            "state_space_n": None if self.state_space_n is None else int(self.state_space_n),
+            "state_space_n": None
+            if self.state_space_n is None
+            else int(self.state_space_n),
             "observation_dim": obs_dim,
             "behavior_action_probs_present": self.behavior_action_probs is not None,
             "trajectory_length_min": int(lengths.min()),
@@ -438,7 +444,9 @@ class TrajectoryDataset:
             discount=float(data["discount"]),
             action_space_n=int(data["action_space_n"]),
             state_space_n=(
-                int(data["state_space_n"]) if data.get("state_space_n") is not None else None
+                int(data["state_space_n"])
+                if data.get("state_space_n") is not None
+                else None
             ),
             metadata=dict(data.get("metadata", {})),
         )

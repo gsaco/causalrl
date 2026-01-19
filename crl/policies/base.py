@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from abc import ABC
-
 import numpy as np
 
 
-class Policy(ABC):
+class Policy:
     """Abstract policy interface for discrete or continuous action spaces.
 
     Estimand:
@@ -35,7 +33,9 @@ class Policy(ABC):
         actions = np.asarray(actions).reshape(-1)
         return probs[np.arange(probs.shape[0]), actions]
 
-    def action_density(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:
+    def action_density(
+        self, observations: np.ndarray, actions: np.ndarray
+    ) -> np.ndarray:
         """Return action densities for selected actions (continuous)."""
 
         raise NotImplementedError("action_density is not implemented for this policy.")

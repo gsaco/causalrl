@@ -7,8 +7,8 @@ from typing import Any
 
 import numpy as np
 
-from crl.policies.base import Policy
 from crl.data.datasets import LoggedBanditDataset
+from crl.policies.base import Policy
 
 
 @dataclass
@@ -81,11 +81,15 @@ class ProximalBanditEstimator:
         theta = np.linalg.solve(xtx, xty)
 
         policy_probs = self.policy.action_probs(contexts)
-        expected_phi = _expected_bridge_features(proxy_o, contexts, policy_probs, data.action_space_n)
+        expected_phi = _expected_bridge_features(
+            proxy_o, contexts, policy_probs, data.action_space_n
+        )
         return float(np.mean(expected_phi @ theta))
 
 
-def _bridge_features(proxy_o: np.ndarray, actions: np.ndarray, contexts: np.ndarray) -> np.ndarray:
+def _bridge_features(
+    proxy_o: np.ndarray, actions: np.ndarray, contexts: np.ndarray
+) -> np.ndarray:
     actions = actions.reshape(-1)
     contexts = contexts.reshape(-1)
     proxy_o = proxy_o.reshape(-1)
@@ -101,7 +105,9 @@ def _bridge_features(proxy_o: np.ndarray, actions: np.ndarray, contexts: np.ndar
     )
 
 
-def _instrument_features(proxy_t: np.ndarray, actions: np.ndarray, contexts: np.ndarray) -> np.ndarray:
+def _instrument_features(
+    proxy_t: np.ndarray, actions: np.ndarray, contexts: np.ndarray
+) -> np.ndarray:
     actions = actions.reshape(-1)
     contexts = contexts.reshape(-1)
     proxy_t = proxy_t.reshape(-1)

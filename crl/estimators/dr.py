@@ -49,7 +49,9 @@ class DRCrossFitConfig:
 class LinearQModel:
     """Linear Q-function model with per-action ridge regression."""
 
-    def __init__(self, action_space_n: int, state_space_n: int | None, ridge: float) -> None:
+    def __init__(
+        self, action_space_n: int, state_space_n: int | None, ridge: float
+    ) -> None:
         self.action_space_n = action_space_n
         self.state_space_n = state_space_n
         self.ridge = ridge
@@ -84,6 +86,7 @@ class LinearQModel:
         policy_probs_next: np.ndarray,
         discount: float,
         num_iterations: int,
+        sample_weights: np.ndarray | None = None,
     ) -> None:
         obs_features = self._features(observations)
         next_features = self._features(next_observations)
@@ -101,8 +104,14 @@ class LinearQModel:
                     continue
                 x = obs_features[mask]
                 y = targets[mask]
-                xtx = x.T @ x + self.ridge * np.eye(feature_dim)
-                xty = x.T @ y
+                if sample_weights is None:
+                    xtx = x.T @ x + self.ridge * np.eye(feature_dim)
+                    xty = x.T @ y
+                else:
+                    w = sample_weights[mask].reshape(-1, 1)
+                    xtw = x.T * w.T
+                    xtx = xtw @ x + self.ridge * np.eye(feature_dim)
+                    xty = xtw @ y
                 self.weights[action] = np.linalg.solve(xtx, xty)
 
         preds = self.predict_q(observations, actions)
@@ -118,7 +127,9 @@ class LinearQModel:
         q_all = self._predict_all(obs_features)
         return q_all[np.arange(obs_features.shape[0]), actions]
 
-    def predict_v(self, observations: np.ndarray, policy_probs: np.ndarray) -> np.ndarray:
+    def predict_v(
+        self, observations: np.ndarray, policy_probs: np.ndarray
+    ) -> np.ndarray:
         obs_features = self._features(observations)
         q_all = self._predict_all(obs_features)
         return np.sum(policy_probs * q_all, axis=1)
@@ -159,8 +170,11 @@ class DoublyRobustEstimator(OPEEstimator):
         self._validate_dataset(data)
         if data.behavior_action_probs is None:
             raise ValueError("behavior_action_probs are required for DR.")
+        behavior_action_probs = data.behavior_action_probs
         indices = np.arange(data.num_trajectories)
-        folds = make_folds(data.num_trajectories, self.config.num_folds, self.config.seed)
+        folds = make_folds(
+            data.num_trajectories, self.config.num_folds, self.config.seed
+        )
 
         fold_values = np.zeros(data.num_trajectories, dtype=float)
         model_mse: list[float] = []
@@ -178,11 +192,17 @@ class DoublyRobustEstimator(OPEEstimator):
         diagnostics: dict[str, Any] = {}
         warnings: list[str] = []
         if self.run_diagnostics:
-            target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
-            ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
+            target_probs = compute_action_probs(
+                self.estimand.policy, data.observations, data.actions
+            )
+            ratios = np.where(data.mask, target_probs / behavior_action_probs, 1.0)
             weights = np.prod(ratios, axis=1)
             diagnostics, warnings = run_diagnostics(
-                weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
+                weights,
+                target_probs,
+                behavior_action_probs,
+                data.mask,
+                self.diagnostics_config,
             )
             if model_mse:
                 diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
@@ -197,7 +217,9 @@ class DoublyRobustEstimator(OPEEstimator):
             data=data,
         )
 
-    def _fit_q_model(self, data: TrajectoryDataset, indices: np.ndarray) -> LinearQModel:
+    def _fit_q_model(
+        self, data: TrajectoryDataset, indices: np.ndarray
+    ) -> LinearQModel:
         obs = data.observations[indices][data.mask[indices]]
         next_obs = data.next_observations[indices][data.mask[indices]]
         actions = data.actions[indices][data.mask[indices]]
@@ -228,9 +250,11 @@ class DoublyRobustEstimator(OPEEstimator):
         actions = data.actions[indices]
         rewards = data.rewards[indices]
         mask = data.mask[indices]
+        behavior_action_probs = data.behavior_action_probs
+        assert behavior_action_probs is not None
 
         target_probs = compute_action_probs(self.estimand.policy, obs, actions)
-        ratios = np.where(mask, target_probs / data.behavior_action_probs[indices], 1.0)
+        ratios = np.where(mask, target_probs / behavior_action_probs[indices], 1.0)
         cumulative = np.cumprod(ratios, axis=1)
 
         obs_flat = obs[mask]

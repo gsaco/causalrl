@@ -74,7 +74,9 @@ class AssumptionSet:
     def to_dict(self) -> dict[str, dict[str, str]]:
         """Return a dictionary keyed by assumption name."""
 
-        return {name: assumption.to_dict() for name, assumption in self._assumptions.items()}
+        return {
+            name: assumption.to_dict() for name, assumption in self._assumptions.items()
+        }
 
     def __repr__(self) -> str:
         return f"AssumptionSet(names={self.names()})"

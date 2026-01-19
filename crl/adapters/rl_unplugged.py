@@ -6,6 +6,7 @@ from typing import Any
 
 import numpy as np
 
+from crl.data.trajectory import TrajectoryDataset
 from crl.data.transition import TransitionDataset
 
 
@@ -16,7 +17,7 @@ def load_rl_unplugged_dataset(
     discount: float = 0.99,
     return_type: str = "transition",
     max_episodes: int | None = None,
-) -> TransitionDataset:
+) -> TransitionDataset | TrajectoryDataset:
     """Load an RL Unplugged dataset and map it to a TransitionDataset."""
 
     try:

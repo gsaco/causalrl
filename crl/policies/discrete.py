@@ -22,8 +22,7 @@ class StochasticPolicy(Policy):
         probs = np.asarray(self.prob_fn(observations), dtype=float)
         if probs.ndim != 2 or probs.shape[1] != self.action_space_n:
             raise ValueError(
-                "prob_fn must return shape (n, action_space_n), got "
-                f"{probs.shape}."
+                f"prob_fn must return shape (n, action_space_n), got {probs.shape}."
             )
         if np.any(probs < 0.0):
             raise ValueError("probabilities must be non-negative.")
@@ -32,7 +31,9 @@ class StochasticPolicy(Policy):
             raise ValueError("probabilities must sum to 1 across actions.")
         return probs
 
-    def sample_action(self, observations: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    def sample_action(
+        self, observations: np.ndarray, rng: np.random.Generator
+    ) -> np.ndarray:
         probs = self.action_probs(observations)
         return np.array([rng.choice(self.action_space_n, p=p) for p in probs])
 
@@ -57,7 +58,9 @@ class UniformPolicy(Policy):
         batch = obs.shape[0] if obs.ndim > 0 else 1
         return np.full((batch, self.action_space_n), 1.0 / self.action_space_n)
 
-    def sample_action(self, observations: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    def sample_action(
+        self, observations: np.ndarray, rng: np.random.Generator
+    ) -> np.ndarray:
         probs = self.action_probs(observations)
         return np.array([rng.choice(self.action_space_n, p=p) for p in probs])
 

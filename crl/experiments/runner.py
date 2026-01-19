@@ -16,6 +16,7 @@ from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.harness import run_all_benchmarks
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
+from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.ope import evaluate
 from crl.viz.plots import plot_bias_variance_tradeoff, plot_estimator_comparison
@@ -106,7 +107,10 @@ def _load_suite_specs(suite: str, config_dir: str | Path) -> list[dict[str, Any]
         return specs
     suite_path = config_dir / f"{suite}.yaml"
     data = yaml.safe_load(suite_path.read_text(encoding="utf-8"))
-    return [dict(spec, suite=data.get("suite", suite)) for spec in data.get("benchmarks", [])]
+    return [
+        dict(spec, suite=data.get("suite", suite))
+        for spec in data.get("benchmarks", [])
+    ]
 
 
 def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
@@ -114,29 +118,36 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
     behavior_known = spec.get("behavior_known", True)
     estimators = spec.get("estimators", "default")
     name = spec.get("name", f"{benchmark_type}_bench")
+    dataset: LoggedBanditDataset | TrajectoryDataset
 
     if benchmark_type == "bandit":
-        config = SyntheticBanditConfig(seed=seed, **spec.get("config", {}))
-        bench = SyntheticBandit(config)
-        dataset = bench.sample(num_samples=int(spec.get("num_samples", 1000)), seed=seed)
+        bandit_config = SyntheticBanditConfig(seed=seed, **spec.get("config", {}))
+        bandit_bench = SyntheticBandit(bandit_config)
+        dataset = bandit_bench.sample(
+            num_samples=int(spec.get("num_samples", 1000)), seed=seed
+        )
         if not behavior_known:
             dataset.behavior_action_probs = None
-        true_value = bench.true_policy_value(bench.target_policy)
+        policy = bandit_bench.target_policy
+        true_value = bandit_bench.true_policy_value(policy)
         estimand = PolicyValueEstimand(
-            policy=bench.target_policy,
+            policy=policy,
             discount=1.0,
             horizon=1,
             assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
         )
     else:
-        config = SyntheticMDPConfig(seed=seed, **spec.get("config", {}))
-        bench = SyntheticMDP(config)
-        dataset = bench.sample(num_trajectories=int(spec.get("num_trajectories", 200)), seed=seed)
+        mdp_config = SyntheticMDPConfig(seed=seed, **spec.get("config", {}))
+        mdp_bench = SyntheticMDP(mdp_config)
+        dataset = mdp_bench.sample(
+            num_trajectories=int(spec.get("num_trajectories", 200)), seed=seed
+        )
         if not behavior_known:
             dataset.behavior_action_probs = None
-        true_value = bench.true_policy_value(bench.target_policy)
+        policy = mdp_bench.target_policy
+        true_value = mdp_bench.true_policy_value(policy)
         estimand = PolicyValueEstimand(
-            policy=bench.target_policy,
+            policy=policy,
             discount=dataset.discount,
             horizon=dataset.horizon,
             assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
@@ -144,7 +155,7 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
 
     report = evaluate(
         dataset=dataset,
-        policy=bench.target_policy,
+        policy=policy,
         estimand=estimand,
         estimators=estimators,
         diagnostics="default",
@@ -193,7 +204,9 @@ def _write_figures(aggregate: pd.DataFrame, figures_dir: Path) -> None:
         rows = []
         for _, row in subset.iterrows():
             mean = float(row["estimate_mean"])
-            std = float(row["estimate_std"]) if not pd.isna(row["estimate_std"]) else 0.0
+            std = (
+                float(row["estimate_std"]) if not pd.isna(row["estimate_std"]) else 0.0
+            )
             rows.append(
                 {
                     "estimator": row["estimator"],
@@ -201,9 +214,7 @@ def _write_figures(aggregate: pd.DataFrame, figures_dir: Path) -> None:
                     "ci": (mean - std, mean + std),
                 }
             )
-        fig = plot_estimator_comparison(
-            rows, truth=float(subset["true_value"].iloc[0])
-        )
+        fig = plot_estimator_comparison(rows, truth=float(subset["true_value"].iloc[0]))
         save_figure(fig, figures_dir / f"{benchmark}")
 
     trade_rows = aggregate[["estimator", "bias", "variance"]].to_dict(orient="records")
@@ -211,7 +222,9 @@ def _write_figures(aggregate: pd.DataFrame, figures_dir: Path) -> None:
     save_figure(fig, figures_dir / "bias_variance_tradeoff")
 
 
-def _write_html_report(aggregate: pd.DataFrame, figures_dir: Path, output_path: Path) -> None:
+def _write_html_report(
+    aggregate: pd.DataFrame, figures_dir: Path, output_path: Path
+) -> None:
     html_parts = [
         "<html><head><meta charset='utf-8'><title>CRL Benchmarks</title></head><body>",
         "<h1>Benchmark Summary</h1>",

@@ -72,8 +72,7 @@ class TransitionDataset:
 
         if self.actions.ndim not in (1, 2):
             raise ValueError(
-                "actions must have shape (n,) or (n, d), got "
-                f"{self.actions.shape}."
+                f"actions must have shape (n,) or (n, d), got {self.actions.shape}."
             )
 
         if self.behavior_action_probs is not None:
@@ -91,7 +90,9 @@ class TransitionDataset:
                     "behavior_action_probs", self.behavior_action_probs
                 )
             elif np.any(self.behavior_action_probs <= 0.0):
-                raise ValueError("behavior_action_probs must be positive for densities.")
+                raise ValueError(
+                    "behavior_action_probs must be positive for densities."
+                )
 
         if self.discount < 0.0 or self.discount > 1.0:
             raise ValueError("discount must be within [0, 1].")
@@ -102,7 +103,9 @@ class TransitionDataset:
             if self.actions.ndim != 1:
                 raise ValueError("actions must be 1D when action_space_n is provided.")
             if not np.issubdtype(self.actions.dtype, np.integer):
-                raise ValueError("actions must be integer indices for discrete action spaces.")
+                raise ValueError(
+                    "actions must be integer indices for discrete action spaces."
+                )
             if np.any(self.actions < 0) or np.any(self.actions >= self.action_space_n):
                 raise ValueError(
                     "actions must be within [0, action_space_n), got "
@@ -163,7 +166,9 @@ class TransitionDataset:
             "type": "transition",
             "num_steps": self.num_steps,
             "discount": float(self.discount),
-            "action_space_n": None if self.action_space_n is None else int(self.action_space_n),
+            "action_space_n": None
+            if self.action_space_n is None
+            else int(self.action_space_n),
             "behavior_action_probs_present": self.behavior_action_probs is not None,
             "episode_ids_present": self.episode_ids is not None,
             "timesteps_present": self.timesteps is not None,
@@ -186,7 +191,9 @@ class TransitionDataset:
         """Convert transitions to a TrajectoryDataset if episodes are known."""
 
         if self.episode_ids is None or self.timesteps is None:
-            raise ValueError("episode_ids and timesteps are required to build trajectories.")
+            raise ValueError(
+                "episode_ids and timesteps are required to build trajectories."
+            )
         if self.action_space_n is None:
             raise ValueError("action_space_n required to build discrete trajectories.")
 
@@ -199,13 +206,16 @@ class TransitionDataset:
         next_shape = self.next_states.shape[1:]
 
         obs = np.zeros((unique_eps.size, horizon, *obs_shape), dtype=self.states.dtype)
-        next_obs = np.zeros((unique_eps.size, horizon, *next_shape), dtype=self.next_states.dtype)
+        next_obs = np.zeros(
+            (unique_eps.size, horizon, *next_shape), dtype=self.next_states.dtype
+        )
         actions = np.zeros((unique_eps.size, horizon), dtype=self.actions.dtype)
         rewards = np.zeros((unique_eps.size, horizon), dtype=self.rewards.dtype)
         mask = np.zeros((unique_eps.size, horizon), dtype=bool)
+        behavior_action_probs_src = self.behavior_action_probs
         behavior_action_probs = (
-            np.zeros((unique_eps.size, horizon), dtype=self.behavior_action_probs.dtype)
-            if self.behavior_action_probs is not None
+            np.zeros((unique_eps.size, horizon), dtype=behavior_action_probs_src.dtype)
+            if behavior_action_probs_src is not None
             else None
         )
 
@@ -219,7 +229,8 @@ class TransitionDataset:
             rewards[ep, t] = self.rewards[idx]
             mask[ep, t] = True
             if behavior_action_probs is not None:
-                behavior_action_probs[ep, t] = self.behavior_action_probs[idx]
+                assert behavior_action_probs_src is not None
+                behavior_action_probs[ep, t] = behavior_action_probs_src[idx]
 
         state_space_n = None
         if np.issubdtype(self.states.dtype, np.integer) and self.states.ndim == 1:
@@ -240,4 +251,3 @@ class TransitionDataset:
 
     def __repr__(self) -> str:
         return f"TransitionDataset(num_steps={self.num_steps})"
-

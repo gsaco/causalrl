@@ -69,14 +69,24 @@ class SyntheticMDP:
             np.ones(config.num_states) * config.transition_concentration,
             size=(config.num_states, config.num_actions),
         )
-        self.reward_means = rng.normal(0.0, 1.0, size=(config.num_states, config.num_actions))
+        self.reward_means = rng.normal(
+            0.0, 1.0, size=(config.num_states, config.num_actions)
+        )
 
-        behavior_logits = rng.normal(size=(config.num_states, config.num_actions)) * config.behavior_scale
-        target_logits = rng.normal(size=(config.num_states, config.num_actions)) * config.target_scale
+        behavior_logits = (
+            rng.normal(size=(config.num_states, config.num_actions))
+            * config.behavior_scale
+        )
+        target_logits = (
+            rng.normal(size=(config.num_states, config.num_actions))
+            * config.target_scale
+        )
         self.behavior_policy = TabularPolicy(_softmax(behavior_logits))
         self.target_policy = TabularPolicy(_softmax(target_logits))
 
-    def sample(self, num_trajectories: int, seed: int | None = None) -> TrajectoryDataset:
+    def sample(
+        self, num_trajectories: int, seed: int | None = None
+    ) -> TrajectoryDataset:
         """Sample trajectories from the behavior policy.
 
         Inputs:
@@ -93,7 +103,9 @@ class SyntheticMDP:
         actions = np.zeros((num_trajectories, self.config.horizon), dtype=int)
         rewards = np.zeros((num_trajectories, self.config.horizon), dtype=float)
         next_obs = np.zeros((num_trajectories, self.config.horizon), dtype=int)
-        behavior_action_probs = np.zeros((num_trajectories, self.config.horizon), dtype=float)
+        behavior_action_probs = np.zeros(
+            (num_trajectories, self.config.horizon), dtype=float
+        )
         mask = np.zeros((num_trajectories, self.config.horizon), dtype=bool)
 
         for i in range(num_trajectories):
@@ -105,9 +117,8 @@ class SyntheticMDP:
                 action = rng.choice(self.config.num_actions, p=action_probs)
                 actions[i, t] = action
                 behavior_action_probs[i, t] = action_probs[action]
-                rewards[i, t] = (
-                    self.reward_means[state, action]
-                    + rng.normal(0.0, self.config.reward_noise_std)
+                rewards[i, t] = self.reward_means[state, action] + rng.normal(
+                    0.0, self.config.reward_noise_std
                 )
                 next_state = rng.choice(
                     self.config.num_states, p=self.transition_probs[state, action]

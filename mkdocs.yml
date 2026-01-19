@@ -19,6 +19,7 @@ nav:
       - Generate Reports: how-to/generate_reports.md
       - Run Benchmarks: how-to/run_benchmarks.md
       - Sensitivity Bounds: how-to/sensitivity_bounds.md
+      - Release Process: how-to/release.md
   - Reference:
       - API Overview: reference/api/index.md
       - Public API: reference/api/public_api.md

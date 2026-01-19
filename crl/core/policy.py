@@ -17,7 +17,9 @@ class Policy(Protocol):
     def action_prob(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:
         """Return action probabilities for selected actions (discrete)."""
 
-    def action_density(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:
+    def action_density(
+        self, observations: np.ndarray, actions: np.ndarray
+    ) -> np.ndarray:
         """Return action densities for selected actions (continuous)."""
 
     def log_prob(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:

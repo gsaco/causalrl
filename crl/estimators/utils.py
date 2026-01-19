@@ -6,7 +6,7 @@ from typing import Tuple
 
 import numpy as np
 
-from crl.policies.base import Policy
+from crl.core.policy import Policy
 
 
 def flatten_observations(observations: np.ndarray) -> Tuple[np.ndarray, int, int]:

@@ -25,7 +25,9 @@ class BehaviorPolicy(Policy):
     def action_prob(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:
         return self.policy.action_prob(observations, actions)
 
-    def action_density(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:
+    def action_density(
+        self, observations: np.ndarray, actions: np.ndarray
+    ) -> np.ndarray:
         return self.policy.action_density(observations, actions)
 
     def log_prob(self, observations: np.ndarray, actions: np.ndarray) -> np.ndarray:

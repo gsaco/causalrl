@@ -33,7 +33,11 @@ from pathlib import Path
 
 import numpy as np
 
+from crl.assumptions import AssumptionSet
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
+from crl.estimands.policy_value import PolicyValueEstimand
+from crl.estimators.dual_dice import DualDICEConfig, DualDICEEstimator
 from crl.ope import evaluate
 from crl.utils.seeding import set_seed
 from crl.viz import configure_notebook_display, save_figure
@@ -54,10 +58,28 @@ true_value = benchmark.true_policy_value(benchmark.target_policy)
 report = evaluate(
     dataset=dataset,
     policy=benchmark.target_policy,
-    estimators=["is", "wis", "pdis", "dr", "fqe"],
+    estimators=["is", "wis", "pdis", "dr", "mis", "dualdice", "fqe"],
 )
 summary = report.summary_table()
 summary
+
+# %% [markdown]
+# ## DualDICE configuration example
+#
+# DualDICE is a behavior-agnostic estimator for discrete MDPs. Here we use a
+# custom ridge setting to illustrate configuration.
+
+# %%
+estimand = PolicyValueEstimand(
+    policy=benchmark.target_policy,
+    discount=dataset.discount,
+    horizon=dataset.horizon,
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+)
+
+dualdice_config = DualDICEConfig(ridge=5e-3, normalize=False)
+dualdice_report = DualDICEEstimator(estimand, config=dualdice_config).estimate(dataset)
+dualdice_report.to_dataframe()
 
 # %% [markdown]
 # ## Visual comparison

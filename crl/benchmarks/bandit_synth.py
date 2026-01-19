@@ -60,10 +60,18 @@ class SyntheticBandit:
         self.config = config
         rng = np.random.default_rng(config.seed)
         self.context_probs = rng.dirichlet(np.ones(config.num_contexts))
-        self.reward_means = rng.normal(0.0, 1.0, size=(config.num_contexts, config.num_actions))
+        self.reward_means = rng.normal(
+            0.0, 1.0, size=(config.num_contexts, config.num_actions)
+        )
 
-        behavior_logits = rng.normal(size=(config.num_contexts, config.num_actions)) * config.behavior_scale
-        target_logits = rng.normal(size=(config.num_contexts, config.num_actions)) * config.target_scale
+        behavior_logits = (
+            rng.normal(size=(config.num_contexts, config.num_actions))
+            * config.behavior_scale
+        )
+        target_logits = (
+            rng.normal(size=(config.num_contexts, config.num_actions))
+            * config.target_scale
+        )
         self.behavior_policy = TabularPolicy(_softmax(behavior_logits))
         self.target_policy = TabularPolicy(_softmax(target_logits))
 
@@ -80,14 +88,15 @@ class SyntheticBandit:
         """
 
         rng = np.random.default_rng(self.config.seed if seed is None else seed)
-        contexts = rng.choice(self.config.num_contexts, size=num_samples, p=self.context_probs)
+        contexts = rng.choice(
+            self.config.num_contexts, size=num_samples, p=self.context_probs
+        )
         behavior_probs = self.behavior_policy.action_probs(contexts)
-        actions = np.array([
-            rng.choice(self.config.num_actions, p=prob) for prob in behavior_probs
-        ])
-        rewards = (
-            self.reward_means[contexts, actions]
-            + rng.normal(0.0, self.config.reward_noise_std, size=num_samples)
+        actions = np.array(
+            [rng.choice(self.config.num_actions, p=prob) for prob in behavior_probs]
+        )
+        rewards = self.reward_means[contexts, actions] + rng.normal(
+            0.0, self.config.reward_noise_std, size=num_samples
         )
         behavior_action_probs = behavior_probs[np.arange(num_samples), actions]
         return LoggedBanditDataset(

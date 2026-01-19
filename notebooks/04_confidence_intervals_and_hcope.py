@@ -36,7 +36,7 @@ from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORAB
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
-from crl.estimators.high_confidence import HighConfidenceISEstimator
+from crl.estimators.high_confidence import HighConfidenceConfig, HighConfidenceISEstimator
 from crl.estimators.importance_sampling import ISEstimator
 from crl.utils.seeding import set_seed
 
@@ -59,7 +59,9 @@ estimand = PolicyValueEstimand(
 )
 
 is_estimator = ISEstimator(estimand)
-bootstrap_cfg = BootstrapConfig(num_bootstrap=200, method="trajectory", alpha=0.05, seed=0)
+bootstrap_cfg = BootstrapConfig(
+    num_bootstrap=200, method="trajectory", alpha=0.05, seed=0
+)
 stderr, ci = bootstrap_ci(lambda: ISEstimator(estimand), dataset, bootstrap_cfg)
 stderr, ci
 
@@ -72,6 +74,18 @@ stderr, ci
 # %%
 hcope_report = HighConfidenceISEstimator(estimand).estimate(dataset)
 hcope_report.value, hcope_report.ci
+
+# %% [markdown]
+# ## Explicit HCOPE configuration
+#
+# When you know a reward bound, pass it explicitly for tighter, reliable bounds.
+
+# %%
+hcope_config = HighConfidenceConfig(delta=0.1, reward_bound=2.0)
+hcope_report_cfg = HighConfidenceISEstimator(estimand, config=hcope_config).estimate(
+    dataset
+)
+hcope_report_cfg.to_dataframe()
 
 # %% [markdown]
 # ## Takeaways

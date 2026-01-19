@@ -1,17 +1,23 @@
 """Stable public API exports for CausalRL."""
 
+from crl.adapters import load_d4rl_dataset, load_rl_unplugged_dataset
 from crl.assumptions import Assumption, AssumptionSet
 from crl.behavior import BehaviorPolicyFit, fit_behavior_policy
 from crl.core.policy import Policy
-from crl.data import BanditDataset, LoggedBanditDataset, TrajectoryDataset, TransitionDataset
+from crl.data import (
+    BanditDataset,
+    LoggedBanditDataset,
+    TrajectoryDataset,
+    TransitionDataset,
+)
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
 from crl.estimators import (
     BootstrapConfig,
-    DRCrossFitConfig,
     DiagnosticsConfig,
-    DoublyRobustEstimator,
     DoubleRLConfig,
     DoubleRLEstimator,
+    DoublyRobustEstimator,
+    DRCrossFitConfig,
     DualDICEConfig,
     DualDICEEstimator,
     EstimationReport,
@@ -21,8 +27,8 @@ from crl.estimators import (
     HighConfidenceConfig,
     HighConfidenceISEstimator,
     ISEstimator,
-    MAGICEstimator,
     MAGICConfig,
+    MAGICEstimator,
     MarginalizedImportanceSamplingEstimator,
     MRDRConfig,
     MRDREstimator,
@@ -32,7 +38,6 @@ from crl.estimators import (
     WeightedDoublyRobustEstimator,
     WISEstimator,
 )
-from crl.adapters import load_d4rl_dataset, load_rl_unplugged_dataset
 from crl.ope import OpeReport, evaluate
 from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed

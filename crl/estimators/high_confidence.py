@@ -39,25 +39,33 @@ class HighConfidenceISEstimator(OPEEstimator):
         super().__init__(estimand, run_diagnostics, diagnostics_config)
         self.config = config or HighConfidenceConfig()
 
-    def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
+    def estimate(
+        self, data: LoggedBanditDataset | TrajectoryDataset
+    ) -> EstimatorReport:
         self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
             values, weights, target_probs, behavior_probs = self._bandit_values(data)
         else:
-            values, weights, target_probs, behavior_probs = self._trajectory_values(data)
+            values, weights, target_probs, behavior_probs = self._trajectory_values(
+                data
+            )
 
         bound = self.config.reward_bound
+        warnings: list[str] = []
         if bound is None:
             bound = float(np.max(np.abs(values))) if values.size else 0.0
+            warnings.append(
+                "reward_bound was inferred from data; provide a theoretical bound for coverage guarantees."
+            )
 
         lcb = empirical_bernstein_lower_bound(values, bound, self.config.delta)
         diagnostics: dict[str, Any] = {}
-        warnings: list[str] = []
         if self.run_diagnostics:
             mask = data.mask if isinstance(data, TrajectoryDataset) else None
-            diagnostics, warnings = run_diagnostics(
+            diagnostics, diag_warnings = run_diagnostics(
                 weights, target_probs, behavior_probs, mask, self.diagnostics_config
             )
+            warnings.extend(diag_warnings)
 
         return self._build_report(
             value=lcb,
@@ -85,8 +93,12 @@ class HighConfidenceISEstimator(OPEEstimator):
 
     def _trajectory_values(self, data: TrajectoryDataset):
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs required for HCOPE on trajectories.")
-        target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
+            raise ValueError(
+                "behavior_action_probs required for HCOPE on trajectories."
+            )
+        target_probs = compute_action_probs(
+            self.estimand.policy, data.observations, data.actions
+        )
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
         returns = compute_trajectory_returns(data.rewards, data.mask, data.discount)
@@ -94,7 +106,9 @@ class HighConfidenceISEstimator(OPEEstimator):
         return values, weights, target_probs, data.behavior_action_probs
 
 
-def empirical_bernstein_lower_bound(values: np.ndarray, bound: float, delta: float) -> float:
+def empirical_bernstein_lower_bound(
+    values: np.ndarray, bound: float, delta: float
+) -> float:
     """Empirical Bernstein lower bound for bounded random variables."""
 
     v = np.asarray(values, dtype=float)

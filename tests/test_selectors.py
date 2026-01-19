@@ -1,5 +1,3 @@
-import numpy as np
-
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig

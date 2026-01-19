@@ -1,0 +1,3 @@
+suite,benchmark,type,estimator,estimate,stderr,true_value,error,seed,behavior_known
+intro_demo,bandit_tiny,bandit,IS,-0.4840149006127824,0.08512105767534794,-0.4750356318471277,-0.008979268765654691,0,True
+intro_demo,bandit_tiny,bandit,WIS,-0.4716018386763845,0.0916288470726228,-0.4750356318471277,0.0034337931707432157,0,True

@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 from crl.behavior import fit_behavior_policy

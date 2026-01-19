@@ -10,14 +10,18 @@ import yaml
 
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
+from crl.core.policy import Policy
+from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.ope import evaluate
 
 app = typer.Typer(help="CausalRL command line interface.")
 
 
 @app.command()
-def ope(config: str = typer.Option(..., help="Path to OPE config YAML."),
-        out: str = typer.Option(..., help="Output directory for reports.")) -> None:
+def ope(
+    config: str = typer.Option(..., help="Path to OPE config YAML."),
+    out: str = typer.Option(..., help="Output directory for reports."),
+) -> None:
     """Run OPE based on a YAML config file."""
 
     cfg = _load_yaml(config)
@@ -54,25 +58,28 @@ def _load_yaml(path: str) -> dict[str, Any]:
         return yaml.safe_load(f) or {}
 
 
-def _resolve_benchmark(config: dict[str, Any]):
+def _resolve_benchmark(
+    config: dict[str, Any],
+) -> tuple[LoggedBanditDataset | TrajectoryDataset, Policy, float]:
     benchmark_type = config.get("type", "bandit")
     if benchmark_type == "bandit":
-        bench = SyntheticBandit(SyntheticBanditConfig(**config.get("config", {})))
-        dataset = bench.sample(
+        bandit_bench = SyntheticBandit(
+            SyntheticBanditConfig(**config.get("config", {}))
+        )
+        bandit_dataset = bandit_bench.sample(
             num_samples=int(config.get("num_samples", 1000)),
             seed=int(config.get("seed", 0)),
         )
-        truth = bench.true_policy_value(bench.target_policy)
-        return dataset, bench.target_policy, truth
-
-    if benchmark_type == "mdp":
-        bench = SyntheticMDP(SyntheticMDPConfig(**config.get("config", {})))
-        dataset = bench.sample(
+        truth = bandit_bench.true_policy_value(bandit_bench.target_policy)
+        return bandit_dataset, bandit_bench.target_policy, truth
+    elif benchmark_type == "mdp":
+        mdp_bench = SyntheticMDP(SyntheticMDPConfig(**config.get("config", {})))
+        mdp_dataset = mdp_bench.sample(
             num_trajectories=int(config.get("num_trajectories", 200)),
             seed=int(config.get("seed", 0)),
         )
-        truth = bench.true_policy_value(bench.target_policy)
-        return dataset, bench.target_policy, truth
+        truth = mdp_bench.true_policy_value(mdp_bench.target_policy)
+        return mdp_dataset, mdp_bench.target_policy, truth
 
     raise ValueError(f"Unknown benchmark type: {benchmark_type}")
 

@@ -1,7 +1,12 @@
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import BOUNDED_REWARDS, MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    BOUNDED_REWARDS,
+    MARKOV,
+    OVERLAP,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -18,7 +23,9 @@ from crl.estimators.wdr import WeightedDoublyRobustEstimator
 
 
 def test_extended_mdp_estimators_run_and_are_reasonable():
-    bench = SyntheticMDP(SyntheticMDPConfig(seed=1, horizon=4, num_states=5, num_actions=3))
+    bench = SyntheticMDP(
+        SyntheticMDPConfig(seed=1, horizon=4, num_states=5, num_actions=3)
+    )
     dataset = bench.sample(num_trajectories=300, seed=2)
     true_value = bench.true_policy_value(bench.target_policy)
 
@@ -65,7 +72,9 @@ def test_double_rl_and_hcope_bandit():
 
 
 def test_fqe_bootstrap_ci():
-    bench = SyntheticMDP(SyntheticMDPConfig(seed=5, horizon=3, num_states=4, num_actions=2))
+    bench = SyntheticMDP(
+        SyntheticMDPConfig(seed=5, horizon=3, num_states=4, num_actions=2)
+    )
     dataset = bench.sample(num_trajectories=40, seed=6)
 
     estimand = PolicyValueEstimand(

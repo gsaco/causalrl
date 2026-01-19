@@ -34,7 +34,9 @@ class ISEstimator(OPEEstimator):
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
-    def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
+    def estimate(
+        self, data: LoggedBanditDataset | TrajectoryDataset
+    ) -> EstimatorReport:
         """Estimate policy value via IS."""
 
         self._validate_dataset(data)
@@ -44,7 +46,9 @@ class ISEstimator(OPEEstimator):
 
     def _estimate_bandit(self, data: LoggedBanditDataset) -> EstimatorReport:
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs are required for IS on bandit data.")
+            raise ValueError(
+                "behavior_action_probs are required for IS on bandit data."
+            )
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         ratios = target_probs / data.behavior_action_probs
         weights = ratios.copy()
@@ -55,7 +59,11 @@ class ISEstimator(OPEEstimator):
         stderr = mean_stderr(values)
         diagnostics, warnings = (
             run_diagnostics(
-                ratios, target_probs, data.behavior_action_probs, None, self.diagnostics_config
+                ratios,
+                target_probs,
+                data.behavior_action_probs,
+                None,
+                self.diagnostics_config,
             )
             if self.run_diagnostics
             else ({}, [])
@@ -72,20 +80,30 @@ class ISEstimator(OPEEstimator):
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs are required for IS on trajectories.")
-        target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
+            raise ValueError(
+                "behavior_action_probs are required for IS on trajectories."
+            )
+        target_probs = compute_action_probs(
+            self.estimand.policy, data.observations, data.actions
+        )
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
         weights_for_est = weights.copy()
         if self.diagnostics_config.max_weight is not None:
-            weights_for_est = np.minimum(weights_for_est, self.diagnostics_config.max_weight)
+            weights_for_est = np.minimum(
+                weights_for_est, self.diagnostics_config.max_weight
+            )
         returns = compute_trajectory_returns(data.rewards, data.mask, data.discount)
         values = weights_for_est * returns
         value = float(np.mean(values))
         stderr = mean_stderr(values)
         diagnostics, warnings = (
             run_diagnostics(
-                weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
+                weights,
+                target_probs,
+                data.behavior_action_probs,
+                data.mask,
+                self.diagnostics_config,
             )
             if self.run_diagnostics
             else ({}, [])
@@ -120,7 +138,9 @@ class WISEstimator(OPEEstimator):
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
-    def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
+    def estimate(
+        self, data: LoggedBanditDataset | TrajectoryDataset
+    ) -> EstimatorReport:
         """Estimate policy value via WIS."""
 
         self._validate_dataset(data)
@@ -130,7 +150,9 @@ class WISEstimator(OPEEstimator):
 
     def _estimate_bandit(self, data: LoggedBanditDataset) -> EstimatorReport:
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs are required for WIS on bandit data.")
+            raise ValueError(
+                "behavior_action_probs are required for WIS on bandit data."
+            )
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         ratios = target_probs / data.behavior_action_probs
         weights = ratios.copy()
@@ -139,7 +161,11 @@ class WISEstimator(OPEEstimator):
         value, stderr = weighted_mean_and_stderr(data.rewards, weights)
         diagnostics, warnings = (
             run_diagnostics(
-                ratios, target_probs, data.behavior_action_probs, None, self.diagnostics_config
+                ratios,
+                target_probs,
+                data.behavior_action_probs,
+                None,
+                self.diagnostics_config,
             )
             if self.run_diagnostics
             else ({}, [])
@@ -156,18 +182,28 @@ class WISEstimator(OPEEstimator):
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs are required for WIS on trajectories.")
-        target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
+            raise ValueError(
+                "behavior_action_probs are required for WIS on trajectories."
+            )
+        target_probs = compute_action_probs(
+            self.estimand.policy, data.observations, data.actions
+        )
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
         weights_for_est = weights.copy()
         if self.diagnostics_config.max_weight is not None:
-            weights_for_est = np.minimum(weights_for_est, self.diagnostics_config.max_weight)
+            weights_for_est = np.minimum(
+                weights_for_est, self.diagnostics_config.max_weight
+            )
         returns = compute_trajectory_returns(data.rewards, data.mask, data.discount)
         value, stderr = weighted_mean_and_stderr(returns, weights_for_est)
         diagnostics, warnings = (
             run_diagnostics(
-                weights, target_probs, data.behavior_action_probs, data.mask, self.diagnostics_config
+                weights,
+                target_probs,
+                data.behavior_action_probs,
+                data.mask,
+                self.diagnostics_config,
             )
             if self.run_diagnostics
             else ({}, [])
@@ -202,18 +238,26 @@ class PDISEstimator(OPEEstimator):
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
-    def estimate(self, data: LoggedBanditDataset | TrajectoryDataset) -> EstimatorReport:
+    def estimate(
+        self, data: LoggedBanditDataset | TrajectoryDataset
+    ) -> EstimatorReport:
         """Estimate policy value via PDIS."""
 
         self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
-            return ISEstimator(self.estimand, self.run_diagnostics, self.diagnostics_config)._estimate_bandit(data)
+            return ISEstimator(
+                self.estimand, self.run_diagnostics, self.diagnostics_config
+            )._estimate_bandit(data)
         return self._estimate_trajectory(data)
 
     def _estimate_trajectory(self, data: TrajectoryDataset) -> EstimatorReport:
         if data.behavior_action_probs is None:
-            raise ValueError("behavior_action_probs are required for PDIS on trajectories.")
-        target_probs = compute_action_probs(self.estimand.policy, data.observations, data.actions)
+            raise ValueError(
+                "behavior_action_probs are required for PDIS on trajectories."
+            )
+        target_probs = compute_action_probs(
+            self.estimand.policy, data.observations, data.actions
+        )
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         cumulative = np.cumprod(ratios, axis=1)
         if self.diagnostics_config.max_weight is not None:

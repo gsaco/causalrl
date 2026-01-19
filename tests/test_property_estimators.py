@@ -14,11 +14,27 @@ from crl.policies.tabular import TabularPolicy
 @st.composite
 def bandit_data(draw):
     n = draw(st.integers(min_value=10, max_value=50))
-    rewards = draw(st.lists(st.floats(min_value=-2, max_value=2, allow_nan=False, allow_infinity=False), min_size=n, max_size=n))
+    rewards = draw(
+        st.lists(
+            st.floats(min_value=-2, max_value=2, allow_nan=False, allow_infinity=False),
+            min_size=n,
+            max_size=n,
+        )
+    )
     rewards = np.array(rewards, dtype=float)
-    actions = draw(st.lists(st.integers(min_value=0, max_value=1), min_size=n, max_size=n))
+    actions = draw(
+        st.lists(st.integers(min_value=0, max_value=1), min_size=n, max_size=n)
+    )
     actions = np.array(actions, dtype=int)
-    behavior_probs = draw(st.lists(st.floats(min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False), min_size=n, max_size=n))
+    behavior_probs = draw(
+        st.lists(
+            st.floats(
+                min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False
+            ),
+            min_size=n,
+            max_size=n,
+        )
+    )
     behavior_probs = np.array(behavior_probs, dtype=float)
     contexts = np.zeros(n, dtype=int)
     return contexts, actions, rewards, behavior_probs

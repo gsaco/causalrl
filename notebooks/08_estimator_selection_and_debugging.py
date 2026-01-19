@@ -31,11 +31,13 @@ from __future__ import annotations
 
 import numpy as np
 
+import pandas as pd
+
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.selectors import select_estimator
+from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed
 
 # %%
@@ -59,12 +61,16 @@ estimand = PolicyValueEstimand(
     assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
 )
 
-best = select_estimator(
+selection = select_estimator(
     dataset,
     estimand,
     candidates=["is", "wis", "pdis", "dr", "wdr", "mrdr", "fqe"],
+    return_scores=True,
 )
-best
+selection.best, isinstance(selection, SelectionResult)
+
+# %%
+pd.DataFrame(selection.scores).sort_values("score", ascending=False)
 
 # %% [markdown]
 # ## Debug playbook

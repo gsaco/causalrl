@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from crl.assumptions import AssumptionSet
-from crl.policies.base import Policy
+from crl.core.policy import Policy
 
 
 @dataclass(frozen=True)

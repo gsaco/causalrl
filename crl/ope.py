@@ -23,8 +23,8 @@ from crl.estimators.importance_sampling import ISEstimator, PDISEstimator, WISEs
 from crl.estimators.magic import MAGICEstimator
 from crl.estimators.mis import MarginalizedImportanceSamplingEstimator
 from crl.estimators.mrdr import MRDREstimator
-from crl.estimators.wdr import WeightedDoublyRobustEstimator
 from crl.estimators.utils import compute_action_probs
+from crl.estimators.wdr import WeightedDoublyRobustEstimator
 from crl.utils.seeding import set_seed
 
 
@@ -77,7 +77,9 @@ class OpeReport:
         self.figures["importance_weights"] = fig
         return fig
 
-    def plot_effective_sample_size(self, weights: np.ndarray, by_time: bool = False) -> Any:
+    def plot_effective_sample_size(
+        self, weights: np.ndarray, by_time: bool = False
+    ) -> Any:
         """Plot effective sample size diagnostics."""
 
         from crl.viz.plots import plot_effective_sample_size
@@ -203,7 +205,10 @@ def evaluate(
         reports[name] = report
 
     diagnostics_out: dict[str, Any] = {}
-    if diagnostics != [] and getattr(dataset, "behavior_action_probs", None) is not None:
+    if (
+        diagnostics != []
+        and getattr(dataset, "behavior_action_probs", None) is not None
+    ):
         diagnostics_out = _compute_dataset_diagnostics(dataset, policy)
 
     return OpeReport(
@@ -211,7 +216,11 @@ def evaluate(
         reports=reports,
         diagnostics=diagnostics_out,
         figures={},
-        metadata={"seed": seed, "inference": inference or {}, "diagnostics": diagnostics},
+        metadata={
+            "seed": seed,
+            "inference": inference or {},
+            "diagnostics": diagnostics,
+        },
     )
 
 
@@ -276,6 +285,7 @@ def _compute_dataset_diagnostics(
     policy: Policy,
 ) -> dict[str, Any]:
     if isinstance(dataset, BanditDataset):
+        assert dataset.behavior_action_probs is not None
         target_probs = policy.action_prob(dataset.contexts, dataset.actions)
         ratios = target_probs / dataset.behavior_action_probs
         diagnostics, _ = run_diagnostics(
@@ -295,6 +305,7 @@ def _compute_dataset_diagnostics(
             diagnostics["shift"] = {"error": "shift diagnostics failed"}
         return diagnostics
 
+    assert dataset.behavior_action_probs is not None
     target_probs = compute_action_probs(policy, dataset.observations, dataset.actions)
     ratios = np.where(dataset.mask, target_probs / dataset.behavior_action_probs, 1.0)
     weights = np.prod(ratios, axis=1)
@@ -310,7 +321,9 @@ def _compute_dataset_diagnostics(
 
         flat_states = dataset.observations[dataset.mask]
         flat_weights = ratios[dataset.mask]
-        diagnostics["shift"] = state_shift_diagnostics(flat_states, weights=flat_weights)
+        diagnostics["shift"] = state_shift_diagnostics(
+            flat_states, weights=flat_weights
+        )
     except Exception:
         diagnostics["shift"] = {"error": "shift diagnostics failed"}
     return diagnostics

@@ -91,7 +91,9 @@ class TorchMLPPolicy(Policy):
             probs = torch.softmax(logits, dim=-1).cpu().numpy()
         return probs
 
-    def sample_action(self, observations: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    def sample_action(
+        self, observations: np.ndarray, rng: np.random.Generator
+    ) -> np.ndarray:
         """Sample actions for observations."""
 
         probs = self.action_probs(observations)

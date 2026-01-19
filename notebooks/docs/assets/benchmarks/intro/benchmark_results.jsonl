@@ -1,0 +1,7 @@
+{"benchmark": "synthetic_bandit", "estimator": "IS", "estimate": -0.4840149006127824, "stderr": 0.08512105767534794, "true_value": -0.4750356318471277, "error": -0.008979268765654691}
+{"benchmark": "synthetic_bandit", "estimator": "WIS", "estimate": -0.4716018386763845, "stderr": 0.0916288470726228, "true_value": -0.4750356318471277, "error": 0.0034337931707432157}
+{"benchmark": "synthetic_mdp", "estimator": "IS", "estimate": -4.8135039683123795, "stderr": 5.258441214144865, "true_value": 0.9506050581384952, "error": -5.764109026450875}
+{"benchmark": "synthetic_mdp", "estimator": "WIS", "estimate": -1.525415740620058, "stderr": 0.9342584891066328, "true_value": 0.9506050581384952, "error": -2.476020798758553}
+{"benchmark": "synthetic_mdp", "estimator": "PDIS", "estimate": 0.12284293681206723, "stderr": 0.8309165491932954, "true_value": 0.9506050581384952, "error": -0.8277621213264279}
+{"benchmark": "synthetic_mdp", "estimator": "DR", "estimate": 1.348367139760061, "stderr": 0.7679004088775522, "true_value": 0.9506050581384952, "error": 0.3977620816215658}
+{"benchmark": "synthetic_mdp", "estimator": "FQE", "estimate": 1.1253591236362839, "stderr": 0.059533845207857566, "true_value": 0.9506050581384952, "error": 0.1747540654977887}

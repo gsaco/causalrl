@@ -32,7 +32,7 @@ from __future__ import annotations
 import numpy as np
 
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
-from crl.sensitivity.namkoong2020 import confounded_ope_bounds
+from crl.sensitivity.namkoong2020 import GammaSensitivityModel, confounded_ope_bounds
 from crl.utils.seeding import set_seed
 
 # %%
@@ -49,6 +49,21 @@ dataset = benchmark.sample(num_trajectories=200, seed=1)
 gammas = np.array([1.0, 1.25, 1.5, 2.0])
 curve = confounded_ope_bounds(dataset, benchmark.target_policy, gammas)
 curve.to_dict()
+
+# %% [markdown]
+# ## Gamma sensitivity model internals
+#
+# The GammaSensitivityModel exposes the multiplicative adjustments applied to
+# trajectory returns under bounded confounding.
+
+# %%
+returns = np.sum(
+    dataset.rewards * (dataset.discount ** np.arange(dataset.horizon)),
+    axis=1,
+)
+gamma_model = GammaSensitivityModel(gamma=1.5)
+low_adj, high_adj = gamma_model.adjustments(returns)
+low_adj[:5], high_adj[:5]
 
 # %% [markdown]
 # ## Takeaways

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 
@@ -43,7 +42,9 @@ def confounded_ope_bounds(
     target_probs = compute_action_probs(policy, dataset.observations, dataset.actions)
     ratios = np.where(dataset.mask, target_probs / dataset.behavior_action_probs, 1.0)
     weights = np.prod(ratios, axis=1)
-    returns = compute_trajectory_returns(dataset.rewards, dataset.mask, dataset.discount)
+    returns = compute_trajectory_returns(
+        dataset.rewards, dataset.mask, dataset.discount
+    )
 
     lower = np.zeros_like(gammas)
     upper = np.zeros_like(gammas)

@@ -26,7 +26,15 @@ from pathlib import Path
 
 import numpy as np
 
+from crl.assumptions import AssumptionSet
+from crl.assumptions_catalog import BOUNDED_CONFOUNDING, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
+from crl.estimands.policy_value import PolicyValueEstimand
+from crl.sensitivity import (
+    BanditPropensitySensitivity,
+    SensitivityBounds,
+    SensitivityCurve,
+)
 from crl.sensitivity.bandits import sensitivity_bounds
 from crl.viz import configure_notebook_display, save_figure
 from crl.viz.plots import plot_sensitivity_curve
@@ -41,6 +49,7 @@ dataset = benchmark.sample(num_samples=1_500, seed=11)
 # %%
 gammas = np.linspace(1.0, 3.0, 15)
 bounds = sensitivity_bounds(dataset, benchmark.target_policy, gammas)
+isinstance(bounds, SensitivityBounds)
 
 fig = plot_sensitivity_curve(
     [
@@ -49,6 +58,24 @@ fig = plot_sensitivity_curve(
     ]
 )
 fig
+
+# %% [markdown]
+# ## Estimand-based sensitivity curve
+#
+# The class-based interface ties bounds to an explicit estimand with bounded
+# confounding assumptions.
+
+# %%
+estimand = PolicyValueEstimand(
+    policy=benchmark.target_policy,
+    discount=1.0,
+    horizon=1,
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_CONFOUNDING]),
+)
+
+bandit_sensitivity = BanditPropensitySensitivity(estimand)
+curve = bandit_sensitivity.curve(dataset, gammas)
+curve.to_dict(), isinstance(curve, SensitivityCurve)
 
 # %%
 output_dir = Path("docs/assets/figures")

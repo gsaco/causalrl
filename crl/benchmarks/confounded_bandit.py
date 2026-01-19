@@ -40,7 +40,9 @@ class ConfoundedBandit:
             )
         )
 
-    def sample(self, num_samples: int, seed: int | None = None) -> ProximalBanditDataset:
+    def sample(
+        self, num_samples: int, seed: int | None = None
+    ) -> ProximalBanditDataset:
         rng = np.random.default_rng(self.config.seed if seed is None else seed)
         u = rng.integers(0, 2, size=num_samples)
         z_flip = rng.random(num_samples) > self.config.p_z
@@ -48,7 +50,9 @@ class ConfoundedBandit:
         z = np.where(z_flip, 1 - u, u)
         w = np.where(w_flip, 1 - u, u)
 
-        p_a1 = np.where(u == 1, self.config.behavior_prob_u1, self.config.behavior_prob_u0)
+        p_a1 = np.where(
+            u == 1, self.config.behavior_prob_u1, self.config.behavior_prob_u0
+        )
         actions = rng.binomial(1, p_a1, size=num_samples)
         rewards = (
             np.array(self.config.reward_base)[actions]

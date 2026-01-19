@@ -29,7 +29,9 @@ def mean_stderr(values: np.ndarray) -> float:
     return float(np.std(v, ddof=1) / math.sqrt(n))
 
 
-def weighted_mean_and_stderr(values: np.ndarray, weights: np.ndarray) -> tuple[float, float]:
+def weighted_mean_and_stderr(
+    values: np.ndarray, weights: np.ndarray
+) -> tuple[float, float]:
     """Compute weighted mean and an ESS-based standard error.
 
     Estimand:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from statistics import NormalDist
 from typing import Any
 
 from crl.data.base import require_fields
@@ -128,8 +129,6 @@ class OPEEstimator(ABC):
     required_assumptions: list[str] = []
     required_fields: list[str] = []
     diagnostics_keys: list[str] = []
-    required_fields: list[str] = []
-    diagnostics_keys: list[str] = []
 
     def __init__(
         self,
@@ -160,7 +159,11 @@ class OPEEstimator(ABC):
             return str(source)
         metadata = getattr(data, "metadata", None)
         if isinstance(metadata, dict):
-            for key in ("behavior_policy_source", "behavior_policy", "propensity_source"):
+            for key in (
+                "behavior_policy_source",
+                "behavior_policy",
+                "propensity_source",
+            ):
                 if key in metadata:
                     return str(metadata[key])
         return None
@@ -178,7 +181,10 @@ class OPEEstimator(ABC):
             if any("overlap" in warning.lower() for warning in warnings):
                 flagged.add("overlap")
         if "bounded_rewards" in self.required_assumptions:
-            if any("reward" in warning.lower() and "bound" in warning.lower() for warning in warnings):
+            if any(
+                "reward" in warning.lower() and "bound" in warning.lower()
+                for warning in warnings
+            ):
                 flagged.add("bounded_rewards")
         return sorted(flagged)
 
@@ -235,7 +241,7 @@ def compute_ci(
 
     if stderr is None:
         return None
-    z = 1.96 if alpha == 0.05 else 1.96
+    z = NormalDist().inv_cdf(1.0 - alpha / 2.0)
     return (value - z * stderr, value + z * stderr)
 
 

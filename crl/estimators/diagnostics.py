@@ -47,7 +47,9 @@ def run_diagnostics(
     ess = effective_sample_size(weights)
     ess_ratio = ess / weights.size if weights.size else 0.0
     tail = weight_tail_stats(
-        weights, quantile=config.weight_tail_quantile, threshold=config.weight_tail_threshold
+        weights,
+        quantile=config.weight_tail_quantile,
+        threshold=config.weight_tail_threshold,
     )
     diagnostics = {
         "overlap": overlap,
@@ -59,11 +61,15 @@ def run_diagnostics(
 
     warnings: list[str] = []
     if overlap["support_violations"] > 0:
-        warnings.append("Detected overlap violations: target actions with low behavior support.")
+        warnings.append(
+            "Detected overlap violations: target actions with low behavior support."
+        )
     if overlap["fraction_behavior_below_threshold"] > 0.0:
         warnings.append("Behavior policy probabilities below minimum threshold.")
     if ess_ratio < config.ess_threshold:
-        warnings.append("Effective sample size ratio below threshold; estimates may be unstable.")
+        warnings.append(
+            "Effective sample size ratio below threshold; estimates may be unstable."
+        )
     if tail["tail_fraction"] > 0.01:
         warnings.append("Heavy-tailed importance weights detected.")
     return diagnostics, warnings

@@ -37,12 +37,18 @@ def compute_overlap_metrics(
         target = target[mask]
         behavior = behavior[mask]
 
-    ratio = np.divide(target, behavior, out=np.full_like(target, np.inf), where=behavior > 0)
+    ratio = np.divide(
+        target, behavior, out=np.full_like(target, np.inf), where=behavior > 0
+    )
     metrics = {
         "min_behavior_prob": float(np.min(behavior)) if behavior.size else 0.0,
         "min_target_prob": float(np.min(target)) if target.size else 0.0,
-        "fraction_behavior_below_threshold": float(np.mean(behavior < threshold)) if behavior.size else 0.0,
-        "fraction_target_below_threshold": float(np.mean(target < threshold)) if target.size else 0.0,
+        "fraction_behavior_below_threshold": float(np.mean(behavior < threshold))
+        if behavior.size
+        else 0.0,
+        "fraction_target_below_threshold": float(np.mean(target < threshold))
+        if target.size
+        else 0.0,
         "ratio_min": float(np.min(ratio)) if ratio.size else 0.0,
         "ratio_max": float(np.max(ratio)) if ratio.size else 0.0,
         "ratio_q50": float(np.quantile(ratio, 0.5)) if ratio.size else 0.0,

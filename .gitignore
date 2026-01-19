@@ -4,10 +4,15 @@ __pycache__/
 *.pyd
 
 .coverage
+.coverage.*
+htmlcov/
+coverage.xml
 .mypy_cache/
+.hypothesis/
 .pytest_cache/
 .ruff_cache/
 .ipynb_checkpoints/
+.nox/
 
 build/
 dist/
@@ -18,3 +23,22 @@ site/
 venv/
 .env/
 .direnv/
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+/results/
+/outputs/
+/artifacts/
+/reports/
+/figures/
+/logs/
+/tmp/
+/report.html
+/summary.csv
+*.log
+*.tmp
+*.bak
+*.swp

@@ -31,7 +31,14 @@ from __future__ import annotations
 
 import numpy as np
 
+from crl.assumptions import AssumptionSet
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
+from crl.estimands.policy_value import PolicyValueEstimand
+from crl.estimators.dr import DRCrossFitConfig, DoublyRobustEstimator
+from crl.estimators.magic import MAGICConfig, MAGICEstimator
+from crl.estimators.mrdr import MRDRConfig, MRDREstimator
+from crl.estimators.wdr import WDRConfig, WeightedDoublyRobustEstimator
 from crl.ope import evaluate
 from crl.utils.seeding import set_seed
 
@@ -53,6 +60,46 @@ report = evaluate(
     estimators=["dr", "wdr", "magic", "mrdr"],
 )
 report.summary_table()
+
+# %% [markdown]
+# ## Custom DR-family configuration
+#
+# Each estimator exposes a config object for cross-fitting, ridge strengths, and
+# mixing parameters. We instantiate them directly to show the controls.
+
+# %%
+estimand = PolicyValueEstimand(
+    policy=benchmark.target_policy,
+    discount=dataset.discount,
+    horizon=dataset.horizon,
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+)
+
+dr_config = DRCrossFitConfig(num_folds=3, num_iterations=3, ridge=5e-3, seed=0)
+wdr_config = WDRConfig(num_folds=3, num_iterations=3, ridge=5e-3, seed=0)
+magic_config = MAGICConfig(num_iterations=4, ridge=1e-3, mixing_horizons=(0, 2, 4))
+mrdr_config = MRDRConfig(num_folds=3, num_iterations=3, ridge=5e-3, seed=0)
+
+custom_estimators = [
+    DoublyRobustEstimator(estimand, config=dr_config),
+    WeightedDoublyRobustEstimator(estimand, config=wdr_config),
+    MAGICEstimator(estimand, config=magic_config),
+    MRDREstimator(estimand, config=mrdr_config),
+]
+
+rows = []
+for estimator in custom_estimators:
+    report = estimator.estimate(dataset)
+    rows.append(
+        {
+            "estimator": report.metadata["estimator"],
+            "value": report.value,
+            "stderr": report.stderr,
+            "ci": report.ci,
+        }
+    )
+
+rows
 
 # %% [markdown]
 # ## Diagnostics

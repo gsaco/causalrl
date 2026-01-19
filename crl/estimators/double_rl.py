@@ -9,7 +9,12 @@ import numpy as np
 
 from crl.data.datasets import LoggedBanditDataset
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.estimators.base import DiagnosticsConfig, EstimatorReport, OPEEstimator, compute_ci
+from crl.estimators.base import (
+    DiagnosticsConfig,
+    EstimatorReport,
+    OPEEstimator,
+    compute_ci,
+)
 from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.stats import mean_stderr
@@ -35,7 +40,9 @@ class LinearRewardModel:
         self.ridge = ridge
         self.weights: np.ndarray | None = None
 
-    def fit(self, contexts: np.ndarray, actions: np.ndarray, rewards: np.ndarray) -> None:
+    def fit(
+        self, contexts: np.ndarray, actions: np.ndarray, rewards: np.ndarray
+    ) -> None:
         features = _features(contexts)
         dim = features.shape[1]
         self.weights = np.zeros((self.num_actions, dim), dtype=float)
@@ -111,16 +118,24 @@ class DoubleRLEstimator(OPEEstimator):
                 else LinearRewardModel(data.action_space_n, self.config.ridge)
             )
             reward_model.fit(
-                data.contexts[train_idx], data.actions[train_idx], data.rewards[train_idx]
+                data.contexts[train_idx],
+                data.actions[train_idx],
+                data.rewards[train_idx],
             )
 
             behavior_probs = data.behavior_action_probs
             if behavior_probs is None:
-                if data.contexts.ndim != 1 or not np.issubdtype(data.contexts.dtype, np.integer):
-                    raise ValueError("behavior_action_probs missing and contexts are not discrete.")
+                if data.contexts.ndim != 1 or not np.issubdtype(
+                    data.contexts.dtype, np.integer
+                ):
+                    raise ValueError(
+                        "behavior_action_probs missing and contexts are not discrete."
+                    )
                 num_contexts = int(np.max(data.contexts)) + 1
                 behavior_model = (
-                    self.config.behavior_model_factory(num_contexts, data.action_space_n)
+                    self.config.behavior_model_factory(
+                        num_contexts, data.action_space_n
+                    )
                     if self.config.behavior_model_factory is not None
                     else TabularBehaviorModel(
                         num_contexts, data.action_space_n, self.config.min_prob
@@ -153,7 +168,11 @@ class DoubleRLEstimator(OPEEstimator):
             target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
             ratios = target_probs / data.behavior_action_probs
             diagnostics, warnings = run_diagnostics(
-                ratios, target_probs, data.behavior_action_probs, None, self.diagnostics_config
+                ratios,
+                target_probs,
+                data.behavior_action_probs,
+                None,
+                self.diagnostics_config,
             )
 
         return self._build_report(
@@ -170,7 +189,9 @@ class DoubleRLEstimator(OPEEstimator):
 def _features(contexts: np.ndarray) -> np.ndarray:
     contexts = np.asarray(contexts)
     if contexts.ndim == 1:
-        return np.column_stack([np.ones_like(contexts, dtype=float), contexts.astype(float)])
+        return np.column_stack(
+            [np.ones_like(contexts, dtype=float), contexts.astype(float)]
+        )
     if contexts.ndim == 2:
         ones = np.ones((contexts.shape[0], 1), dtype=float)
         return np.concatenate([ones, contexts.astype(float)], axis=1)

@@ -29,7 +29,11 @@ import numpy as np
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.confounded_bandit import ConfoundedBandit, ConfoundedBanditConfig
-from crl.confounding.proximal import ProximalBanditEstimator
+from crl.confounding.proximal import (
+    ProximalBanditDataset,
+    ProximalBanditEstimator,
+    ProximalConfig,
+)
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator
 from crl.viz import configure_notebook_display, save_figure
@@ -52,7 +56,12 @@ estimand = PolicyValueEstimand(
 )
 
 is_report = ISEstimator(estimand).estimate(logged_data)
-prox_report = ProximalBanditEstimator(benchmark.target_policy).estimate(prox_data)
+prox_config = ProximalConfig(ridge=5e-3)
+prox_report = ProximalBanditEstimator(
+    benchmark.target_policy, config=prox_config
+).estimate(prox_data)
+
+isinstance(prox_data, ProximalBanditDataset), prox_data.to_dict().keys()
 
 rows = [
     {"estimator": "IS", "value": is_report.value, "ci": is_report.ci},

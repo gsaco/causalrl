@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import textwrap
+from typing import Any
 
 import numpy as np
 
@@ -95,10 +94,12 @@ def plot_effective_sample_size(
         if by_time:
             if w.ndim != 2:
                 raise ValueError("by_time=True requires weights with shape (n, t).")
-            ess = np.array([effective_sample_size(w[:, t]) for t in range(w.shape[1])])
+            ess_series = np.array(
+                [effective_sample_size(w[:, t]) for t in range(w.shape[1])]
+            )
             ax.plot(
                 np.arange(w.shape[1]),
-                ess,
+                ess_series,
                 marker="o",
                 color="0.25",
                 markerfacecolor="0.25",
@@ -112,8 +113,8 @@ def plot_effective_sample_size(
             ax.xaxis.set_major_locator(MaxNLocator(nbins=8, integer=True))
             ax.set_ylim(bottom=0)
         else:
-            ess = effective_sample_size(w.reshape(-1))
-            ax.bar(["ESS"], [ess], color="0.35", edgecolor="0.10", linewidth=1.0)
+            ess_value = effective_sample_size(w.reshape(-1))
+            ax.bar(["ESS"], [ess_value], color="0.35", edgecolor="0.10", linewidth=1.0)
             ax.set_ylabel("ESS")
             if title:
                 ax.set_title(title)
@@ -244,7 +245,9 @@ def plot_estimator_comparison(
             ax.set_title(title)
         ax.margins(x=0.05)
         if truth is not None:
-            ax.axvline(truth, color="0.15", linestyle="--", linewidth=1.2, label="True value")
+            ax.axvline(
+                truth, color="0.15", linestyle="--", linewidth=1.2, label="True value"
+            )
             ax.legend(loc="upper right", frameon=False)
         apply_axes_style(ax)
         return fig

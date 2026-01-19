@@ -1,5 +1,6 @@
 """Utility helpers."""
 
+from crl.utils.seeding import set_seed
 from crl.utils.validation import (
     require_finite,
     require_in_unit_interval,
@@ -7,7 +8,6 @@ from crl.utils.validation import (
     require_same_length,
     require_shape,
 )
-from crl.utils.seeding import set_seed
 
 __all__ = [
     "require_finite",

@@ -37,16 +37,41 @@ from __future__ import annotations
 
 import numpy as np
 
-from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions import Assumption, AssumptionSet
+from crl.assumptions_catalog import CORRECT_MODEL, MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
-from crl.estimands.policy_value import PolicyValueEstimand
+from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator
+from crl.policies import UniformPolicy
 from crl.utils.seeding import set_seed
 
 # %%
 set_seed(0)
 np.random.seed(0)
+
+# %% [markdown]
+# ## Custom assumptions
+#
+# Assumptions are explicit, typed objects. You can add your own and mix them
+# with catalog defaults.
+
+# %%
+benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
+dataset = benchmark.sample(num_samples=500, seed=1)
+
+stationarity = Assumption(
+    name="stationarity",
+    description="The environment dynamics do not drift during collection.",
+)
+
+assumptions = AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, stationarity])
+assumptions.to_dict()
+
+# %% [markdown]
+# The catalog entries are reusable primitives for building checklists.
+
+# %%
+AssumptionSet([MARKOV]).names()
 
 # %% [markdown]
 # ## Define an estimand
@@ -56,17 +81,37 @@ np.random.seed(0)
 # running.
 
 # %%
-benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
-dataset = benchmark.sample(num_samples=500, seed=1)
-
 estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
+    discount=1.0,
+    horizon=1,
+    assumptions=assumptions,
+)
+
+estimand
+
+# %% [markdown]
+# ## Policy contrast estimand
+#
+# A contrast estimand expresses the difference between two policy values.
+
+# %%
+control_policy = UniformPolicy(action_space_n=dataset.action_space_n)
+control_estimand = PolicyValueEstimand(
+    policy=control_policy,
     discount=1.0,
     horizon=1,
     assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
 )
 
-estimand
+contrast = PolicyContrastEstimand(treatment=estimand, control=control_estimand)
+contrast.to_dict()
+
+# %% [markdown]
+# Model-based estimators typically add a correct-model assumption.
+
+# %%
+AssumptionSet([CORRECT_MODEL]).names()
 
 # %% [markdown]
 # ## Overlap violations

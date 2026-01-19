@@ -70,9 +70,7 @@ class BanditPropensitySensitivity:
         self.estimand = estimand
         self.estimand.require(self.required_assumptions)
 
-    def curve(
-        self, data: LoggedBanditDataset, gammas: np.ndarray
-    ) -> SensitivityCurve:
+    def curve(self, data: LoggedBanditDataset, gammas: np.ndarray) -> SensitivityCurve:
         """Compute a robustness curve over gamma values.
 
         Inputs:

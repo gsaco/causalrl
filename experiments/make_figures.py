@@ -42,14 +42,10 @@ def _weights_histograms(outdir: Path, n_samples: int, seed: int) -> None:
     target_probs = bench.target_policy.action_prob(data.contexts, data.actions)
     ratios = target_probs / data.behavior_action_probs
 
-    fig_w = plot_weight_histogram(
-        ratios, bins=40, xlabel=r"$\hat{w}$", title=None
-    )
+    fig_w = plot_weight_histogram(ratios, bins=40, xlabel=r"$\hat{w}$", title=None)
     save_figure(fig_w, outdir / "weights_hist")
 
-    fig_r = plot_ratio_histogram(
-        ratios, bins=40, xlabel=r"$\hat{\nu}$", title=None
-    )
+    fig_r = plot_ratio_histogram(ratios, bins=40, xlabel=r"$\hat{\nu}$", title=None)
     save_figure(fig_r, outdir / "ratio_hist")
 
 
@@ -99,9 +95,7 @@ def _diagnostics_overlap_ess(outdir: Path) -> None:
     target_probs = compute_action_probs(
         benchmark.target_policy, dataset.observations, dataset.actions
     )
-    ratios = np.where(
-        dataset.mask, target_probs / dataset.behavior_action_probs, 1.0
-    )
+    ratios = np.where(dataset.mask, target_probs / dataset.behavior_action_probs, 1.0)
 
     fig_overlap = plot_overlap_diagnostics(
         target_probs, dataset.behavior_action_probs, mask=dataset.mask
@@ -120,9 +114,7 @@ def _confidence_intervals(outdir: Path) -> None:
         policy=bandit.target_policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet(
-            [SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_REWARDS]
-        ),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_REWARDS]),
     )
 
     is_report = ISEstimator(bandit_estimand).estimate(bandit_data)
@@ -174,7 +166,7 @@ def _sensitivity_bandits(outdir: Path) -> None:
 
     rows = [
         {"gamma": g, "lower": lo, "upper": up}
-        for g, lo, up in zip(bounds.gammas, bounds.lower, bounds.upper)
+        for g, lo, up in zip(bounds.gammas, bounds.lower, bounds.upper, strict=True)
     ]
     fig = plot_sensitivity_curve(rows)
     save_figure(fig, outdir / "sensitivity_bandits_curve")

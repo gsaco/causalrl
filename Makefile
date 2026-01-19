@@ -7,10 +7,7 @@ docs:
 	mkdocs build --strict
 
 benchmarks-smoke:
-	python - <<'PY'
-from crl.benchmarks.harness import run_all_benchmarks
-run_all_benchmarks(num_samples=100, num_trajectories=50, seed=0)
-PY
+	python -c "from crl.benchmarks.harness import run_all_benchmarks; run_all_benchmarks(num_samples=100, num_trajectories=50, seed=0)"
 
 notebooks-smoke:
 	python notebooks/00_introduction.py

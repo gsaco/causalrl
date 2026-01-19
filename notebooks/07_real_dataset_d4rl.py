@@ -58,6 +58,27 @@ except Exception as exc:
     print("D4RL unavailable; falling back to synthetic data:", exc)
 
 # %% [markdown]
+# ## Load RL Unplugged (optional)
+#
+# RL Unplugged datasets are accessed via tensorflow-datasets. We keep this
+# example small and optional so the notebook still runs without TFDS.
+
+# %%
+rlu_dataset = None
+try:
+    from crl.adapters.rl_unplugged import load_rl_unplugged_dataset
+
+    rlu_dataset = load_rl_unplugged_dataset(
+        dataset_name="d4rl_mujoco_hopper/v2-medium",
+        split="train",
+        max_episodes=1,
+        return_type="transition",
+    )
+    rlu_dataset.describe()
+except Exception as exc:
+    print("RL Unplugged unavailable; skipping:", exc)
+
+# %% [markdown]
 # ## Fallback: synthetic dataset for report demo
 #
 # We still generate a report artifact so reviewers can see the pipeline end-to-end.
@@ -71,7 +92,9 @@ if dataset is None:
     report = evaluate(dataset=dataset, policy=benchmark.target_policy)
     report.summary_table()
 else:
-    print("D4RL dataset loaded. OPE estimators requiring propensities are not applicable.")
+    print(
+        "D4RL dataset loaded. OPE estimators requiring propensities are not applicable."
+    )
 
 # %% [markdown]
 # ## Save HTML report artifact
