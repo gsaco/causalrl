@@ -1,6 +1,10 @@
 # CausalRL
 
 <p align="center">
+  <img src="docs/assets/branding/causalrl-banner.svg" alt="CausalRL banner" width="100%" />
+</p>
+
+<p align="center">
   <strong>Estimand-first causal reinforcement learning & off-policy evaluation</strong><br />
   Assumptions in the open. Diagnostics by default. Reproducible benchmarks.
 </p>
