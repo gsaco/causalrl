@@ -43,4 +43,4 @@ report = WeightedDoublyRobustEstimator(estimand).estimate(dataset)
 
 ## Notebook
 
-- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/03_mdp_ope_walkthrough.ipynb)

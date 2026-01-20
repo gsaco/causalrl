@@ -1,8 +1,27 @@
-site_name: causalrl
+site_name: CausalRL
 repo_url: https://github.com/gsaco/causalrl
 site_url: https://gsaco.github.io/causalrl/
 theme:
   name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+  palette:
+    - scheme: default
+      primary: blue grey
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue grey
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
 nav:
   - Home: index.md
   - Getting Started:
@@ -11,6 +30,7 @@ nav:
       - Quickstart (MDP): getting-started/quickstart_mdp.md
   - Tutorials:
       - Overview: tutorials/index.md
+      - Examples: tutorials/examples.md
       - Quickstart (Bandit): tutorials/quickstart_bandit.md
       - Quickstart (MDP): tutorials/quickstart_mdp.md
       - Diagnostics: tutorials/diagnostics.md
@@ -34,6 +54,7 @@ nav:
       - Sensitivity Bounds: how-to/sensitivity_bounds.md
       - Release Process: how-to/release.md
   - Concepts:
+      - Core Concepts: concepts/core_concepts.md
       - Dataset Format: concepts/dataset_format.md
       - Estimands: concepts/estimands.md
       - Assumptions and Identification: concepts/assumptions_identification.md
@@ -85,25 +106,11 @@ nav:
       - Seeds and Configs: reproducibility/seeds_and_configs.md
       - Benchmark Suites: reproducibility/benchmark_suites.md
       - Environment: reproducibility/environment.md
-  - Notebooks:
-      - Gallery: notebooks/index.md
-      - 00 Introduction: notebooks/00_introduction.ipynb
-      - 01 Estimands and Assumptions: notebooks/01_estimands_and_assumptions.ipynb
-      - 02 Bandit OPE Walkthrough: notebooks/02_bandit_ope_walkthrough.ipynb
-      - 03 MDP OPE Walkthrough: notebooks/03_mdp_ope_walkthrough.ipynb
-      - 04 Confidence Intervals and HCOPE: notebooks/04_confidence_intervals_and_hcope.ipynb
-      - 05 Advanced DR Family: notebooks/05_advanced_dr_family.ipynb
-      - 06 Sensitivity to Confounding: notebooks/06_sensitivity_unobserved_confounding.ipynb
-      - 07 Real Dataset (D4RL): notebooks/07_real_dataset_d4rl.ipynb
-      - 08 Estimator Selection: notebooks/08_estimator_selection_and_debugging.ipynb
-      - 05 Dataset Schema and Validation: notebooks/05_dataset_schema_and_validation.ipynb
-      - 06 Missing Propensities (FQE): notebooks/06_missing_propensities_fqe_path.ipynb
-      - 07 Uncertainty Intervals (Bootstrap): notebooks/07_uncertainty_intervals_bootstrap.ipynb
-      - 08 Benchmark Runner End-to-End: notebooks/08_benchmark_runner_end_to_end.ipynb
   - References: references.md
   - Project:
       - Project Status: project_status.md
       - Changelog: changelog.md
+      - Citing: citing.md
       - Contributing: contributing.md
 plugins:
   - search
@@ -118,5 +125,14 @@ plugins:
             show_source: false
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
   - toc:
       permalink: true
+extra:
+  version: "0.1.0"

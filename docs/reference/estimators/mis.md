@@ -42,4 +42,4 @@ report = MarginalizedImportanceSamplingEstimator(estimand).estimate(dataset)
 
 ## Notebook
 
-- [06_long_horizon_mis_vs_is.ipynb](../../notebooks/06_long_horizon_mis_vs_is.ipynb)
+- [06_long_horizon_mis_vs_is.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/06_long_horizon_mis_vs_is.ipynb)

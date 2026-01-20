@@ -43,4 +43,4 @@ report = DoubleRLEstimator(estimand).estimate(dataset)
 
 ## Notebook
 
-- [02_bandit_ope_walkthrough.ipynb](../../notebooks/02_bandit_ope_walkthrough.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/02_bandit_ope_walkthrough.ipynb)

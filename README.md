@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/gsaco/causalrl/actions/workflows/ci.yml"><img src="https://github.com/gsaco/causalrl/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://gsaco.github.io/causalrl/"><img src="https://img.shields.io/badge/docs-online-brightgreen" alt="Docs" /></a>
+  <a href="https://gsaco.github.io/causalrl/"><img src="https://github.com/gsaco/causalrl/actions/workflows/pages.yml/badge.svg?branch=v4" alt="Docs" /></a>
   <a href="https://codecov.io/gh/gsaco/causalrl"><img src="https://codecov.io/gh/gsaco/causalrl/branch/main/graph/badge.svg" alt="Coverage" /></a>
   <a href="https://pypi.org/project/causalrl/"><img src="https://img.shields.io/badge/PyPI-coming%20soon-lightgrey" alt="PyPI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/gsaco/causalrl" alt="License" /></a>

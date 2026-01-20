@@ -1,48 +1,51 @@
 # CausalRL
 
 CausalRL is an estimand-first toolkit for causal reinforcement learning and
-off-policy evaluation. It pairs identification assumptions with diagnostics and
-reproducible benchmarks so you can trust or debug a policy value estimate.
+off-policy evaluation (OPE). It makes assumptions explicit, surfaces overlap
+diagnostics, and provides reproducible benchmarks for comparing estimators.
 
-> Package name on PyPI: `causalrl` | Import name: `crl`
+**Package**: `causalrl` · **Import**: `crl` · **Version**: 0.1.0 ·
+[GitHub](https://github.com/gsaco/causalrl)
 
-## A 10-minute researcher path
+## Who it is for
 
-1. Install:
+- Researchers comparing OPE estimators with clear assumptions.
+- Practitioners who need diagnostics before trusting policy value estimates.
+- Anyone building reproducible baselines for offline evaluation.
 
-   ```bash
-   python -m pip install causalrl
-   ```
+## 60-second quickstart
 
-2. Run a quickstart:
+```bash
+python -m pip install causalrl
+```
 
-   ```bash
-   python examples/quickstart/bandit_ope.py
-   python examples/quickstart/mdp_ope.py
-   ```
+```python
+from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
+from crl.ope import evaluate
 
-3. Interpret outputs:
+benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
+dataset = benchmark.sample(num_samples=1000, seed=1)
+report = evaluate(dataset=dataset, policy=benchmark.target_policy)
 
-   - Check the estimate and the diagnostics (overlap, ESS, weight tails).
-   - Compare estimators in a synthetic benchmark before you trust a number.
+print(report.summary_table())
+```
 
-## The mental model (teach it once, reuse forever)
+This prints a table with estimates and diagnostics for the default estimators.
+Use the diagnostics to check overlap and effective sample size before trusting
+any estimate.
 
-1. **Define the estimand**: what policy value you want and the horizon/discount.
-2. **State the assumptions**: sequential ignorability, overlap, and Markov (MDPs).
-3. **Run estimators**: IS/WIS/PDIS/DR/FQE, depending on data and horizon.
-4. **Read diagnostics**: overlap, ESS, and weight pathologies guide trust.
+!!! note "Scope"
+    The current `evaluate` pipeline assumes discrete action spaces. See
+    [Limitations](concepts/limitations.md) for details.
 
-If you remember only one rule: never trust a point estimate without its
-assumptions and diagnostics.
+## Core workflow (mental model)
 
-## What you can do here
+1. **Define the estimand** (policy, horizon, discount).
+2. **Declare assumptions** (sequential ignorability, overlap, Markov for MDPs).
+3. **Run estimators** (IS/WIS/PDIS/DR/FQE, depending on data).
+4. **Interpret diagnostics** (overlap, ESS, weight tails).
 
-- Diagnostics-first reporting to surface overlap and ESS issues early.
-- Synthetic benchmarks with ground truth for method selection.
-- A growing estimator suite grounded in core OPE literature.
-
-## Data contracts (required before you run anything)
+## Data contracts (read first)
 
 Use the dataset contracts in `crl.data` and follow the shape rules exactly:
 
@@ -55,8 +58,7 @@ Start here: [Dataset Format and Validation](concepts/dataset_format.md)
 ## Learn by example
 
 - [Installation](getting-started/installation.md)
-- [Quickstart (Bandit)](getting-started/quickstart_bandit.md)
-- [Quickstart (MDP)](getting-started/quickstart_mdp.md)
+- [Examples](tutorials/examples.md)
 - [Estimator Reference](reference/estimators/index.md)
 - [Public API](reference/api/public_api.md)
 - [Sample HTML report](assets/reports/intro_bandit_report.html)

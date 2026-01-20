@@ -11,4 +11,4 @@ trusting an off-policy estimate.
 
 ## Notebook
 
-- [08_estimator_selection_and_debugging.ipynb](../notebooks/08_estimator_selection_and_debugging.ipynb)
+- [08_estimator_selection_and_debugging.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/08_estimator_selection_and_debugging.ipynb)

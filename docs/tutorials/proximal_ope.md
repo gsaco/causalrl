@@ -5,4 +5,4 @@ proximal estimation uses proxy variables to improve robustness.
 
 ## Notebook
 
-- [07_proximal_ope_confounded_pomdp.ipynb](../notebooks/07_proximal_ope_confounded_pomdp.ipynb)
+- [07_proximal_ope_confounded_pomdp.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/07_proximal_ope_confounded_pomdp.ipynb)
