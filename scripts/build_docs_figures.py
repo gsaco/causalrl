@@ -44,11 +44,11 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "docs" / "assets" / "figures"
 
 PALETTE = {
-    "primary": "#2a6f97",
-    "secondary": "#40916c",
-    "accent": "#f77f00",
-    "muted": "#6c757d",
-    "light": "#e9eef3",
+    "primary": "0.15",
+    "secondary": "0.35",
+    "accent": "0.55",
+    "muted": "0.65",
+    "light": "0.9",
 }
 
 

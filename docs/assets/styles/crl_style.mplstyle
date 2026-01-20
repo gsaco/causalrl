@@ -7,17 +7,17 @@ xtick.labelsize: 10
 ytick.labelsize: 10
 legend.fontsize: 10
 
-axes.edgecolor: 0.15
+axes.edgecolor: 0.2
 axes.linewidth: 1.1
 axes.grid: True
 grid.linestyle: --
 grid.linewidth: 0.6
-grid.color: 0.85
+grid.color: 0.9
 
 lines.linewidth: 2.1
 lines.markersize: 6
 
-axes.prop_cycle: cycler('color', ['tab:blue', 'tab:green', 'tab:orange', 'tab:gray', 'tab:purple'])
+axes.prop_cycle: cycler('color', ['0.15', '0.35', '0.55', '0.75'])
 
 figure.facecolor: white
 axes.facecolor: white
