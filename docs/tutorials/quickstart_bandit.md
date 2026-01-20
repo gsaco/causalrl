@@ -28,7 +28,10 @@ fig = report.plot_estimator_comparison(truth=benchmark.true_policy_value(benchma
 report.save_html("report.html")
 ```
 
-![](../assets/figures/quickstart_bandit_estimator_comparison.png)
+<figure class="crl-figure">
+  <img src="../assets/figures/bandit_estimator_comparison.svg" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
+  <figcaption>Estimator comparison rendered with the CausalRL grayscale style.</figcaption>
+</figure>
 
 ## Notebook
 
