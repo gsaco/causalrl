@@ -76,3 +76,14 @@
   height: auto;
   border-radius: 8px;
 }
+
+.md-typeset .crl-report-frame {
+  display: block;
+  width: 100%;
+  height: 80vh;
+  min-height: 640px;
+  border: 1px solid var(--crl-border);
+  border-radius: 12px;
+  background: var(--crl-surface);
+  box-shadow: var(--crl-shadow);
+}

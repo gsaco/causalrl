@@ -111,7 +111,7 @@ Start here: [Dataset Format and Validation](concepts/dataset_format.md)
 - [Examples](tutorials/examples.md)
 - [Estimator Reference](reference/estimators/index.md)
 - [Public API](reference/api/public_api.md)
-- [Sample HTML report](assets/reports/intro_bandit_report.html)
+- [Sample HTML report](results/report_preview.md)
 
 ## Estimator selection
 

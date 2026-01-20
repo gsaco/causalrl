@@ -40,6 +40,7 @@ nav:
       - Proximal OPE (Advanced): tutorials/proximal_ope.md
   - Results:
       - Gallery: results/gallery.md
+      - Report Preview: results/report_preview.md
   - How-to:
       - Integrate Logged Data: how-to/integrate_logged_data.md
       - Logged Bandit from DataFrame: how-to/logged_bandit_from_dataframe.md
