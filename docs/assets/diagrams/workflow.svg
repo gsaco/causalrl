@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="140" viewBox="0 0 900 140" role="img" aria-label="Workflow diagram: data to report">
+  <defs>
+    <style>
+      .box { fill: #f6f7f9; stroke: #cfd6de; stroke-width: 1.5; }
+      .arrow { stroke: #8c99a6; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .label { font: 12px 'STIXGeneral', 'Times New Roman', serif; fill: #253040; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8c99a6" />
+    </marker>
+  </defs>
+  <rect class="box" x="20" y="40" width="120" height="60" rx="10" />
+  <rect class="box" x="170" y="40" width="120" height="60" rx="10" />
+  <rect class="box" x="320" y="40" width="120" height="60" rx="10" />
+  <rect class="box" x="470" y="40" width="120" height="60" rx="10" />
+  <rect class="box" x="620" y="40" width="120" height="60" rx="10" />
+  <rect class="box" x="770" y="40" width="110" height="60" rx="10" />
+
+  <line class="arrow" x1="140" y1="70" x2="170" y2="70" />
+  <line class="arrow" x1="290" y1="70" x2="320" y2="70" />
+  <line class="arrow" x1="440" y1="70" x2="470" y2="70" />
+  <line class="arrow" x1="590" y1="70" x2="620" y2="70" />
+  <line class="arrow" x1="740" y1="70" x2="770" y2="70" />
+
+  <text class="label" x="42" y="75">Logged data</text>
+  <text class="label" x="186" y="75">Estimand</text>
+  <text class="label" x="338" y="75">Estimator</text>
+  <text class="label" x="485" y="75">Diagnostics</text>
+  <text class="label" x="638" y="75">Sensitivity</text>
+  <text class="label" x="800" y="75">Report</text>
+</svg>

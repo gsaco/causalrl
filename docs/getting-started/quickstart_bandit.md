@@ -12,6 +12,10 @@ benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=1000, seed=1)
 ```
 
+!!! note "Behavior propensities"
+    Synthetic benchmarks include `behavior_action_probs`. If your real data
+    does not, see [Behavior Propensities Missing](../how-to/behavior_propensities_missing.md).
+
 ## 2) Define the estimand
 
 ```python

@@ -29,6 +29,23 @@ python -m pip install "causalrl[d4rl]"
 python -m pip install "causalrl[rlu]"
 ```
 
+!!! tip "Recommended extras"
+    - Use `causalrl[behavior]` if you need to estimate behavior propensities.
+    - Use `causalrl[notebooks]` to run the walkthrough notebooks locally.
+    - Use `causalrl[docs]` if you plan to build the documentation site.
+
+!!! warning "Common pitfalls"
+    - Behavior policy estimation requires `scikit-learn`.
+    - FQE and some estimators require `torch`.
+    - `evaluate` currently assumes discrete action spaces.
+
+## Workflow schematic
+
+<figure class="crl-figure">
+  <img src="../assets/diagrams/workflow.svg" alt="Workflow diagram from logged data to report" loading="lazy" />
+  <figcaption>Typical CausalRL workflow: data -> estimand -> estimator -> diagnostics -> sensitivity -> report.</figcaption>
+</figure>
+
 ## Sanity check
 
 ```bash

@@ -1,17 +1,46 @@
 # CausalRL
 
-CausalRL is an estimand-first toolkit for causal reinforcement learning and
-off-policy evaluation (OPE). It makes assumptions explicit, surfaces overlap
-diagnostics, and provides reproducible benchmarks for comparing estimators.
+<div class="crl-hero" markdown>
 
-**Package**: `causalrl` · **Import**: `crl` · **Version**: 0.1.0 ·
+## Estimand-first causal RL and off-policy evaluation
+
+<p class="crl-hero-subtitle">
+Assumptions in the open. Diagnostics by default. Benchmarks you can trust.
+</p>
+
+<div class="crl-hero-actions" markdown>
+[Get started](getting-started/installation.md){ .md-button .md-button--primary }
+[View results gallery](results/gallery.md){ .md-button }
+</div>
+
+</div>
+
+**Package**: `causalrl` | **Import**: `crl` | **Version**: 0.1.0 |
 [GitHub](https://github.com/gsaco/causalrl)
 
-## Who it is for
+## Why CausalRL
 
-- Researchers comparing OPE estimators with clear assumptions.
-- Practitioners who need diagnostics before trusting policy value estimates.
-- Anyone building reproducible baselines for offline evaluation.
+<div class="grid cards" markdown>
+
+-   **OPE pipeline with reporting**
+    End-to-end evaluation via `evaluate`, with summary tables and HTML reports.
+
+-   **Diagnostics-first workflow**
+    Overlap, ESS, and weight tails are explicit in every estimator report.
+
+-   **Reproducible benchmarks**
+    Synthetic bandit/MDP generators with ground-truth values for sanity checks.
+
+-   **Sensitivity analysis**
+    Bounded-confounding curves for bandits and sequential settings.
+
+-   **Estimator selection**
+    Heuristics to compare stability and model fit before choosing an estimator.
+
+-   **Adapters and policies**
+    D4RL/RL Unplugged loaders and policy wrappers for sklearn/torch models.
+
+</div>
 
 ## 60-second quickstart
 
@@ -30,20 +59,41 @@ report = evaluate(dataset=dataset, policy=benchmark.target_policy)
 print(report.summary_table())
 ```
 
-This prints a table with estimates and diagnostics for the default estimators.
-Use the diagnostics to check overlap and effective sample size before trusting
-any estimate.
-
 !!! note "Scope"
     The current `evaluate` pipeline assumes discrete action spaces. See
     [Limitations](concepts/limitations.md) for details.
 
-## Core workflow (mental model)
+## Why trust it
 
-1. **Define the estimand** (policy, horizon, discount).
-2. **Declare assumptions** (sequential ignorability, overlap, Markov for MDPs).
-3. **Run estimators** (IS/WIS/PDIS/DR/FQE, depending on data).
-4. **Interpret diagnostics** (overlap, ESS, weight tails).
+- Explicit assumptions via `AssumptionSet`, attached to every estimand.
+- Deterministic benchmark generators with fixed seeds.
+- Test suite covering estimators, diagnostics, and pipelines.
+- Reproducibility docs for configs and benchmark suites.
+
+## Results gallery
+
+<div class="crl-gallery">
+  <a href="assets/figures/bandit_estimator_comparison.svg" data-gallery="home">
+    <img src="assets/figures/bandit_estimator_comparison_web.png" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
+  </a>
+  <a href="assets/figures/bandit_overlap_ratios.svg" data-gallery="home">
+    <img src="assets/figures/bandit_overlap_ratios_web.png" alt="Overlap ratios histogram for bandit data" loading="lazy" />
+  </a>
+  <a href="assets/figures/bandit_weighted_rewards.svg" data-gallery="home">
+    <img src="assets/figures/bandit_weighted_rewards_web.png" alt="Weighted reward distribution with log scale" loading="lazy" />
+  </a>
+  <a href="assets/figures/bandit_sensitivity_bounds.svg" data-gallery="home">
+    <img src="assets/figures/bandit_sensitivity_bounds_web.png" alt="Sensitivity bounds curve for bandit data" loading="lazy" />
+  </a>
+  <a href="assets/figures/mdp_estimator_comparison.svg" data-gallery="home">
+    <img src="assets/figures/mdp_estimator_comparison_web.png" alt="MDP estimator comparison with uncertainty" loading="lazy" />
+  </a>
+  <a href="assets/figures/mdp_ess_by_time.svg" data-gallery="home">
+    <img src="assets/figures/mdp_ess_by_time_web.png" alt="Effective sample size by time step for MDP data" loading="lazy" />
+  </a>
+</div>
+
+See the full [Results Gallery](results/gallery.md) for interpretations and links.
 
 ## Data contracts (read first)
 

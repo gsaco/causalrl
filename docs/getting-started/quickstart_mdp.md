@@ -11,6 +11,10 @@ benchmark = SyntheticMDP(SyntheticMDPConfig(seed=0))
 dataset = benchmark.sample(num_trajectories=200, seed=1)
 ```
 
+!!! note "Discrete actions"
+    The built-in pipeline assumes discrete action spaces. If you have
+    continuous actions, you will need to implement custom estimators.
+
 ## 2) Define the estimand
 
 ```python

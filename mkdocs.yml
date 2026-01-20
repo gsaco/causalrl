@@ -38,6 +38,8 @@ nav:
       - Sensitivity Analysis: tutorials/sensitivity.md
       - Long-Horizon MIS vs IS: tutorials/long_horizon_mis.md
       - Proximal OPE (Advanced): tutorials/proximal_ope.md
+  - Results:
+      - Gallery: results/gallery.md
   - How-to:
       - Integrate Logged Data: how-to/integrate_logged_data.md
       - Logged Bandit from DataFrame: how-to/logged_bandit_from_dataframe.md
@@ -114,6 +116,7 @@ nav:
       - Contributing: contributing.md
 plugins:
   - search
+  - glightbox
   - mkdocs-jupyter:
       include_source: true
       execute: false
@@ -134,5 +137,7 @@ markdown_extensions:
   - pymdownx.superfences
   - toc:
       permalink: true
+extra_css:
+  - stylesheets/extra.css
 extra:
   version: "0.1.0"
