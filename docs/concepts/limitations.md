@@ -14,6 +14,11 @@ CausalRL is an OPE toolkit, not a replacement for careful causal reasoning.
 - **Model misspecification** can bias DR/FQE.
 - **Long horizons** amplify variance for importance-weighted methods.
 
+## Scope constraints
+
+- `evaluate` currently assumes discrete action spaces; continuous-action OPE is not implemented yet.
+- Transition-only logs must include `episode_id` and `timestep` to reconstruct trajectories, or you must build a `TrajectoryDataset` directly.
+
 ## What to do instead
 
 - Log behavior propensities during data collection.

@@ -186,8 +186,14 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
 
         weights = cumulative * mask
         weights_sum = weights.sum(axis=0)
+        weights_norm = np.zeros_like(weights, dtype=float)
         with np.errstate(divide="ignore", invalid="ignore"):
-            weights_norm = np.divide(weights, weights_sum, where=weights_sum > 0)
+            np.divide(
+                weights,
+                weights_sum,
+                out=weights_norm,
+                where=weights_sum > 0,
+            )
 
         values = weights_norm[:, 0] * v_matrix[:, 0] + np.sum(
             weights_norm * td_matrix, axis=1

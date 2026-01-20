@@ -185,6 +185,16 @@ def evaluate(
 
     set_seed(seed)
     if isinstance(dataset, TransitionDataset):
+        if dataset.action_space_n is None:
+            raise ValueError(
+                "TransitionDataset with continuous actions is not supported in evaluate(); "
+                "provide action_space_n for discrete actions or construct a TrajectoryDataset."
+            )
+        if dataset.episode_ids is None or dataset.timesteps is None:
+            raise ValueError(
+                "TransitionDataset requires episode_ids and timesteps to build trajectories "
+                "for OPE; provide them or construct a TrajectoryDataset."
+            )
         dataset = dataset.to_trajectory()
     validate_dataset(dataset)
 

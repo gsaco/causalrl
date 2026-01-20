@@ -85,6 +85,8 @@ class BanditPropensitySensitivity:
         gammas = np.asarray(gammas, dtype=float)
         if np.any(gammas < 1.0):
             raise ValueError("gamma values must be >= 1.")
+        if data.behavior_action_probs is None:
+            raise ValueError("behavior_action_probs required for sensitivity bounds.")
 
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         base_weights = target_probs / data.behavior_action_probs

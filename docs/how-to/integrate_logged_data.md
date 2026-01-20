@@ -35,6 +35,10 @@ traj = TrajectoryDataset.from_dataframe(
 )
 ```
 
+If you only have transitions (s, a, r, s'), build a `TransitionDataset` and
+include `episode_id` and `timestep` so it can be converted to trajectories for
+evaluation. `evaluate` currently assumes discrete action spaces.
+
 ## Step 2: Wrap your policy
 
 If you already have a model that outputs probabilities:
