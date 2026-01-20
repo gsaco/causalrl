@@ -3,11 +3,13 @@ name: pages
 on:
   push:
     branches:
+      - main
       - v4
     tags:
       - "v*"
   pull_request:
     branches:
+      - main
       - v4
 
 permissions:
