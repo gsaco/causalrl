@@ -33,6 +33,9 @@ nav:
       - Examples: tutorials/examples.md
       - Quickstart (Bandit): tutorials/quickstart_bandit.md
       - Quickstart (MDP): tutorials/quickstart_mdp.md
+      - Bandit OPE Script: tutorials/bandit_ope.md
+      - MDP OPE Script: tutorials/mdp_ope.md
+      - Benchmarks: tutorials/benchmarks.md
       - Diagnostics: tutorials/diagnostics.md
       - Confidence Intervals: tutorials/confidence_intervals.md
       - Sensitivity Analysis: tutorials/sensitivity.md
@@ -61,6 +64,13 @@ nav:
       - Dataset Format: concepts/dataset_format.md
       - Estimands: concepts/estimands.md
       - Assumptions and Identification: concepts/assumptions_identification.md
+      - Assumption Cards:
+          - Sequential Ignorability: assumptions/sequential_ignorability.md
+          - Overlap (Positivity): assumptions/overlap.md
+          - Markov: assumptions/markov.md
+          - Correct Model: assumptions/correct_model.md
+          - Bounded Rewards: assumptions/bounded_rewards.md
+          - Bounded Confounding: assumptions/bounded_confounding.md
       - Diagnostics: concepts/diagnostics.md
       - Sensitivity: concepts/sensitivity.md
       - Limitations: concepts/limitations.md
@@ -114,6 +124,7 @@ nav:
   - References: references.md
   - Project:
       - Project Status: project_status.md
+      - Research Roadmap: repo_cleanup_and_research_recommendations.md
       - Changelog: changelog.md
       - Citing: citing.md
       - Contributing: contributing.md
@@ -131,6 +142,8 @@ plugins:
             show_source: false
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true

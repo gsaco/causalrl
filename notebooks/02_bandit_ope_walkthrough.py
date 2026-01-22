@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -94,6 +94,15 @@ extra_diag["propensity"]
 # %%
 dataset_est = behavior_fit.apply(dataset)
 dataset_est.describe()
+
+# %%
+print(
+    summary[["estimator", "value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+best = summary.sort_values("stderr").iloc[0]
+print(f"Lowest stderr: {best['estimator']} (stderr={best['stderr']:.4f})")
 
 # %% [markdown]
 # ## Custom estimator configuration

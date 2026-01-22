@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -267,7 +267,16 @@ trajectory_roundtrip = transition_dataset.to_trajectory()
 
 # %%
 report = evaluate(dataset=dataset, policy=benchmark.target_policy)
-report.summary_table(), isinstance(report, OpeReport)
+summary = report.summary_table()
+summary
+
+# %%
+print(
+    summary[["estimator", "value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+isinstance(report, OpeReport)
 
 # %%
 from crl.core import EstimationReport  # noqa: E402

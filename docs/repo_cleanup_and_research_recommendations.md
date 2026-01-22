@@ -1,5 +1,11 @@
 # Repo Cleanup and Research-Grade Recommendations
 
+!!! note "Scope"
+    This page is maintainer-facing. Researchers should start with
+    [Getting Started](getting-started/installation.md), the
+    [Estimator Selection Guide](explanation/estimator_selection.md), and the
+    [Estimator Reference](reference/estimators/index.md).
+
 ## 1. Executive Summary
 
 I removed generated build artifacts, duplicate notebook output assets, and archived legacy documentation that was superseded by the current reference docs. The core package and documentation remain intact, and the repo is now cleaner and easier to navigate.

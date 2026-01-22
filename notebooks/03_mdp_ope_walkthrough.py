@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -38,6 +38,7 @@ from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.dual_dice import DualDICEConfig, DualDICEEstimator
+from crl.estimators.utils import compute_action_probs
 from crl.ope import evaluate
 from crl.utils.seeding import set_seed
 from crl.viz import configure_notebook_display, save_figure
@@ -63,6 +64,13 @@ report = evaluate(
 summary = report.summary_table()
 summary
 
+# %%
+print(
+    summary[["estimator", "value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+
 # %% [markdown]
 # ## DualDICE configuration example
 #
@@ -87,6 +95,14 @@ dualdice_report.to_dataframe()
 # %%
 fig = report.plot_estimator_comparison(truth=true_value)
 fig
+
+# %%
+target_probs = compute_action_probs(
+    benchmark.target_policy, dataset.observations, dataset.actions
+)
+ratios = np.where(dataset.mask, target_probs / dataset.behavior_action_probs, 1.0)
+fig_ess = report.plot_effective_sample_size(np.cumprod(ratios, axis=1), by_time=True)
+fig_ess
 
 # %% [markdown]
 # ## Save figures for docs

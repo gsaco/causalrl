@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -61,6 +61,18 @@ report = evaluate(
 )
 report.summary_table()
 
+# %%
+summary = report.summary_table()
+print(
+    summary[["estimator", "value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+
+# %%
+fig = report.plot_estimator_comparison(truth=true_value)
+fig
+
 # %% [markdown]
 # ## Custom DR-family configuration
 #
@@ -89,13 +101,13 @@ custom_estimators = [
 
 rows = []
 for estimator in custom_estimators:
-    report = estimator.estimate(dataset)
+    est_report = estimator.estimate(dataset)
     rows.append(
         {
-            "estimator": report.metadata["estimator"],
-            "value": report.value,
-            "stderr": report.stderr,
-            "ci": report.ci,
+            "estimator": est_report.metadata["estimator"],
+            "value": est_report.value,
+            "stderr": est_report.stderr,
+            "ci": est_report.ci,
         }
     )
 

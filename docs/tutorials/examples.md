@@ -31,6 +31,14 @@ print(report.summary_table())
 ## Notebook gallery (source)
 
 The repo includes notebooks that walk through diagnostics, sensitivity analysis,
-and estimator selection. See the source directory:
+and estimator selection. Each notebook is paired with a `.py` script via
+Jupytext so you can diff and run them easily. See the source directory:
 
 - [`notebooks/`](https://github.com/gsaco/causalrl/tree/v4/notebooks)
+
+Recommended notebooks:
+
+- `00_introduction.ipynb` — estimand-first tour + report export
+- `02_bandit_ope_walkthrough.ipynb` — diagnostics-driven bandit OPE
+- `03_mdp_ope_walkthrough.ipynb` — trajectory estimators and horizon effects
+- `10_bandit_ope_end_to_end.ipynb` — full workflow with sensitivity analysis

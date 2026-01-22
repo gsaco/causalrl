@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -102,6 +102,13 @@ diagnostics_obj = Diagnostics(
     model={},
 )
 diagnostics_obj.to_dict(), shift_stats
+
+# %%
+print(f"ESS: {ess_value:.1f} (ratio={ess_ratio_value:.3f})")
+print(
+    "Tail fraction (q=0.99): "
+    f"{tail_stats['tail_fraction']:.3f} | max weight: {tail_stats['max_weight']:.2f}"
+)
 
 # %% [markdown]
 # ## Bias-variance tradeoff plot

@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -25,6 +25,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
@@ -67,6 +68,11 @@ rows = [
     {"estimator": "IS", "value": is_report.value, "ci": is_report.ci},
     {"estimator": "Proximal", "value": prox_report, "ci": None},
 ]
+
+results = pd.DataFrame(rows)
+results["abs_error"] = (results["value"] - true_value).abs()
+print(results.round(3).to_string(index=False))
+results
 
 # %%
 fig = plot_estimator_comparison(rows, truth=true_value)

@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -25,6 +25,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import (
@@ -55,6 +56,12 @@ gammas = np.linspace(1.0, 3.0, 15)
 bounds = sensitivity_bounds(dataset, benchmark.target_policy, gammas)
 isinstance(bounds, SensitivityBounds)
 
+bounds_df = pd.DataFrame(
+    {"gamma": bounds.gammas, "lower": bounds.lower, "upper": bounds.upper}
+)
+print(bounds_df.head().round(3).to_string(index=False))
+bounds_df.head()
+
 fig = plot_sensitivity_curve(
     [
         {"gamma": g, "lower": lo, "upper": up}
@@ -80,6 +87,12 @@ estimand = PolicyValueEstimand(
 bandit_sensitivity = BanditPropensitySensitivity(estimand)
 curve = bandit_sensitivity.curve(dataset, gammas)
 curve.to_dict(), isinstance(curve, SensitivityCurve)
+
+# %%
+print(
+    "Gamma=1.0 bounds: "
+    f"[{curve.lower[0]:.3f}, {curve.upper[0]:.3f}]"
+)
 
 # %%
 output_dir = Path("docs/assets/figures")

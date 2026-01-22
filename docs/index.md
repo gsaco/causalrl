@@ -11,6 +11,7 @@ Assumptions in the open. Diagnostics by default. Benchmarks you can trust.
 <div class="crl-hero-actions" markdown>
 [Get started](getting-started/installation.md){ .md-button .md-button--primary }
 [View results gallery](results/gallery.md){ .md-button }
+[Read tutorials](tutorials/index.md){ .md-button }
 </div>
 
 </div>
@@ -39,6 +40,9 @@ Assumptions in the open. Diagnostics by default. Benchmarks you can trust.
 
 -   **Adapters and policies**
     D4RL/RL Unplugged loaders and policy wrappers for sklearn/torch models.
+
+-   **Modern estimator suite**
+    DR/WDR/MAGIC/MRDR, MIS, FQE, DualDICE, GenDICE, and DRL in a single pipeline.
 
 </div>
 
@@ -69,6 +73,7 @@ print(report.summary_table())
 - Deterministic benchmark generators with fixed seeds.
 - Test suite covering estimators, diagnostics, and pipelines.
 - Reproducibility docs for configs and benchmark suites.
+- Docs ↔ code parity checks that keep formulas and APIs aligned.
 
 ## Results gallery
 
@@ -109,6 +114,7 @@ Start here: [Dataset Format and Validation](concepts/dataset_format.md)
 
 - [Installation](getting-started/installation.md)
 - [Examples](tutorials/examples.md)
+- [Notebook walkthroughs](tutorials/index.md)
 - [Estimator Reference](reference/estimators/index.md)
 - [Public API](reference/api/public_api.md)
 - [Sample HTML report](results/report_preview.md)

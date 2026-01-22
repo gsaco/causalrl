@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -49,6 +49,7 @@ np.random.seed(0)
 
 # %%
 dataset = None
+report = None
 try:
     from crl.adapters.d4rl import load_d4rl_dataset
 
@@ -95,6 +96,35 @@ else:
     print(
         "D4RL dataset loaded. OPE estimators requiring propensities are not applicable."
     )
+
+# %% [markdown]
+# ## Report snapshot
+#
+# When using the synthetic fallback, we show a quick estimator comparison.
+
+# %%
+if report is not None:
+    summary = report.summary_table()
+    print(
+        summary[["estimator", "value", "lower_bound", "upper_bound"]]
+        .round(3)
+        .to_string(index=False)
+    )
+    summary
+
+# %%
+if report is not None:
+    fig = report.plot_estimator_comparison()
+    fig
+
+# %%
+if report is not None and dataset.behavior_action_probs is not None:
+    weights = (
+        benchmark.target_policy.action_prob(dataset.contexts, dataset.actions)
+        / dataset.behavior_action_probs
+    )
+    fig_w = report.plot_importance_weights(weights, logy=True)
+    fig_w
 
 # %% [markdown]
 # ## Save HTML report artifact

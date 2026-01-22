@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -34,6 +34,7 @@ import numpy as np
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.sensitivity.namkoong2020 import GammaSensitivityModel, confounded_ope_bounds
 from crl.utils.seeding import set_seed
+from crl.viz.plots import plot_sensitivity_curve
 
 # %%
 set_seed(0)
@@ -49,6 +50,20 @@ dataset = benchmark.sample(num_trajectories=200, seed=1)
 gammas = np.array([1.0, 1.25, 1.5, 2.0])
 curve = confounded_ope_bounds(dataset, benchmark.target_policy, gammas)
 curve.to_dict()
+
+# %%
+records = [
+    {"gamma": g, "lower": lo, "upper": up}
+    for g, lo, up in zip(curve.gammas, curve.lower, curve.upper)
+]
+fig = plot_sensitivity_curve(records)
+fig
+
+# %%
+print(
+    "Gamma=1.0 bounds: "
+    f"[{curve.lower[0]:.3f}, {curve.upper[0]:.3f}]"
+)
 
 # %% [markdown]
 # ## Gamma sensitivity model internals

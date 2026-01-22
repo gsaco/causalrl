@@ -5,6 +5,21 @@
   --crl-hero-accent: #2a6f97;
 }
 
+.md-typeset {
+  line-height: 1.65;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  letter-spacing: -0.01em;
+}
+
+.md-typeset a.md-button {
+  border-radius: 999px;
+  text-transform: none;
+}
+
 [data-md-color-scheme="slate"] {
   --crl-surface: #161a20;
   --crl-border: #2a2f36;
