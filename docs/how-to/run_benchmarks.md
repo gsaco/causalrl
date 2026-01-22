@@ -12,4 +12,9 @@ To run a pinned suite:
 python -m experiments.run_benchmarks --config configs/benchmark_suites/default.yaml --seed 0
 ```
 
+## CI vs full runs
+
+- Smoke benchmarks (CI): `make benchmarks-smoke`
+- Full benchmarks (manual): `make benchmarks-full`
+
 Outputs include `results.csv`, `aggregate.csv`, figures, `metadata.json`, and an HTML summary.

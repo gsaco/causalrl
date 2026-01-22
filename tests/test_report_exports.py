@@ -24,6 +24,7 @@ def test_report_json_and_html_exports(tmp_path):
     report.save_html(html_path)
 
     payload = json.loads(json_path.read_text(encoding="utf-8"))
-    assert payload["schema_version"] == 1
+    assert payload["schema_version"] == 2
     assert payload["value"] == 1.23
+    assert payload["uncertainty"]["kind"] == "wald"
     assert html_path.read_text(encoding="utf-8").startswith("<table")

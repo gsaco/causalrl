@@ -1,7 +1,12 @@
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    MARKOV,
+    OVERLAP,
+    Q_MODEL_REALIZABLE,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.fqe import FQEConfig, FQEEstimator
@@ -18,7 +23,9 @@ def test_fqe_estimator_on_synthetic_mdp():
         policy=benchmark.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet(
+            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+        ),
     )
 
     estimator = FQEEstimator(

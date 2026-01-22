@@ -17,4 +17,5 @@ relaxed, especially unobserved confounding.
 
 - Report both the point estimate and the sensitivity bounds.
 - Be explicit about the sensitivity parameter and its meaning.
+- Use the `SensitivityPolicyValueEstimand` to make the model explicit.
 - Use synthetic benchmarks to build intuition before real data.

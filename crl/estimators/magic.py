@@ -18,6 +18,7 @@ from crl.estimators.base import (
 )
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
+from crl.estimators.dr_core import discounted_powers
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
 
@@ -169,12 +170,13 @@ class MAGICEstimator(OPEEstimator):
             horizons = tuple(range(0, data.horizon + 1))
 
         candidate_values = []
+        discounts = discounted_powers(data.discount, data.horizon)
         for m in horizons:
             if m == 0:
                 values = v_matrix[:, 0]
             else:
                 values = v_matrix[:, 0] + np.sum(
-                    cumulative[:, :m] * td_matrix[:, :m], axis=1
+                    cumulative[:, :m] * td_matrix[:, :m] * discounts[:m], axis=1
                 )
             candidate_values.append(values)
 

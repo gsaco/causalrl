@@ -89,7 +89,7 @@ class FQEEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability, overlap, and correct function approximation.
+        Sequential ignorability, overlap, Markov property, and Q-model realizability.
     Inputs:
         TrajectoryDataset (n, t).
     Outputs:
@@ -98,7 +98,12 @@ class FQEEstimator(OPEEstimator):
         Extrapolation error for out-of-distribution actions.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "q_model_realizable",
+    ]
     required_fields: list[str] = []
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
@@ -127,7 +132,8 @@ class FQEEstimator(OPEEstimator):
                 self.bootstrap_config = self.config.bootstrap_config
             else:
                 self.bootstrap_config = BootstrapConfig(
-                    num_bootstrap=self.config.n_bootstrap
+                    num_bootstrap=self.config.n_bootstrap,
+                    method="block",
                 )
         self._bootstrap_params.update(
             {
@@ -156,7 +162,8 @@ class FQEEstimator(OPEEstimator):
             )
             value = float(np.mean(values))
             stderr = mean_stderr(values)
-            model_metrics = {"q_model_mse": train_mse}
+            residual_stats = self._bellman_residual_stats(q_network, data)
+            model_metrics = {"q_model_mse": train_mse, **residual_stats}
 
         ci = compute_ci(value, stderr)
 
@@ -179,6 +186,10 @@ class FQEEstimator(OPEEstimator):
         elif self.run_diagnostics:
             warnings.append(
                 "behavior_action_probs missing; skipping weight diagnostics."
+            )
+        if not self.bootstrap:
+            warnings.append(
+                "FQE CI uses normal approximation; consider bootstrap for dependent trajectories."
             )
 
         return self._build_report(
@@ -345,6 +356,41 @@ class FQEEstimator(OPEEstimator):
             train_mse = float(torch.mean((preds - targets) ** 2).cpu().item())
 
         return q_network, train_mse
+
+    def _bellman_residual_stats(
+        self, q_network: TorchQNetwork, data: TrajectoryDataset
+    ) -> dict[str, float]:
+        obs, next_obs, actions, rewards, next_policy_probs = self._flatten_transitions(
+            data
+        )
+        obs_features = self._features(obs, data.state_space_n)
+        action_one_hot = self._one_hot(actions, data.action_space_n)
+        obs_action = np.concatenate([obs_features, action_one_hot], axis=1)
+        next_features = self._features(next_obs, data.state_space_n)
+
+        with torch.no_grad():
+            obs_action_tensor = torch.tensor(obs_action, dtype=torch.float32).to(
+                self.device
+            )
+            rewards_tensor = torch.tensor(rewards, dtype=torch.float32).to(self.device)
+            next_tensor = torch.tensor(next_features, dtype=torch.float32).to(
+                self.device
+            )
+            policy_tensor = torch.tensor(next_policy_probs, dtype=torch.float32).to(
+                self.device
+            )
+            preds = q_network(obs_action_tensor)
+            next_values = self._torch_policy_value(
+                q_network, next_tensor, policy_tensor, data.action_space_n
+            )
+            residual = rewards_tensor + data.discount * next_values - preds
+            residual_np = residual.detach().cpu().numpy()
+
+        return {
+            "bellman_residual_mean": float(np.mean(residual_np)),
+            "bellman_residual_std": float(np.std(residual_np)),
+            "bellman_residual_mse": float(np.mean(residual_np**2)),
+        }
 
     def _flatten_transitions(
         self, data: TrajectoryDataset

@@ -19,8 +19,10 @@ from crl.estimators.base import (
 from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
+from crl.estimators.dr_core import dr_values_from_qv
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
+from crl.utils.cache import get_or_set
 
 
 @dataclass
@@ -172,34 +174,44 @@ class MRDREstimator(OPEEstimator):
     def _fit_q_model(
         self, data: TrajectoryDataset, indices: np.ndarray
     ) -> WeightedLinearQModel:
-        obs = data.observations[indices][data.mask[indices]]
-        next_obs = data.next_observations[indices][data.mask[indices]]
-        actions = data.actions[indices][data.mask[indices]]
-        rewards = data.rewards[indices][data.mask[indices]]
-        policy_probs_next = self.estimand.policy.action_probs(next_obs)
-        target_probs = self.estimand.policy.action_prob(obs, actions)
-        behavior_action_probs = data.behavior_action_probs
-        assert behavior_action_probs is not None
-        sample_weights = (
-            target_probs / behavior_action_probs[indices][data.mask[indices]]
+        cache_key = (
+            "mrdr_q_model",
+            self.config.num_iterations,
+            self.config.ridge,
+            indices.tobytes(),
         )
 
-        q_model = WeightedLinearQModel(
-            action_space_n=data.action_space_n,
-            state_space_n=data.state_space_n,
-            ridge=self.config.ridge,
-        )
-        q_model.fit(
-            observations=obs,
-            actions=actions,
-            rewards=rewards,
-            next_observations=next_obs,
-            policy_probs_next=policy_probs_next,
-            discount=data.discount,
-            num_iterations=self.config.num_iterations,
-            sample_weights=sample_weights,
-        )
-        return q_model
+        def _build() -> WeightedLinearQModel:
+            obs = data.observations[indices][data.mask[indices]]
+            next_obs = data.next_observations[indices][data.mask[indices]]
+            actions = data.actions[indices][data.mask[indices]]
+            rewards = data.rewards[indices][data.mask[indices]]
+            policy_probs_next = self.estimand.policy.action_probs(next_obs)
+            target_probs = self.estimand.policy.action_prob(obs, actions)
+            behavior_action_probs = data.behavior_action_probs
+            assert behavior_action_probs is not None
+            sample_weights = (
+                target_probs / behavior_action_probs[indices][data.mask[indices]]
+            )
+
+            q_model = WeightedLinearQModel(
+                action_space_n=data.action_space_n,
+                state_space_n=data.state_space_n,
+                ridge=self.config.ridge,
+            )
+            q_model.fit(
+                observations=obs,
+                actions=actions,
+                rewards=rewards,
+                next_observations=next_obs,
+                policy_probs_next=policy_probs_next,
+                discount=data.discount,
+                num_iterations=self.config.num_iterations,
+                sample_weights=sample_weights,
+            )
+            return q_model
+
+        return get_or_set(data, cache_key, _build)
 
     def _dr_values(
         self, data: TrajectoryDataset, indices: np.ndarray, q_model: LinearQModel
@@ -226,12 +238,18 @@ class MRDREstimator(OPEEstimator):
         v_hat = q_model.predict_v(obs_flat, policy_probs_flat)
         v_hat_next = q_model.predict_v(next_obs_flat, policy_probs_next)
 
-        td_residual = rewards[mask] + data.discount * v_hat_next - q_hat
+        q_matrix = np.zeros_like(rewards, dtype=float)
+        v_matrix = np.zeros((rewards.shape[0], rewards.shape[1] + 1), dtype=float)
 
-        td_matrix = np.zeros_like(rewards, dtype=float)
-        v_matrix = np.zeros_like(rewards, dtype=float)
-        td_matrix[mask] = td_residual
-        v_matrix[mask] = v_hat
+        q_matrix[mask] = q_hat
+        v_matrix[:, :-1][mask] = v_hat
+        v_matrix[:, 1:][mask] = v_hat_next
 
-        dr_values = v_matrix[:, 0] + np.sum(cumulative * td_matrix, axis=1)
-        return dr_values
+        return dr_values_from_qv(
+            rewards=rewards,
+            mask=mask,
+            discount=data.discount,
+            cumulative_rho=cumulative,
+            v_hat=v_matrix,
+            q_hat=q_matrix,
+        )

@@ -4,7 +4,7 @@
 - The state is a sufficient summary of the history for transitions and rewards.
 
 **Applies to**
-- DR and FQE.
+- DR, WDR, MRDR, MAGIC, MIS, FQE, DualDICE/GenDICE, DRL.
 
 **Definition**
 - P(S_{t+1}, R_t | H_t, A_t) = P(S_{t+1}, R_t | S_t, A_t).

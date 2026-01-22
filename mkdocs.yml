@@ -95,6 +95,8 @@ nav:
           - MIS: reference/estimators/mis.md
           - FQE: reference/estimators/fqe.md
           - DualDICE: reference/estimators/dual_dice.md
+          - GenDICE: reference/estimators/gendice.md
+          - DRL: reference/estimators/drl.md
           - Double RL: reference/estimators/double_rl.md
           - High-Confidence OPE: reference/estimators/hcope.md
       - Config Schemas: reference/configs.md

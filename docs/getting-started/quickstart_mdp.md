@@ -19,14 +19,14 @@ dataset = benchmark.sample(num_trajectories=200, seed=1)
 
 ```python
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, Q_MODEL_REALIZABLE, SEQUENTIAL_IGNORABILITY
 from crl.estimands.policy_value import PolicyValueEstimand
 
 estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=dataset.discount,
     horizon=dataset.horizon,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]),
 )
 ```
 

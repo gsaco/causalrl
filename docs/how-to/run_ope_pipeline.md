@@ -12,6 +12,24 @@ report.to_dataframe()
 report.save_html("report.html")
 ```
 
+## Sensitivity integration
+
+```python
+import numpy as np
+from crl.assumptions import AssumptionSet
+from crl.assumptions_catalog import BOUNDED_CONFOUNDING
+from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
+
+sensitivity = SensitivityPolicyValueEstimand(
+    policy=policy,
+    discount=dataset.discount,
+    horizon=dataset.horizon,
+    gammas=np.linspace(1.0, 2.0, 6),
+    assumptions=AssumptionSet([BOUNDED_CONFOUNDING]),
+)
+report = evaluate(dataset=dataset, policy=policy, sensitivity=sensitivity)
+```
+
 ## Estimated behavior policy
 
 ```python

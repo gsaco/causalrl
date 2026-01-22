@@ -5,7 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    MARKOV,
+    OVERLAP,
+    Q_MODEL_REALIZABLE,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -92,7 +97,9 @@ def run_mdp_benchmark(
         policy=bench.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet(
+            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+        ),
     )
 
     estimators = [

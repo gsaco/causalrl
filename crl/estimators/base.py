@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
+import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-import json
 from pathlib import Path
 from statistics import NormalDist
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
-from crl.utils.validation import validate_dataset
 from crl.estimands.policy_value import PolicyValueEstimand
+from crl.utils.validation import validate_dataset
 
-REPORT_SCHEMA_VERSION = 1
+REPORT_SCHEMA_VERSION = 2
 
 
 @dataclass
@@ -40,6 +40,34 @@ class DiagnosticsConfig:
     ess_threshold: float = 0.1
     weight_tail_quantile: float = 0.99
     weight_tail_threshold: float = 10.0
+
+
+@dataclass
+class UncertaintySummary:
+    """Structured summary of estimator uncertainty."""
+
+    kind: Literal[
+        "wald",
+        "bootstrap",
+        "empirical_bernstein",
+        "hoeffding",
+        "none",
+    ]
+    level: float
+    interval: tuple[float, float] | None
+    lower_bound: float | None
+    upper_bound: float | None
+    notes: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "level": self.level,
+            "interval": self.interval,
+            "lower_bound": self.lower_bound,
+            "upper_bound": self.upper_bound,
+            "notes": list(self.notes),
+        }
 
 
 @dataclass
@@ -73,12 +101,39 @@ class EstimatorReport:
     metadata: dict[str, Any] = field(default_factory=dict)
     lower_bound: float | None = None
     upper_bound: float | None = None
+    uncertainty: UncertaintySummary | None = None
+
+    def __post_init__(self) -> None:
+        if self.uncertainty is None:
+            if self.ci is not None:
+                self.uncertainty = UncertaintySummary(
+                    kind="wald",
+                    level=0.95,
+                    interval=self.ci,
+                    lower_bound=self.ci[0],
+                    upper_bound=self.ci[1],
+                    notes=["Normal-approximation interval (level inferred as 0.95)."],
+                )
+            else:
+                self.uncertainty = UncertaintySummary(
+                    kind="none",
+                    level=0.0,
+                    interval=None,
+                    lower_bound=self.lower_bound,
+                    upper_bound=self.upper_bound,
+                    notes=[],
+                )
 
     def to_dict(self) -> dict[str, Any]:
         """Return a pandas-friendly dict representation."""
 
         lower = self.lower_bound
         upper = self.upper_bound
+        if self.uncertainty is not None:
+            if self.uncertainty.lower_bound is not None:
+                lower = self.uncertainty.lower_bound
+            if self.uncertainty.upper_bound is not None:
+                upper = self.uncertainty.upper_bound
         if lower is None and self.ci is not None:
             lower = self.ci[0]
         if upper is None and self.ci is not None:
@@ -89,6 +144,9 @@ class EstimatorReport:
             "value": self.value,
             "stderr": self.stderr,
             "ci": self.ci,
+            "uncertainty": self.uncertainty.to_dict()
+            if self.uncertainty is not None
+            else None,
             "diagnostics": self.diagnostics,
             "assumptions_checked": list(self.assumptions_checked),
             "assumptions_flagged": list(self.assumptions_flagged),
@@ -110,7 +168,9 @@ class EstimatorReport:
     def to_json(self) -> str:
         """Return a JSON string representation."""
 
-        return json.dumps(self.to_dict(), default=_to_jsonable, indent=2, sort_keys=True)
+        return json.dumps(
+            self.to_dict(), default=_to_jsonable, indent=2, sort_keys=True
+        )
 
     def save_json(self, path: str | Path) -> None:
         """Write report contents to a JSON file."""
@@ -238,6 +298,7 @@ class OPEEstimator(ABC):
         data: Any | None = None,
         lower_bound: float | None = None,
         upper_bound: float | None = None,
+        uncertainty: UncertaintySummary | None = None,
     ) -> EstimatorReport:
         warnings_out = list(warnings)
         behavior_source = None
@@ -254,6 +315,25 @@ class OPEEstimator(ABC):
         metadata_out.setdefault("diagnostics_keys", list(self.diagnostics_keys))
         if behavior_source is not None:
             metadata_out.setdefault("behavior_policy_source", behavior_source)
+        if uncertainty is None:
+            if ci is not None:
+                uncertainty = UncertaintySummary(
+                    kind="wald",
+                    level=0.95,
+                    interval=ci,
+                    lower_bound=ci[0],
+                    upper_bound=ci[1],
+                    notes=["Normal-approximation interval (level inferred as 0.95)."],
+                )
+            else:
+                uncertainty = UncertaintySummary(
+                    kind="none",
+                    level=0.0,
+                    interval=None,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    notes=[],
+                )
         report = EstimatorReport(
             value=value,
             stderr=stderr,
@@ -265,6 +345,7 @@ class OPEEstimator(ABC):
             metadata=metadata_out,
             lower_bound=lower_bound,
             upper_bound=upper_bound,
+            uncertainty=uncertainty,
         )
         return self._apply_bootstrap(report, data)
 
@@ -303,6 +384,16 @@ class OPEEstimator(ABC):
         stderr, ci = bootstrap_ci(self._bootstrap_factory(), data, config)
         report.stderr = stderr
         report.ci = ci
+        report.uncertainty = UncertaintySummary(
+            kind="bootstrap",
+            level=1.0 - config.alpha,
+            interval=ci,
+            lower_bound=ci[0],
+            upper_bound=ci[1],
+            notes=[
+                f"Bootstrap CI with method={config.method}, num_bootstrap={config.num_bootstrap}."
+            ],
+        )
         report.metadata = dict(report.metadata)
         report.metadata.setdefault(
             "bootstrap",

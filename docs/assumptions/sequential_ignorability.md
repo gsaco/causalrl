@@ -4,7 +4,7 @@
 - No unmeasured confounding given observed history.
 
 **Applies to**
-- IS, WIS, PDIS, DR, FQE.
+- IS, WIS, PDIS, DR, WDR, MAGIC, MRDR, MIS, FQE, DualDICE/GenDICE, DRL, HCOPE, Double RL.
 
 **Definition**
 - Conditional on observed history, the action at each time step is independent

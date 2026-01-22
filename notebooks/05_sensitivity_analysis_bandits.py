@@ -27,7 +27,11 @@ from pathlib import Path
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import BOUNDED_CONFOUNDING, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    BOUNDED_CONFOUNDING,
+    OVERLAP,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.sensitivity import (

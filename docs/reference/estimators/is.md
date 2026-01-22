@@ -1,5 +1,7 @@
 # Importance Sampling (IS)
 
+Implementation: `crl.estimators.importance_sampling.ISEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
@@ -7,7 +9,7 @@
 
 ## Requires
 
-- LoggedBanditDataset or TrajectoryDataset
+- `LoggedBanditDataset` or `TrajectoryDataset`
 - `behavior_action_probs` for logged actions
 
 ## Diagnostics to check
@@ -22,7 +24,12 @@ For trajectory return $G_i$ and importance weight $w_i = \prod_t \pi(a_t|s_t) / 
 
 $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 
-## Fails when
+## Uncertainty
+
+- Normal-approximation CI by default.
+- Bootstrap CI available via `bootstrap=True`.
+
+## Failure modes
 
 - High variance with weak overlap or long horizons.
 - Heavy-tailed weights can dominate the estimate.
@@ -32,7 +39,7 @@ $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 ```python
 from crl.estimators.importance_sampling import ISEstimator
 
-report = ISEstimator(estimand).estimate(dataset)
+report = ISEstimator(estimand, clip_rho=10.0, use_log_weights=True).estimate(dataset)
 ```
 
 ## References

@@ -35,6 +35,8 @@ jobs:
         run: mypy crl
       - name: Tests
         run: pytest --cov=crl --cov-report=term-missing --cov-fail-under=80
+      - name: Docs parity
+        run: python scripts/validate_docs_vs_code.py
       - name: Benchmarks smoke
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
         run: make benchmarks-smoke

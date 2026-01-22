@@ -38,7 +38,12 @@ from __future__ import annotations
 import numpy as np
 
 from crl.assumptions import Assumption, AssumptionSet
-from crl.assumptions_catalog import CORRECT_MODEL, MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    CORRECT_MODEL,
+    MARKOV,
+    OVERLAP,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator

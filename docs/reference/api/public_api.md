@@ -14,6 +14,8 @@ listed here may change without notice.
 
 - `crl.PolicyValueEstimand`
 - `crl.PolicyContrastEstimand`
+- `crl.SensitivityPolicyValueEstimand`
+- `crl.ProximalPolicyValueEstimand`
 - `crl.Assumption`
 - `crl.AssumptionSet`
 
@@ -51,6 +53,7 @@ listed here may change without notice.
 
 - `crl.estimators.OPEEstimator`
 - `crl.estimators.EstimatorReport`
+- `crl.estimators.UncertaintySummary`
 - `crl.estimators.DiagnosticsConfig`
 - `crl.estimators.ISEstimator`
 - `crl.estimators.WISEstimator`
@@ -62,7 +65,9 @@ listed here may change without notice.
 - `crl.estimators.MarginalizedImportanceSamplingEstimator`
 - `crl.estimators.FQEEstimator`
 - `crl.estimators.DualDICEEstimator`
+- `crl.estimators.GenDICEEstimator`
 - `crl.estimators.DoubleRLEstimator`
+- `crl.estimators.DRLEstimator`
 - `crl.estimators.HighConfidenceISEstimator`
 
 ## API namespace

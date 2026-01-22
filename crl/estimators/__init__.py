@@ -5,14 +5,18 @@ from crl.estimators.base import (
     EstimationReport,
     EstimatorReport,
     OPEEstimator,
+    UncertaintySummary,
 )
 from crl.estimators.bootstrap import BootstrapConfig
 from crl.estimators.double_rl import DoubleRLConfig, DoubleRLEstimator
 from crl.estimators.dr import DoublyRobustEstimator, DRCrossFitConfig
+from crl.estimators.drl import DRLConfig, DRLEstimator
 from crl.estimators.dual_dice import DualDICEConfig, DualDICEEstimator
 from crl.estimators.fqe import FQEConfig, FQEEstimator
+from crl.estimators.gen_dice import GenDICEConfig, GenDICEEstimator
 from crl.estimators.high_confidence import (
     HighConfidenceConfig,
+    HighConfidenceISConfig,
     HighConfidenceISEstimator,
 )
 from crl.estimators.importance_sampling import ISEstimator, PDISEstimator, WISEstimator
@@ -26,6 +30,7 @@ __all__ = [
     "EstimationReport",
     "EstimatorReport",
     "OPEEstimator",
+    "UncertaintySummary",
     "DRCrossFitConfig",
     "DoublyRobustEstimator",
     "WDRConfig",
@@ -37,9 +42,14 @@ __all__ = [
     "MarginalizedImportanceSamplingEstimator",
     "DualDICEConfig",
     "DualDICEEstimator",
+    "GenDICEConfig",
+    "GenDICEEstimator",
     "DoubleRLConfig",
     "DoubleRLEstimator",
+    "DRLConfig",
+    "DRLEstimator",
     "HighConfidenceConfig",
+    "HighConfidenceISConfig",
     "HighConfidenceISEstimator",
     "BootstrapConfig",
     "FQEConfig",

@@ -8,19 +8,26 @@ import matplotlib
 import numpy as np
 
 matplotlib.use("Agg")
+import sys  # noqa: E402
+
 import matplotlib.pyplot as plt  # noqa: E402
 
 from crl.assumptions import AssumptionSet  # noqa: E402
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY  # noqa: E402
+from crl.assumptions_catalog import (  # noqa: E402
+    MARKOV,
+    OVERLAP,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.bandit_synth import (  # noqa: E402
     SyntheticBandit,
     SyntheticBanditConfig,
 )
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig  # noqa: E402
+from crl.diagnostics.ess import effective_sample_size  # noqa: E402
 from crl.estimands.policy_value import PolicyValueEstimand  # noqa: E402
 from crl.estimators.dr import (  # noqa: E402
-    DRCrossFitConfig,
     DoublyRobustEstimator,
+    DRCrossFitConfig,
 )
 from crl.estimators.importance_sampling import (  # noqa: E402
     ISEstimator,
@@ -30,9 +37,6 @@ from crl.estimators.importance_sampling import (  # noqa: E402
 from crl.estimators.utils import compute_action_probs  # noqa: E402
 from crl.sensitivity.bandits import sensitivity_bounds  # noqa: E402
 from crl.utils.seeding import set_seed  # noqa: E402
-from crl.diagnostics.ess import effective_sample_size  # noqa: E402
-
-import sys  # noqa: E402
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
@@ -140,7 +144,9 @@ def _plot_sensitivity(
 
 
 def build_bandit_figures() -> None:
-    bench = SyntheticBandit(SyntheticBanditConfig(seed=0, num_contexts=6, num_actions=4))
+    bench = SyntheticBandit(
+        SyntheticBanditConfig(seed=0, num_contexts=6, num_actions=4)
+    )
     data = bench.sample(num_samples=1200, seed=1)
 
     estimand = PolicyValueEstimand(

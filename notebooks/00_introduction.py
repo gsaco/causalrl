@@ -214,9 +214,9 @@ mdp_benchmark = SyntheticMDP(SyntheticMDPConfig(seed=5, horizon=4))
 traj_dataset = mdp_benchmark.sample(num_trajectories=5, seed=6)
 
 mask_flat = traj_dataset.mask.reshape(-1)
-obs_flat = traj_dataset.observations.reshape(
-    -1, *traj_dataset.observations.shape[2:]
-)[mask_flat]
+obs_flat = traj_dataset.observations.reshape(-1, *traj_dataset.observations.shape[2:])[
+    mask_flat
+]
 next_obs_flat = traj_dataset.next_observations.reshape(
     -1, *traj_dataset.next_observations.shape[2:]
 )[mask_flat]
@@ -229,9 +229,9 @@ behavior_probs_flat = (
     else None
 )
 
-episode_ids = np.repeat(
-    np.arange(traj_dataset.num_trajectories), traj_dataset.horizon
-)[mask_flat]
+episode_ids = np.repeat(np.arange(traj_dataset.num_trajectories), traj_dataset.horizon)[
+    mask_flat
+]
 timesteps = np.tile(np.arange(traj_dataset.horizon), traj_dataset.num_trajectories)[
     mask_flat
 ]
@@ -270,7 +270,7 @@ report = evaluate(dataset=dataset, policy=benchmark.target_policy)
 report.summary_table(), isinstance(report, OpeReport)
 
 # %%
-from crl.core import EstimationReport
+from crl.core import EstimationReport  # noqa: E402
 
 first_report = next(iter(report.reports.values()))
 isinstance(first_report, EstimationReport)

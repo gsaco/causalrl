@@ -35,6 +35,16 @@ contrast = PolicyContrastEstimand(
 )
 ```
 
+## Sensitivity estimand
+
+`SensitivityPolicyValueEstimand` encodes a gamma-bounded confounding model and
+produces partial identification bounds.
+
+## Proximal estimand
+
+`ProximalPolicyValueEstimand` encodes proximal assumptions about proxy
+variables and bridge functions.
+
 ## Why estimands matter
 
 - They define what you can claim.

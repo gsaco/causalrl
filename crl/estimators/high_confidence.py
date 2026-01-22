@@ -3,23 +3,34 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.estimators.base import DiagnosticsConfig, EstimatorReport, OPEEstimator
+from crl.estimators.base import (
+    DiagnosticsConfig,
+    EstimatorReport,
+    OPEEstimator,
+    UncertaintySummary,
+)
 from crl.estimators.diagnostics import run_diagnostics
+from crl.estimators.hc_bounds import select_hcope_bound
 from crl.estimators.utils import compute_action_probs, compute_trajectory_returns
 
 
 @dataclass
-class HighConfidenceConfig:
+class HighConfidenceISConfig:
     """Configuration for high-confidence lower bounds."""
 
     delta: float = 0.05
     reward_bound: float | None = None
+    clip_grid: list[float] | None = None
+    bound: Literal["empirical_bernstein", "hoeffding"] = "empirical_bernstein"
+
+
+HighConfidenceConfig = HighConfidenceISConfig
 
 
 class HighConfidenceISEstimator(OPEEstimator):
@@ -34,7 +45,7 @@ class HighConfidenceISEstimator(OPEEstimator):
         estimand: PolicyValueEstimand,
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
-        config: HighConfidenceConfig | None = None,
+        config: HighConfidenceISConfig | None = None,
         bootstrap: bool = False,
         bootstrap_config: Any | None = None,
     ) -> None:
@@ -59,21 +70,38 @@ class HighConfidenceISEstimator(OPEEstimator):
     ) -> EstimatorReport:
         self._validate_dataset(data)
         if isinstance(data, LoggedBanditDataset):
-            values, weights, target_probs, behavior_probs = self._bandit_values(data)
+            returns, weights, target_probs, behavior_probs = self._bandit_values(data)
         else:
-            values, weights, target_probs, behavior_probs = self._trajectory_values(
+            returns, weights, target_probs, behavior_probs = self._trajectory_values(
                 data
             )
 
         bound = self.config.reward_bound
         warnings: list[str] = []
         if bound is None:
-            bound = float(np.max(np.abs(values))) if values.size else 0.0
+            bound = float(np.max(np.abs(returns))) if returns.size else 0.0
             warnings.append(
                 "reward_bound was inferred from data; provide a theoretical bound for coverage guarantees."
             )
 
-        lcb = empirical_bernstein_lower_bound(values, bound, self.config.delta)
+        clip_grid = self.config.clip_grid
+        if clip_grid is None:
+            if weights.size == 0:
+                clip_grid = [1.0]
+            else:
+                quantiles = np.quantile(weights, [0.5, 0.75, 0.9, 0.95, 0.99])
+                clip_grid = sorted({1.0, float(np.max(weights)), *quantiles.tolist()})
+
+        best, all_results = select_hcope_bound(
+            returns=returns,
+            weights=weights,
+            reward_bound=bound,
+            delta=self.config.delta,
+            clip_grid=list(clip_grid),
+            bound_kind=self.config.bound,
+        )
+        lcb = best.lower_bound
+        is_estimate = float(np.mean(weights * returns)) if weights.size else 0.0
         diagnostics: dict[str, Any] = {}
         if self.run_diagnostics:
             mask = data.mask if isinstance(data, TrajectoryDataset) else None
@@ -81,21 +109,47 @@ class HighConfidenceISEstimator(OPEEstimator):
                 weights, target_probs, behavior_probs, mask, self.diagnostics_config
             )
             warnings.extend(diag_warnings)
+        uncertainty = UncertaintySummary(
+            kind=self.config.bound,
+            level=1.0 - self.config.delta,
+            interval=None,
+            lower_bound=lcb,
+            upper_bound=is_estimate,
+            notes=[
+                f"clip={best.clip}",
+                f"bias_term={best.bias_term:.4f}",
+            ],
+        )
 
         return self._build_report(
             value=lcb,
             stderr=None,
-            ci=(lcb, float(np.mean(values))),
+            ci=(lcb, is_estimate),
             diagnostics=diagnostics,
             warnings=warnings,
             metadata={
                 "estimator": "HCOPE",
                 "delta": self.config.delta,
                 "reward_bound": bound,
+                "bound": self.config.bound,
+                "clip_grid": list(clip_grid),
+                "clip": best.clip,
+                "bias_term": best.bias_term,
+                "clipped_mean": best.clipped_mean,
+                "grid_results": [
+                    {
+                        "clip": result.clip,
+                        "lower_bound": result.lower_bound,
+                        "bias_term": result.bias_term,
+                        "clipped_mean": result.clipped_mean,
+                    }
+                    for result in all_results
+                ],
             },
             data=data,
             lower_bound=lcb,
-            upper_bound=float(np.mean(values)),
+            upper_bound=is_estimate,
+            uncertainty=uncertainty,
         )
 
     def _bandit_values(self, data: LoggedBanditDataset):
@@ -103,8 +157,8 @@ class HighConfidenceISEstimator(OPEEstimator):
             raise ValueError("behavior_action_probs required for HCOPE on bandits.")
         target_probs = self.estimand.policy.action_prob(data.contexts, data.actions)
         weights = target_probs / data.behavior_action_probs
-        values = weights * data.rewards
-        return values, weights, target_probs, data.behavior_action_probs
+        returns = data.rewards
+        return returns, weights, target_probs, data.behavior_action_probs
 
     def _trajectory_values(self, data: TrajectoryDataset):
         if data.behavior_action_probs is None:
@@ -117,24 +171,11 @@ class HighConfidenceISEstimator(OPEEstimator):
         ratios = np.where(data.mask, target_probs / data.behavior_action_probs, 1.0)
         weights = np.prod(ratios, axis=1)
         returns = compute_trajectory_returns(data.rewards, data.mask, data.discount)
-        values = weights * returns
-        return values, weights, target_probs, data.behavior_action_probs
+        return returns, weights, target_probs, data.behavior_action_probs
 
 
-def empirical_bernstein_lower_bound(
-    values: np.ndarray, bound: float, delta: float
-) -> float:
-    """Empirical Bernstein lower bound for bounded random variables."""
-
-    v = np.asarray(values, dtype=float)
-    n = v.size
-    if n == 0:
-        return 0.0
-    if n == 1:
-        return float(v.mean())
-    mean = float(np.mean(v))
-    var = float(np.var(v, ddof=1))
-    log_term = np.log(2.0 / delta)
-    term1 = np.sqrt(2.0 * var * log_term / n)
-    term2 = 7.0 * bound * log_term / (3.0 * (n - 1))
-    return mean - term1 - term2
+__all__ = [
+    "HighConfidenceISConfig",
+    "HighConfidenceConfig",
+    "HighConfidenceISEstimator",
+]

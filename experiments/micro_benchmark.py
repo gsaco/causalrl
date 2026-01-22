@@ -23,9 +23,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
 
-    benchmark = SyntheticMDP(
-        SyntheticMDPConfig(seed=args.seed, horizon=args.horizon)
-    )
+    benchmark = SyntheticMDP(SyntheticMDPConfig(seed=args.seed, horizon=args.horizon))
     dataset = benchmark.sample(num_trajectories=args.num_trajectories, seed=args.seed)
 
     estimand = PolicyValueEstimand(

@@ -10,6 +10,8 @@ from crl.data import (
     TransitionDataset,
 )
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
+from crl.estimands.proximal_policy_value import ProximalPolicyValueEstimand
+from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
 from crl.ope import OpeReport, evaluate
 from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed
@@ -21,6 +23,8 @@ __all__ = [
     "AssumptionSet",
     "PolicyValueEstimand",
     "PolicyContrastEstimand",
+    "ProximalPolicyValueEstimand",
+    "SensitivityPolicyValueEstimand",
     "BanditDataset",
     "LoggedBanditDataset",
     "TrajectoryDataset",

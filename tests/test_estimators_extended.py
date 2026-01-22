@@ -5,6 +5,7 @@ from crl.assumptions_catalog import (
     BOUNDED_REWARDS,
     MARKOV,
     OVERLAP,
+    Q_MODEL_REALIZABLE,
     SEQUENTIAL_IGNORABILITY,
 )
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
@@ -33,7 +34,9 @@ def test_extended_mdp_estimators_run_and_are_reasonable():
         policy=bench.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet(
+            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+        ),
     )
 
     estimators = [
@@ -81,7 +84,9 @@ def test_fqe_bootstrap_ci():
         policy=bench.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet(
+            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+        ),
     )
 
     config = FQEConfig(

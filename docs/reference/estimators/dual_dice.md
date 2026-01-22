@@ -1,30 +1,31 @@
 # DualDICE
 
+Implementation: `crl.estimators.dual_dice.DualDICEEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
-- Markov
+- Markov property
 
 ## Requires
 
-- TrajectoryDataset with discrete `state_space_n`
-- Stable state-action feature representation
+- `TrajectoryDataset` with `state_space_n`
 
 ## Diagnostics to check
 
-- `model` diagnostics from upstream modeling (DualDICE itself is diagnostic-light)
+- Density-ratio convergence (if available)
 
 ## Formula
 
-DualDICE solves a density ratio estimation problem for the discounted
-stationary distribution ratio $w = d_\pi / d_\mu$ and estimates
+DualDICE estimates the discounted occupancy ratio and reweights rewards.
 
-$V^\pi \approx \frac{1}{1-\gamma} \mathbb{E}_{d_\mu}[w(s,a) r(s,a)]$.
+## Uncertainty
 
-## Fails when
+- CI reported but may be unreliable for density-ratio estimators; interpret cautiously.
 
-- Requires stable density ratio estimation.
-- Sensitive to feature misspecification for function approximation.
+## Failure modes
+
+- Sparse state-action coverage can destabilize ratio estimates.
 
 ## Minimal example
 
@@ -37,7 +38,3 @@ report = DualDICEEstimator(estimand).estimate(dataset)
 ## References
 
 - Nachum et al. (2019)
-
-## Notebook
-
-- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/03_mdp_ope_walkthrough.ipynb)

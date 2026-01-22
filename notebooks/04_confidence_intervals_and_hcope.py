@@ -36,7 +36,10 @@ from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORAB
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
-from crl.estimators.high_confidence import HighConfidenceConfig, HighConfidenceISEstimator
+from crl.estimators.high_confidence import (
+    HighConfidenceConfig,
+    HighConfidenceISEstimator,
+)
 from crl.estimators.importance_sampling import ISEstimator
 from crl.utils.seeding import set_seed
 

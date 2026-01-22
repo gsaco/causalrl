@@ -14,6 +14,11 @@ Or run the canonical suite:
 python -m experiments.run_benchmarks --config configs/benchmark_suites/default.yaml --seed 0
 ```
 
+## CI vs full benchmarks
+
+- CI smoke benchmarks live in `benchmarks/ci_smoke` and run via `make benchmarks-smoke`.
+- Full benchmarks live in `benchmarks/full` and run via `make benchmarks-full`.
+
 ## Outputs
 
 - `results.csv` / `aggregate.csv`

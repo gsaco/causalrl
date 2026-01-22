@@ -109,7 +109,9 @@ class DualDICEEstimator(OPEEstimator):
         stderr = mean_stderr(traj_values)
 
         diagnostics: dict[str, Any] = {}
-        warnings: list[str] = []
+        warnings: list[str] = [
+            "Uncertainty for density-ratio estimators may be unreliable; interpret CI cautiously."
+        ]
 
         return self._build_report(
             value=value,

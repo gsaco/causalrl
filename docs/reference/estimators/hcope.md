@@ -1,4 +1,6 @@
-# High-Confidence OPE Lower Bounds
+# High-Confidence Off-Policy Evaluation (HCOPE)
+
+Implementation: `crl.estimators.high_confidence.HighConfidenceISEstimator`
 
 ## Assumptions
 
@@ -8,39 +10,39 @@
 
 ## Requires
 
-- LoggedBanditDataset or TrajectoryDataset
 - `behavior_action_probs` for logged actions
-- Reward bound (or inferred bound with warning)
 
 ## Diagnostics to check
 
 - `overlap.support_violations`
 - `ess.ess_ratio`
+- `weights.tail_fraction`
 
-## Formula
+## Formula (sketch)
 
-Using an empirical Bernstein bound, compute a lower confidence bound for
-importance-sampled returns:
+Compute a clipped IS estimate and apply a concentration inequality
+(empirical Bernstein or Hoeffding) with bias correction, selecting the
+clipping parameter that maximizes the lower bound.
 
-$\text{LCB} = \bar X - \sqrt{\frac{2 \hat\sigma^2 \log(2/\delta)}{n}} - \frac{7 R_{\max} \log(2/\delta)}{3(n-1)}$.
+## Uncertainty
 
-## Fails when
+- Returns a lower bound (not a symmetric CI).
+- Confidence level set by `delta` in `HighConfidenceISConfig`.
 
-- Conservative when variance is large.
-- Requires a valid reward bound.
+## Failure modes
+
+- Requires a valid reward bound; inferred bounds are heuristic.
+- Bounds can be vacuous with weak overlap.
 
 ## Minimal example
 
 ```python
-from crl.estimators.high_confidence import HighConfidenceISEstimator
+from crl.estimators.high_confidence import HighConfidenceISEstimator, HighConfidenceISConfig
 
-report = HighConfidenceISEstimator(estimand).estimate(dataset)
+config = HighConfidenceISConfig(delta=0.05, bound="empirical_bernstein")
+report = HighConfidenceISEstimator(estimand, config=config).estimate(dataset)
 ```
 
 ## References
 
 - Thomas et al. (2015)
-
-## Notebook
-
-- [04_confidence_intervals_and_hcope.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/04_confidence_intervals_and_hcope.ipynb)

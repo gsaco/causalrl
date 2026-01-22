@@ -50,6 +50,5 @@ def test_wdr_zero_weight_timesteps_no_divide_warning():
 
     assert np.isfinite(report.value)
     assert all(
-        "where' used without 'out'" not in str(warning.message)
-        for warning in caught
+        "where' used without 'out'" not in str(warning.message) for warning in caught
     )

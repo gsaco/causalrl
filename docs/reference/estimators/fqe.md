@@ -1,19 +1,23 @@
 # Fitted Q Evaluation (FQE)
 
+Implementation: `crl.estimators.fqe.FQEEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
 - Overlap/positivity
-- Markov + function approximation
+- Markov property
+- Q-model realizability
 
 ## Requires
 
-- TrajectoryDataset
+- `TrajectoryDataset`
 - `behavior_action_probs` optional (used only for diagnostics)
 
 ## Diagnostics to check
 
 - `model.q_model_mse`
+- `model.bellman_residual_mse`
 - `overlap.support_violations` (if propensities provided)
 
 ## Formula
@@ -21,7 +25,12 @@
 FQE fits a Q-function by iterative Bellman regression on logged data, then
 estimates $V^\pi$ by averaging $\hat V(s_0)$ under the target policy.
 
-## Fails when
+## Uncertainty
+
+- Normal-approximation CI by default.
+- Block bootstrap recommended for sequential dependence (`bootstrap=True`).
+
+## Failure modes
 
 - Extrapolation error for out-of-distribution state-action pairs.
 - Sensitive to model capacity and optimization.

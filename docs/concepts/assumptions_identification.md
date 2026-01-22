@@ -10,13 +10,20 @@ valid and how to interpret results.
 - **Overlap (positivity)**: the behavior policy assigns nonzero probability to
   actions that the target policy may take.
 - **Markov (MDPs)**: the future depends only on the current state and action.
+- **Behavior policy known**: propensities are known or correctly specified.
+- **Q-model realizability**: value function lies in the chosen model class.
+- **Bridge identifiability**: proximal bridge functions are well-posed.
+- **Bounded rewards**: required for concentration bounds.
 
 ## What estimators require
 
 - IS/WIS/PDIS: sequential ignorability + overlap.
-- DR/WDR/MRDR/MAGIC: sequential ignorability + overlap + model correctness.
-- FQE: sequential ignorability + overlap + adequate function approximation.
-- DualDICE/MIS: sequential ignorability + Markov + discrete state support.
+- DR/WDR/MRDR/MAGIC: sequential ignorability + overlap + Markov.
+- DRL: sequential ignorability + overlap + Markov.
+- FQE: sequential ignorability + overlap + Markov + Q-model realizability.
+- MIS: sequential ignorability + overlap + Markov.
+- DualDICE/GenDICE: sequential ignorability + Markov + discrete state support.
+- HCOPE: sequential ignorability + overlap + bounded rewards.
 
 ## Why this matters
 

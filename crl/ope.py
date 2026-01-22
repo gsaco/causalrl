@@ -8,16 +8,24 @@ from typing import Any, Iterable
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    MARKOV,
+    OVERLAP,
+    Q_MODEL_REALIZABLE,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.core.datasets import BanditDataset, TrajectoryDataset, TransitionDataset
 from crl.core.policy import Policy
 from crl.estimands.policy_value import PolicyValueEstimand
+from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
 from crl.estimators.base import EstimatorReport, OPEEstimator
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.double_rl import DoubleRLEstimator
 from crl.estimators.dr import DoublyRobustEstimator
+from crl.estimators.drl import DRLEstimator
 from crl.estimators.dual_dice import DualDICEEstimator
 from crl.estimators.fqe import FQEEstimator
+from crl.estimators.gen_dice import GenDICEEstimator
 from crl.estimators.high_confidence import HighConfidenceISEstimator
 from crl.estimators.importance_sampling import ISEstimator, PDISEstimator, WISEstimator
 from crl.estimators.magic import MAGICEstimator
@@ -161,6 +169,7 @@ def evaluate(
     estimators: Iterable[str | OPEEstimator] | str = "default",
     diagnostics: list[str] | str = "default",
     inference: dict[str, Any] | None = None,
+    sensitivity: SensitivityPolicyValueEstimand | None = None,
     seed: int = 0,
 ) -> OpeReport:
     """Run an end-to-end OPE evaluation with reporting.
@@ -176,6 +185,7 @@ def evaluate(
         estimators: List of estimator instances or names (or "default").
         diagnostics: Diagnostics configuration (currently unused placeholder).
         inference: Optional inference configuration (stored in metadata).
+        sensitivity: Optional sensitivity estimand to compute bounds.
         seed: Random seed for estimators that require it.
     Outputs:
         OpeReport containing estimator reports and diagnostics.
@@ -202,6 +212,7 @@ def evaluate(
         assumptions = [SEQUENTIAL_IGNORABILITY, OVERLAP]
         if isinstance(dataset, TrajectoryDataset):
             assumptions.append(MARKOV)
+            assumptions.append(Q_MODEL_REALIZABLE)
         estimand = PolicyValueEstimand(
             policy=policy,
             discount=dataset.discount,
@@ -235,17 +246,36 @@ def evaluate(
         reports[name] = report
 
     diagnostics_out: dict[str, Any] = {}
+    figures_out: dict[str, Any] = {}
     if (
         diagnostics != []
         and getattr(dataset, "behavior_action_probs", None) is not None
     ):
         diagnostics_out = _compute_dataset_diagnostics(dataset, policy)
+    if sensitivity is not None:
+        sensitivity.require(["bounded_confounding"])
+        bounds = sensitivity.compute_bounds(dataset)
+        diagnostics_out["sensitivity"] = bounds.to_dict()
+        try:
+            from crl.viz.plots import plot_sensitivity_curve
+
+            records = [
+                {"gamma": float(g), "lower": float(lower), "upper": float(upper)}
+                for g, lower, upper in zip(
+                    bounds.gammas, bounds.lower, bounds.upper, strict=True
+                )
+            ]
+            figures_out["sensitivity_bounds"] = plot_sensitivity_curve(records)
+        except Exception:
+            diagnostics_out.setdefault("sensitivity", {}).setdefault(
+                "plot_error", "failed to create sensitivity plot"
+            )
 
     return OpeReport(
         estimand=estimand,
         reports=reports,
         diagnostics=diagnostics_out,
-        figures={},
+        figures=figures_out,
         metadata={
             "seed": seed,
             "inference": inference or {},
@@ -278,6 +308,8 @@ def _resolve_estimators(
             MarginalizedImportanceSamplingEstimator(estimand),
             FQEEstimator(estimand),
             DualDICEEstimator(estimand),
+            DRLEstimator(estimand),
+            GenDICEEstimator(estimand),
         ]
     if isinstance(estimators, str):
         estimators = [estimators]
@@ -302,7 +334,9 @@ def _estimator_from_name(name: str, estimand: PolicyValueEstimand) -> OPEEstimat
         "mis": MarginalizedImportanceSamplingEstimator,
         "fqe": FQEEstimator,
         "dualdice": DualDICEEstimator,
+        "gendice": GenDICEEstimator,
         "double_rl": DoubleRLEstimator,
+        "drl": DRLEstimator,
         "hcope": HighConfidenceISEstimator,
     }
     key = name.strip().lower()
