@@ -45,4 +45,10 @@ dataset = fit.apply(dataset)
 crl ope --config configs/ope.yaml --out results/run_001/
 ```
 
+Alias:
+
+```bash
+crl --config configs/ope.yaml --out results/run_001/
+```
+
 See `configs/ope.yaml` for the expected schema.

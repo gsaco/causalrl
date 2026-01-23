@@ -27,7 +27,7 @@
 </p>
 
 > Release status: v0.1.0 (research preview, alpha quality).
-> PyPI package: `causalrl` | Import name: `crl`
+> PyPI package (planned): `causalrl` | Import name: `crl`
 
 If CausalRL helps your work, please consider starring the repo.
 
@@ -45,7 +45,7 @@ If CausalRL helps your work, please consider starring the repo.
 
 ## Why CausalRL
 
-- Estimand-first API: make causal guarantees explicit and traceable.
+- Estimand-first API: make identification assumptions explicit and traceable.
 - Diagnostics as a first-class output, not an afterthought.
 - Synthetic benchmarks for fast comparisons and regression tests.
 - Clean data contracts for bandit, trajectory, and transition logs.
@@ -60,13 +60,7 @@ If CausalRL helps your work, please consider starring the repo.
 
 ## Installation
 
-PyPI (when available):
-
-```bash
-python -m pip install causalrl
-```
-
-From source:
+PyPI: not yet published (as of January 23, 2026). Install from source:
 
 ```bash
 git clone https://github.com/gsaco/causalrl
@@ -77,12 +71,12 @@ python -m pip install -e .
 Optional extras:
 
 ```bash
-python -m pip install "causalrl[docs]"
-python -m pip install "causalrl[benchmarks]"
-python -m pip install "causalrl[notebooks]"
-python -m pip install "causalrl[behavior]"
-python -m pip install "causalrl[d4rl]"
-python -m pip install "causalrl[rlu]"
+python -m pip install -e ".[docs]"
+python -m pip install -e ".[benchmarks]"
+python -m pip install -e ".[notebooks]"
+python -m pip install -e ".[behavior]"
+python -m pip install -e ".[d4rl]"
+python -m pip install -e ".[rlu]"
 ```
 
 ---
@@ -93,7 +87,7 @@ Bandit OPE:
 
 ```python
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import BEHAVIOR_POLICY_KNOWN, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator, WISEstimator
@@ -105,7 +99,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 
 for estimator in [ISEstimator(estimand), WISEstimator(estimand)]:
@@ -117,7 +111,7 @@ MDP OPE:
 
 ```python
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import BEHAVIOR_POLICY_KNOWN, MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.dr import DoublyRobustEstimator
@@ -131,7 +125,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=dataset.discount,
     horizon=dataset.horizon,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
 )
 
 estimators = [
@@ -170,6 +164,7 @@ report.save_html("report.html")
 
 ```bash
 crl ope --config configs/ope.yaml --out results/
+crl --config configs/ope.yaml --out results/
 ```
 
 ---

@@ -8,6 +8,7 @@ from crl.assumptions_catalog import (
     OVERLAP,
     Q_MODEL_REALIZABLE,
     SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
 )
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
@@ -22,7 +23,7 @@ def test_golden_bandit_workflow():
         policy=benchmark.target_policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
     report = evaluate(
         dataset=dataset,
@@ -51,7 +52,13 @@ def test_golden_mdp_workflow():
         discount=dataset.discount,
         horizon=dataset.horizon,
         assumptions=AssumptionSet(
-            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+            [
+                SEQUENTIAL_IGNORABILITY,
+                OVERLAP,
+                BEHAVIOR_POLICY_KNOWN,
+                MARKOV,
+                Q_MODEL_REALIZABLE,
+            ]
         ),
     )
     report = evaluate(

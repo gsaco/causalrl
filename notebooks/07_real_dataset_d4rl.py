@@ -27,7 +27,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[d4rl]"
+# pip install ".[d4rl]"
 # ```
 
 # %%

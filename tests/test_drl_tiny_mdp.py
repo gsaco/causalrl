@@ -1,7 +1,7 @@
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.drl import DRLConfig, DRLEstimator
@@ -25,7 +25,7 @@ def test_drl_tiny_mdp_runs():
         policy=bench.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
     )
 
     report = DRLEstimator(

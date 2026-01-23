@@ -67,6 +67,7 @@ nav:
       - Assumption Cards:
           - Sequential Ignorability: assumptions/sequential_ignorability.md
           - Overlap (Positivity): assumptions/overlap.md
+          - Behavior Policy Known: assumptions/behavior_policy_known.md
           - Markov: assumptions/markov.md
           - Correct Model: assumptions/correct_model.md
           - Bounded Rewards: assumptions/bounded_rewards.md

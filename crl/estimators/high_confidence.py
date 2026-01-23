@@ -36,7 +36,12 @@ HighConfidenceConfig = HighConfidenceISConfig
 class HighConfidenceISEstimator(OPEEstimator):
     """High-confidence lower bound based on IS (Thomas et al., 2015)."""
 
-    required_assumptions = ["sequential_ignorability", "overlap", "bounded_rewards"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "bounded_rewards",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
@@ -77,12 +82,14 @@ class HighConfidenceISEstimator(OPEEstimator):
             )
 
         bound = self.config.reward_bound
+        inferred_bound = False
         warnings: list[str] = []
         if bound is None:
             bound = float(np.max(np.abs(returns))) if returns.size else 0.0
             warnings.append(
                 "reward_bound was inferred from data; provide a theoretical bound for coverage guarantees."
             )
+            inferred_bound = True
 
         clip_grid = self.config.clip_grid
         if clip_grid is None:
@@ -109,16 +116,19 @@ class HighConfidenceISEstimator(OPEEstimator):
                 weights, target_probs, behavior_probs, mask, self.diagnostics_config
             )
             warnings.extend(diag_warnings)
+        notes = [
+            f"clip={best.clip}",
+            f"bias_term={best.bias_term:.4f}",
+        ]
+        if inferred_bound:
+            notes.append("reward_bound inferred from data; coverage is heuristic.")
         uncertainty = UncertaintySummary(
             kind=self.config.bound,
             level=1.0 - self.config.delta,
             interval=None,
             lower_bound=lcb,
             upper_bound=is_estimate,
-            notes=[
-                f"clip={best.clip}",
-                f"bias_term={best.bias_term:.4f}",
-            ],
+            notes=notes,
         )
 
         return self._build_report(

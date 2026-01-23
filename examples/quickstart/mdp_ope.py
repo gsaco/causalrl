@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import (
+    BEHAVIOR_POLICY_KNOWN,
     MARKOV,
     OVERLAP,
     Q_MODEL_REALIZABLE,
@@ -26,7 +27,13 @@ def main() -> None:
         discount=dataset.discount,
         horizon=dataset.horizon,
         assumptions=AssumptionSet(
-            [SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV, Q_MODEL_REALIZABLE]
+            [
+                SEQUENTIAL_IGNORABILITY,
+                OVERLAP,
+                BEHAVIOR_POLICY_KNOWN,
+                MARKOV,
+                Q_MODEL_REALIZABLE,
+            ]
         ),
     )
 

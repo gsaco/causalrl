@@ -308,6 +308,17 @@ class OPEEstimator(ABC):
             warnings_out.append(
                 "Behavior propensities were estimated; additional modeling risk may apply."
             )
+        if not self.bootstrap and ci is not None and data is not None:
+            try:
+                from crl.data.datasets import TrajectoryDataset
+
+                if isinstance(data, TrajectoryDataset):
+                    warnings_out.append(
+                        "Normal-approximation CIs assume independent trajectories; "
+                        "consider bootstrap intervals for dependent or heavy-tailed data."
+                    )
+            except Exception:
+                pass
         assumptions_checked = list(self.required_assumptions)
         assumptions_flagged = self._flag_assumptions(diagnostics, warnings_out)
         metadata_out = dict(metadata)

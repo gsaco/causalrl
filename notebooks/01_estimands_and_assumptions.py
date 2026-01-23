@@ -29,7 +29,7 @@
 # Suggested environment:
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -43,6 +43,7 @@ from crl.assumptions_catalog import (
     MARKOV,
     OVERLAP,
     SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
 )
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.diagnostics.plots import plot_weight_histogram
@@ -72,7 +73,7 @@ stationarity = Assumption(
     description="The environment dynamics do not drift during collection.",
 )
 
-assumptions = AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, stationarity])
+assumptions = AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, stationarity])
 assumptions.to_dict()
 
 # %% [markdown]
@@ -109,7 +110,7 @@ control_estimand = PolicyValueEstimand(
     policy=control_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 
 contrast = PolicyContrastEstimand(treatment=estimand, control=control_estimand)

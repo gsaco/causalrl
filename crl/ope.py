@@ -9,9 +9,9 @@ import numpy as np
 
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import (
+    BEHAVIOR_POLICY_KNOWN,
     MARKOV,
     OVERLAP,
-    Q_MODEL_REALIZABLE,
     SEQUENTIAL_IGNORABILITY,
 )
 from crl.core.datasets import BanditDataset, TrajectoryDataset, TransitionDataset
@@ -191,6 +191,8 @@ def evaluate(
         OpeReport containing estimator reports and diagnostics.
     Failure modes:
         Raises ValueError if requested estimators are unavailable.
+        When using default estimators, those with missing assumptions are skipped
+        and reported in the output metadata warnings.
     """
 
     set_seed(seed)
@@ -210,9 +212,10 @@ def evaluate(
 
     if estimand is None:
         assumptions = [SEQUENTIAL_IGNORABILITY, OVERLAP]
+        if getattr(dataset, "behavior_action_probs", None) is not None:
+            assumptions.append(BEHAVIOR_POLICY_KNOWN)
         if isinstance(dataset, TrajectoryDataset):
             assumptions.append(MARKOV)
-            assumptions.append(Q_MODEL_REALIZABLE)
         estimand = PolicyValueEstimand(
             policy=policy,
             discount=dataset.discount,
@@ -220,8 +223,11 @@ def evaluate(
             assumptions=AssumptionSet(assumptions),
         )
 
-    estimator_list = _resolve_estimators(estimators, estimand, dataset)
+    estimator_list, estimator_warnings = _resolve_estimators(
+        estimators, estimand, dataset, strict=estimators != "default"
+    )
     warnings: list[str] = []
+    warnings.extend(estimator_warnings)
     if getattr(dataset, "behavior_action_probs", None) is None:
         skipped = []
         filtered: list[OPEEstimator] = []
@@ -289,37 +295,58 @@ def _resolve_estimators(
     estimators: Iterable[str | OPEEstimator] | str,
     estimand: PolicyValueEstimand,
     dataset: BanditDataset | TrajectoryDataset,
-) -> list[OPEEstimator]:
+    *,
+    strict: bool = True,
+) -> tuple[list[OPEEstimator], list[str]]:
     if estimators == "default":
         if isinstance(dataset, BanditDataset):
-            return [
-                ISEstimator(estimand),
-                WISEstimator(estimand),
-                DoubleRLEstimator(estimand),
+            default_estimators: list[type[OPEEstimator]] = [
+                ISEstimator,
+                WISEstimator,
+                DoubleRLEstimator,
             ]
-        return [
-            ISEstimator(estimand),
-            WISEstimator(estimand),
-            PDISEstimator(estimand),
-            DoublyRobustEstimator(estimand),
-            WeightedDoublyRobustEstimator(estimand),
-            MAGICEstimator(estimand),
-            MRDREstimator(estimand),
-            MarginalizedImportanceSamplingEstimator(estimand),
-            FQEEstimator(estimand),
-            DualDICEEstimator(estimand),
-            DRLEstimator(estimand),
-            GenDICEEstimator(estimand),
-        ]
+        else:
+            default_estimators = [
+                ISEstimator,
+                WISEstimator,
+                PDISEstimator,
+                DoublyRobustEstimator,
+                WeightedDoublyRobustEstimator,
+                MAGICEstimator,
+                MRDREstimator,
+                MarginalizedImportanceSamplingEstimator,
+                FQEEstimator,
+                DualDICEEstimator,
+                DRLEstimator,
+                GenDICEEstimator,
+            ]
+        warnings: list[str] = []
+        resolved: list[OPEEstimator] = []
+        for estimator_cls in default_estimators:
+            try:
+                resolved.append(estimator_cls(estimand))
+            except ValueError as exc:
+                if strict:
+                    raise
+                warnings.append(
+                    f"Skipped {estimator_cls.__name__}: {exc}"
+                )
+        return resolved, warnings
     if isinstance(estimators, str):
         estimators = [estimators]
     estimator_list: list[OPEEstimator] = []
+    warnings: list[str] = []
     for estimator in estimators:
         if isinstance(estimator, OPEEstimator):
             estimator_list.append(estimator)
             continue
-        estimator_list.append(_estimator_from_name(str(estimator), estimand))
-    return estimator_list
+        try:
+            estimator_list.append(_estimator_from_name(str(estimator), estimand))
+        except ValueError as exc:
+            if strict:
+                raise
+            warnings.append(f"Skipped {estimator}: {exc}")
+    return estimator_list, warnings
 
 
 def _estimator_from_name(name: str, estimand: PolicyValueEstimand) -> OPEEstimator:

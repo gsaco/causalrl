@@ -23,7 +23,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%

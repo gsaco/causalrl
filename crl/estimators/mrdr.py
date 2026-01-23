@@ -80,7 +80,12 @@ class WeightedLinearQModel(LinearQModel):
 class MRDREstimator(OPEEstimator):
     """MRDR estimator (Farajtabar et al., 2018)."""
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = [
         "overlap",

@@ -5,7 +5,7 @@
 ## Estimand-first causal RL and off-policy evaluation
 
 <p class="crl-hero-subtitle">
-Assumptions in the open. Diagnostics by default. Benchmarks you can trust.
+Assumptions in the open. Diagnostics by default. Synthetic benchmarks with known ground truth.
 </p>
 
 <div class="crl-hero-actions" markdown>
@@ -49,7 +49,9 @@ Assumptions in the open. Diagnostics by default. Benchmarks you can trust.
 ## 60-second quickstart
 
 ```bash
-python -m pip install causalrl
+git clone https://github.com/gsaco/causalrl
+cd causalrl
+python -m pip install -e .
 ```
 
 ```python

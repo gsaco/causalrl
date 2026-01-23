@@ -1,7 +1,7 @@
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator, PDISEstimator, WISEstimator
@@ -29,7 +29,7 @@ def test_is_wis_bandit_matches_on_policy_mean():
         policy=policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     expected = float(np.mean(rewards))
@@ -68,7 +68,7 @@ def test_is_pdis_trajectory_matches_on_policy_mean():
         policy=policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     returns = compute_trajectory_returns(rewards, mask, dataset.discount)

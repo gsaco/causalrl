@@ -23,7 +23,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.bootstrap import BootstrapConfig, bootstrap_ci
@@ -59,7 +59,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_REWARDS]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, BOUNDED_REWARDS]),
 )
 
 is_estimator = ISEstimator(estimand)

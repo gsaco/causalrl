@@ -1,5 +1,5 @@
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import BOUNDED_REWARDS, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.high_confidence import (
@@ -17,7 +17,7 @@ def test_hcope_bound_is_lower_than_point_estimate():
         policy=bench.target_policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_REWARDS]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, BOUNDED_REWARDS]),
     )
 
     hcope = HighConfidenceISEstimator(

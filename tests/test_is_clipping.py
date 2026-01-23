@@ -1,7 +1,7 @@
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.data.datasets import LoggedBanditDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator
@@ -26,7 +26,7 @@ def test_is_clipping_emits_warning_and_finite_value():
         policy=policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     estimator = ISEstimator(estimand, clip_rho=1.0)

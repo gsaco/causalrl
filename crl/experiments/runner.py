@@ -16,7 +16,7 @@ import pandas as pd
 import yaml
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.harness import run_all_benchmarks
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
@@ -38,7 +38,7 @@ def run_benchmarks_to_table(
     Estimand:
         Policy value under intervention for each benchmark target policy.
     Assumptions:
-        Sequential ignorability and overlap (plus Markov for MDP).
+        Sequential ignorability, overlap, and known behavior propensities (plus Markov for MDP).
     Inputs:
         output_dir: Directory for result files.
         num_samples: Number of bandit samples.
@@ -157,7 +157,7 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
             policy=policy,
             discount=1.0,
             horizon=1,
-            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
         )
     else:
         mdp_config = SyntheticMDPConfig(seed=seed, **spec.get("config", {}))
@@ -173,7 +173,7 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
             policy=policy,
             discount=dataset.discount,
             horizon=dataset.horizon,
-            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
         )
 
     report = evaluate(

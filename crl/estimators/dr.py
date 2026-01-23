@@ -143,7 +143,7 @@ class DoublyRobustEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability, overlap, and Markov property.
+        Sequential ignorability, overlap, Markov property, and known behavior propensities.
     Inputs:
         TrajectoryDataset (n, t).
     Outputs:
@@ -152,7 +152,12 @@ class DoublyRobustEstimator(OPEEstimator):
         Bias if both the Q model and propensities are misspecified.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 

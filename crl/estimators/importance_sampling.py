@@ -29,7 +29,7 @@ class ISEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability and overlap/positivity.
+        Sequential ignorability, overlap/positivity, and known behavior propensities.
     Inputs:
         LoggedBanditDataset (n,) or TrajectoryDataset (n, t).
     Outputs:
@@ -38,7 +38,11 @@ class ISEstimator(OPEEstimator):
         High variance under weak overlap.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
@@ -206,7 +210,7 @@ class WISEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability and overlap/positivity.
+        Sequential ignorability, overlap/positivity, and known behavior propensities.
     Inputs:
         LoggedBanditDataset (n,) or TrajectoryDataset (n, t).
     Outputs:
@@ -215,7 +219,11 @@ class WISEstimator(OPEEstimator):
         Bias from normalization in small samples.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
@@ -368,7 +376,7 @@ class PDISEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability and overlap/positivity.
+        Sequential ignorability, overlap/positivity, and known behavior propensities.
     Inputs:
         TrajectoryDataset (n, t).
     Outputs:
@@ -377,7 +385,11 @@ class PDISEstimator(OPEEstimator):
         Variance grows with horizon under weak overlap.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 

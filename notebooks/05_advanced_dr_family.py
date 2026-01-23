@@ -23,7 +23,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -32,7 +32,7 @@ from __future__ import annotations
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.dr import DRCrossFitConfig, DoublyRobustEstimator
@@ -84,7 +84,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=dataset.discount,
     horizon=dataset.horizon,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
 )
 
 dr_config = DRCrossFitConfig(num_folds=3, num_iterations=3, ridge=5e-3, seed=0)

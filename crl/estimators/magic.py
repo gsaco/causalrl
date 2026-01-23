@@ -16,6 +16,7 @@ from crl.estimators.base import (
     OPEEstimator,
     compute_ci,
 )
+from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
 from crl.estimators.dr_core import discounted_powers
@@ -27,15 +28,22 @@ from crl.estimators.utils import compute_action_probs
 class MAGICConfig:
     """Configuration for MAGIC."""
 
+    num_folds: int = 1
     num_iterations: int = 5
     ridge: float = 1e-3
     mixing_horizons: tuple[int, ...] | None = None
+    seed: int = 0
 
 
 class MAGICEstimator(OPEEstimator):
     """MAGIC estimator that mixes truncated DR estimators."""
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = [
         "overlap",
@@ -76,8 +84,33 @@ class MAGICEstimator(OPEEstimator):
         if data.behavior_action_probs is None:
             raise ValueError("behavior_action_probs are required for MAGIC.")
 
-        q_model = self._fit_q_model(data)
-        per_traj_values, weights = self._magic_values(data, q_model)
+        weights = np.array([])
+        model_mse: list[float] = []
+
+        if self.config.num_folds <= 1:
+            q_model = self._fit_q_model(data)
+            if q_model.train_mse is not None:
+                model_mse.append(q_model.train_mse)
+            per_traj_values, weights = self._magic_values(data, q_model)
+        else:
+            indices = np.arange(data.num_trajectories)
+            folds = make_folds(
+                data.num_trajectories, self.config.num_folds, self.config.seed
+            )
+            per_traj_values = np.zeros(data.num_trajectories, dtype=float)
+            weight_list: list[np.ndarray] = []
+            for fold_idx in folds:
+                train_idx = np.setdiff1d(indices, fold_idx)
+                q_model = self._fit_q_model(data, train_idx)
+                if q_model.train_mse is not None:
+                    model_mse.append(q_model.train_mse)
+                values, fold_weights = self._magic_values(
+                    data, q_model, indices=fold_idx
+                )
+                per_traj_values[fold_idx] = values
+                weight_list.append(fold_weights)
+            if weight_list:
+                weights = np.mean(np.stack(weight_list, axis=0), axis=0)
 
         value = float(np.mean(per_traj_values))
         stderr = mean_stderr(per_traj_values)
@@ -97,7 +130,8 @@ class MAGICEstimator(OPEEstimator):
                 data.mask,
                 self.diagnostics_config,
             )
-            diagnostics["model"] = {"q_model_mse": q_model.train_mse}
+            if model_mse:
+                diagnostics["model"] = {"q_model_mse": float(np.mean(model_mse))}
             diagnostics["weight_time"] = weight_time_diagnostics(
                 np.cumprod(ratios, axis=1), data.mask
             )
@@ -112,11 +146,19 @@ class MAGICEstimator(OPEEstimator):
             data=data,
         )
 
-    def _fit_q_model(self, data: TrajectoryDataset) -> LinearQModel:
-        obs = data.observations[data.mask]
-        next_obs = data.next_observations[data.mask]
-        actions = data.actions[data.mask]
-        rewards = data.rewards[data.mask]
+    def _fit_q_model(
+        self, data: TrajectoryDataset, indices: np.ndarray | None = None
+    ) -> LinearQModel:
+        if indices is None:
+            obs = data.observations[data.mask]
+            next_obs = data.next_observations[data.mask]
+            actions = data.actions[data.mask]
+            rewards = data.rewards[data.mask]
+        else:
+            obs = data.observations[indices][data.mask[indices]]
+            next_obs = data.next_observations[indices][data.mask[indices]]
+            actions = data.actions[indices][data.mask[indices]]
+            rewards = data.rewards[indices][data.mask[indices]]
         policy_probs_next = self.estimand.policy.action_probs(next_obs)
 
         q_model = LinearQModel(
@@ -136,16 +178,27 @@ class MAGICEstimator(OPEEstimator):
         return q_model
 
     def _magic_values(
-        self, data: TrajectoryDataset, q_model: LinearQModel
+        self,
+        data: TrajectoryDataset,
+        q_model: LinearQModel,
+        *,
+        indices: np.ndarray | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
-        obs = data.observations
-        next_obs = data.next_observations
-        actions = data.actions
-        rewards = data.rewards
-        mask = data.mask
+        obs = data.observations if indices is None else data.observations[indices]
+        next_obs = (
+            data.next_observations if indices is None else data.next_observations[indices]
+        )
+        actions = data.actions if indices is None else data.actions[indices]
+        rewards = data.rewards if indices is None else data.rewards[indices]
+        mask = data.mask if indices is None else data.mask[indices]
 
+        behavior_probs = (
+            data.behavior_action_probs
+            if indices is None
+            else data.behavior_action_probs[indices]
+        )
         target_probs = compute_action_probs(self.estimand.policy, obs, actions)
-        ratios = np.where(mask, target_probs / data.behavior_action_probs, 1.0)
+        ratios = np.where(mask, target_probs / behavior_probs, 1.0)
         cumulative = np.cumprod(ratios, axis=1)
 
         obs_flat = obs[mask]

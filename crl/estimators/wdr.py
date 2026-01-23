@@ -38,7 +38,12 @@ class WDRConfig:
 class WeightedDoublyRobustEstimator(OPEEstimator):
     """Weighted doubly robust estimator (Thomas & Brunskill, 2016)."""
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = [
         "overlap",

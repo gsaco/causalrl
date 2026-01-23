@@ -23,7 +23,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -34,7 +34,13 @@ from pathlib import Path
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    BEHAVIOR_POLICY_KNOWN,
+    MARKOV,
+    OVERLAP,
+    Q_MODEL_REALIZABLE,
+    SEQUENTIAL_IGNORABILITY,
+)
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.dual_dice import DualDICEConfig, DualDICEEstimator
@@ -56,9 +62,25 @@ benchmark = SyntheticMDP(SyntheticMDPConfig(seed=0, horizon=5))
 dataset = benchmark.sample(num_trajectories=200, seed=1)
 true_value = benchmark.true_policy_value(benchmark.target_policy)
 
+estimand = PolicyValueEstimand(
+    policy=benchmark.target_policy,
+    discount=dataset.discount,
+    horizon=dataset.horizon,
+    assumptions=AssumptionSet(
+        [
+            SEQUENTIAL_IGNORABILITY,
+            OVERLAP,
+            BEHAVIOR_POLICY_KNOWN,
+            MARKOV,
+            Q_MODEL_REALIZABLE,
+        ]
+    ),
+)
+
 report = evaluate(
     dataset=dataset,
     policy=benchmark.target_policy,
+    estimand=estimand,
     estimators=["is", "wis", "pdis", "dr", "mis", "dualdice", "fqe"],
 )
 summary = report.summary_table()

@@ -10,13 +10,13 @@ makes the estimand explicit and pairs it with assumptions.
 ```python
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import BEHAVIOR_POLICY_KNOWN, OVERLAP, SEQUENTIAL_IGNORABILITY
 
 estimand = PolicyValueEstimand(
     policy=target_policy,
     discount=0.99,
     horizon=10,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 ```
 

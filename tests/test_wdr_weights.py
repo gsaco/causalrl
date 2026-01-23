@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.data.datasets import TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.wdr import WDRConfig, WeightedDoublyRobustEstimator
@@ -36,7 +36,7 @@ def test_wdr_zero_weight_timesteps_no_divide_warning():
         policy=policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
     )
 
     estimator = WeightedDoublyRobustEstimator(

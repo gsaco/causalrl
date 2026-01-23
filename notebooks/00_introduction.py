@@ -32,7 +32,7 @@
 # Suggested environment:
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 #
 # (You can add `[docs]` or `[notebooks]` if you want full notebook tooling.)

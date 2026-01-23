@@ -16,9 +16,15 @@ The benchmark runner also captures package versions in `metadata.json`.
 
 ## Optional extras
 
-Install extras based on your workflow:
+Install extras based on your workflow (source install):
 
-- `causalrl[docs]`
-- `causalrl[benchmarks]`
-- `causalrl[notebooks]`
-- `causalrl[behavior]`
+```bash
+python -m pip install -e ".[docs]"
+```
+
+Available extras:
+
+- `.[docs]`
+- `.[benchmarks]`
+- `.[notebooks]`
+- `.[behavior]`

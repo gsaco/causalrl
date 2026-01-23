@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.confounded_bandit import ConfoundedBandit, ConfoundedBanditConfig
 from crl.confounding.proximal import (
     ProximalBanditDataset,
@@ -53,7 +53,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 
 is_report = ISEstimator(estimand).estimate(logged_data)

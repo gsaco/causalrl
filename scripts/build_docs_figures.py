@@ -17,6 +17,7 @@ from crl.assumptions_catalog import (  # noqa: E402
     MARKOV,
     OVERLAP,
     SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
 )
 from crl.benchmarks.bandit_synth import (  # noqa: E402
     SyntheticBandit,
@@ -153,7 +154,7 @@ def build_bandit_figures() -> None:
         policy=bench.target_policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
     estimators = [
         ISEstimator(estimand),
@@ -218,7 +219,7 @@ def build_mdp_figures() -> None:
         policy=bench.target_policy,
         discount=data.discount,
         horizon=data.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
     )
     estimators = [
         ISEstimator(estimand),

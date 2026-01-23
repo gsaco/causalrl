@@ -9,7 +9,7 @@ options:
 ## Option 1: estimate propensities
 
 CausalRL includes behavior policy estimation utilities (requires scikit-learn).
-Install with `causalrl[behavior]`.
+Install with `python -m pip install -e ".[behavior]"`.
 
 ```python
 from crl.behavior import fit_behavior_policy

@@ -32,7 +32,7 @@ class GenDICEEstimator(OPEEstimator):
 
     required_assumptions = ["sequential_ignorability", "markov"]
     required_fields = ["state_space_n"]
-    diagnostics_keys: list[str] = []
+    diagnostics_keys: list[str] = ["density_ratio"]
 
     def __init__(
         self,
@@ -111,7 +111,9 @@ class GenDICEEstimator(OPEEstimator):
         value = float(np.mean(traj_values))
         stderr = mean_stderr(traj_values)
 
-        diagnostics: dict[str, Any] = {}
+        diagnostics: dict[str, Any] = {
+            "density_ratio": _ratio_stats(density_ratio)
+        }
         warnings: list[str] = [
             "Uncertainty for density-ratio estimators may be unreliable; interpret CI cautiously."
         ]
@@ -146,6 +148,25 @@ class GenDICEEstimator(OPEEstimator):
         values = np.zeros((data.num_trajectories, data.horizon), dtype=float)
         values[mask] = values_flat
         return values.sum(axis=1)
+
+
+def _ratio_stats(values: np.ndarray) -> dict[str, float]:
+    values = np.asarray(values, dtype=float)
+    if values.size == 0:
+        return {
+            "min": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "q95": 0.0,
+            "q99": 0.0,
+        }
+    return {
+        "min": float(np.min(values)),
+        "max": float(np.max(values)),
+        "mean": float(np.mean(values)),
+        "q95": float(np.quantile(values, 0.95)),
+        "q99": float(np.quantile(values, 0.99)),
+    }
 
 
 __all__ = ["GenDICEConfig", "GenDICEEstimator"]

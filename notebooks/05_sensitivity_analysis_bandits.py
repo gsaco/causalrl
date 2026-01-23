@@ -32,6 +32,7 @@ from crl.assumptions_catalog import (
     BOUNDED_CONFOUNDING,
     OVERLAP,
     SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
 )
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -81,7 +82,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BOUNDED_CONFOUNDING]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, BOUNDED_CONFOUNDING]),
 )
 
 bandit_sensitivity = BanditPropensitySensitivity(estimand)

@@ -10,7 +10,7 @@ valid and how to interpret results.
 - **Overlap (positivity)**: the behavior policy assigns nonzero probability to
   actions that the target policy may take.
 - **Markov (MDPs)**: the future depends only on the current state and action.
-- **Behavior policy known**: propensities are known or correctly specified.
+- **Behavior policy known** (`BEHAVIOR_POLICY_KNOWN`): propensities are known or correctly specified.
 - **Q-model realizability**: value function lies in the chosen model class.
 - **Bridge identifiability**: proximal bridge functions are well-posed.
 - **Bounded rewards**: required for concentration bounds.

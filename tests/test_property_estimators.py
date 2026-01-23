@@ -3,7 +3,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.data.datasets import LoggedBanditDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.base import DiagnosticsConfig
@@ -56,7 +56,7 @@ def test_is_wis_permutation_invariance(bandit_data):
         policy=policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     is_value = ISEstimator(estimand).estimate(dataset).value
@@ -93,7 +93,7 @@ def test_is_clipping_matches_manual(bandit_data):
         policy=policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     config = DiagnosticsConfig(max_weight=1.0)

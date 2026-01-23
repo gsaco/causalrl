@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators.bootstrap import BootstrapConfig
@@ -31,7 +31,7 @@ def test_bootstrap_ci_bandit():
         policy=policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     estimator = ISEstimator(
@@ -73,7 +73,7 @@ def test_bootstrap_ci_trajectory():
         policy=policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
     )
 
     estimator = PDISEstimator(

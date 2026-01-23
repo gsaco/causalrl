@@ -1,8 +1,10 @@
 # Bias-Variance Tradeoffs
 
-IS-based estimators are unbiased but can have high variance. Model-based
-estimators reduce variance but introduce model bias. DR methods aim to balance
-both by combining model estimates with importance weights.
+IS-based estimators are unbiased when propensities are correct and overlap
+holds, but they can have high variance. WIS/PDIS can be biased in finite
+samples. Model-based estimators reduce variance but introduce model bias. DR
+methods aim to balance both by combining model estimates with importance
+weights.
 
 Key takeaways:
 
