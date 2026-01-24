@@ -27,4 +27,6 @@ def test_report_json_and_html_exports(tmp_path):
     assert payload["schema_version"] == 2
     assert payload["value"] == 1.23
     assert payload["uncertainty"]["kind"] == "wald"
-    assert html_path.read_text(encoding="utf-8").startswith("<table")
+    html = html_path.read_text(encoding="utf-8")
+    assert "<html" in html
+    assert "CausalRL Report" in html

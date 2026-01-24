@@ -23,6 +23,8 @@ from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.ope import evaluate
+from crl.reporting import EstimateRow, ReportData, ReportMetadata
+from crl.reporting.html import render_html
 from crl.version import __version__
 from crl.viz.plots import plot_bias_variance_tradeoff, plot_estimator_comparison
 
@@ -248,18 +250,53 @@ def _write_figures(aggregate: pd.DataFrame, figures_dir: Path) -> None:
 def _write_html_report(
     aggregate: pd.DataFrame, figures_dir: Path, output_path: Path
 ) -> None:
-    html_parts = [
-        "<html><head><meta charset='utf-8'><title>CRL Benchmarks</title></head><body>",
-        "<h1>Benchmark Summary</h1>",
-        aggregate.to_html(index=False),
-        "<h2>Figures</h2>",
-    ]
+    estimates: list[EstimateRow] = []
+    for _, row in aggregate.iterrows():
+        estimates.append(
+            EstimateRow(
+                estimator=str(row.get("estimator", "")),
+                value=float(row.get("estimate_mean", 0.0)),
+                stderr=float(row.get("estimate_std", 0.0))
+                if not pd.isna(row.get("estimate_std", 0.0))
+                else None,
+                ci=None,
+                lower_bound=None,
+                upper_bound=None,
+                metadata={
+                    "benchmark": row.get("benchmark"),
+                    "suite": row.get("suite"),
+                    "bias": row.get("bias"),
+                    "variance": row.get("variance"),
+                    "mse": row.get("mse"),
+                },
+            )
+        )
+
+    figures_payload: list[dict[str, Any]] = []
     for fig_path in sorted(figures_dir.glob("*.png")):
         img = _to_base64(fig_path)
-        html_parts.append(f"<h3>{fig_path.stem}</h3>")
-        html_parts.append(f"<img src='data:image/png;base64,{img}' />")
-    html_parts.append("</body></html>")
-    output_path.write_text("\n".join(html_parts), encoding="utf-8")
+        figures_payload.append(
+            {
+                "id": fig_path.stem,
+                "title": fig_path.stem.replace("_", " ").title(),
+                "src": f"data:image/png;base64,{img}",
+            }
+        )
+
+    report = ReportData(
+        mode="benchmarks",
+        metadata=ReportMetadata(
+            run_name="benchmark_suite",
+            package_version=__version__,
+            configs={"rows": len(aggregate)},
+        ),
+        estimates=estimates,
+        diagnostics={"aggregate": aggregate.to_dict(orient="records")},
+        figures=figures_payload,
+    )
+
+    html = render_html(report, title="CRL Benchmarks")
+    output_path.write_text(html, encoding="utf-8")
 
 
 def _write_metadata(

@@ -171,6 +171,18 @@ class LoggedBanditDataset:
             )
         return summary
 
+    def summary(self) -> dict[str, Any]:
+        """Alias for describe()."""
+
+        return self.describe()
+
+    def fingerprint(self) -> str:
+        """Return a stable fingerprint for the dataset."""
+
+        from crl.data.fingerprint import fingerprint_dataset
+
+        return fingerprint_dataset(self)
+
     def __repr__(self) -> str:
         return (
             "LoggedBanditDataset(num_samples="
@@ -249,6 +261,35 @@ class LoggedBanditDataset:
             actions=actions,
             rewards=rewards,
             behavior_action_probs=behavior,
+            action_space_n=action_space_n,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str,
+        *,
+        context_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "LoggedBanditDataset":
+        """Create a LoggedBanditDataset from a parquet file."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_parquet().") from exc
+        df = pd.read_parquet(path)
+        return cls.from_dataframe(
+            df,
+            context_columns=context_columns,
+            action_column=action_column,
+            reward_column=reward_column,
+            behavior_prob_column=behavior_prob_column,
             action_space_n=action_space_n,
             metadata=metadata,
         )
@@ -496,6 +537,18 @@ class TrajectoryDataset:
             )
         return summary
 
+    def summary(self) -> dict[str, Any]:
+        """Alias for describe()."""
+
+        return self.describe()
+
+    def fingerprint(self) -> str:
+        """Return a stable fingerprint for the dataset."""
+
+        from crl.data.fingerprint import fingerprint_dataset
+
+        return fingerprint_dataset(self)
+
     def __repr__(self) -> str:
         return (
             "TrajectoryDataset(num_trajectories="
@@ -639,6 +692,45 @@ class TrajectoryDataset:
             next_observations=next_obs,
             behavior_action_probs=behavior_probs,
             mask=mask,
+            discount=discount,
+            action_space_n=action_space_n,
+            state_space_n=state_space_n,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str,
+        *,
+        episode_id_column: str = "episode_id",
+        timestep_column: str = "timestep",
+        observation_columns: list[str],
+        next_observation_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        discount: float = 1.0,
+        action_space_n: int | None = None,
+        state_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TrajectoryDataset":
+        """Create a TrajectoryDataset from a parquet file."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_parquet().") from exc
+        df = pd.read_parquet(path)
+        return cls.from_dataframe(
+            df,
+            episode_id_column=episode_id_column,
+            timestep_column=timestep_column,
+            observation_columns=observation_columns,
+            next_observation_columns=next_observation_columns,
+            action_column=action_column,
+            reward_column=reward_column,
+            behavior_prob_column=behavior_prob_column,
             discount=discount,
             action_space_n=action_space_n,
             state_space_n=state_space_n,

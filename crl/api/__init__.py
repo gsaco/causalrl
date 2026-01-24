@@ -13,6 +13,17 @@ from crl.data import (
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
 from crl.estimands.proximal_policy_value import ProximalPolicyValueEstimand
 from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
+from crl.evaluation import (
+    DecisionResult,
+    DecisionSpec,
+    DiagnosticsSpec,
+    EvaluationResult,
+    EvaluationSpec,
+    InferenceSpec,
+    ReportSpec,
+    SensitivitySpec,
+    evaluate_many,
+)
 from crl.estimators import (
     BootstrapConfig,
     DiagnosticsConfig,
@@ -62,6 +73,15 @@ __all__ = [
     "PolicyContrastEstimand",
     "ProximalPolicyValueEstimand",
     "SensitivityPolicyValueEstimand",
+    "EvaluationSpec",
+    "InferenceSpec",
+    "DiagnosticsSpec",
+    "SensitivitySpec",
+    "ReportSpec",
+    "EvaluationResult",
+    "DecisionSpec",
+    "DecisionResult",
+    "evaluate_many",
     "DiagnosticsConfig",
     "EstimatorReport",
     "EstimationReport",

@@ -10,6 +10,10 @@ from statistics import NormalDist
 from typing import Any, Callable, Literal
 
 from crl.estimands.policy_value import PolicyValueEstimand
+from crl.reporting import EstimateRow, ReportData, ReportMetadata
+from crl.reporting.html import render_html
+from crl.reporting.warnings import normalize_warnings
+from crl.version import __version__
 from crl.utils.validation import validate_dataset
 
 REPORT_SCHEMA_VERSION = 2
@@ -179,13 +183,34 @@ class EstimatorReport:
         path_obj.write_text(self.to_json(), encoding="utf-8")
 
     def to_html(self) -> str:
-        """Return a self-contained HTML table representation."""
+        """Return a self-contained HTML report representation."""
 
-        try:
-            import pandas as pd  # noqa: F401
-        except ImportError as exc:  # pragma: no cover - optional dependency
-            raise ImportError("pandas is required for to_html().") from exc
-        return self.to_dataframe().to_html(index=False, escape=False)
+        estimate = EstimateRow(
+            estimator=self.metadata.get("estimator", "Estimator"),
+            value=self.value,
+            stderr=self.stderr,
+            ci=self.ci,
+            lower_bound=self.lower_bound,
+            upper_bound=self.upper_bound,
+            assumptions_checked=self.assumptions_checked,
+            assumptions_flagged=self.assumptions_flagged,
+            warnings=normalize_warnings(self.warnings),
+            diagnostics=self.diagnostics,
+            metadata=self.metadata,
+        )
+        report_data = ReportData(
+            mode="estimator",
+            metadata=ReportMetadata(
+                package_version=__version__,
+                estimand=self.metadata.get("estimand"),
+                configs={"estimator": self.metadata.get("estimator")},
+            ),
+            estimates=[estimate],
+            diagnostics=self.diagnostics,
+            warnings=normalize_warnings(self.warnings),
+        )
+        title = f"Estimator Report: {estimate.estimator}"
+        return render_html(report_data, title=title)
 
     def save_html(self, path: str | Path) -> None:
         """Write report contents to an HTML file."""
