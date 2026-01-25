@@ -61,17 +61,6 @@ nav:
       - Bias-Variance Tradeoffs: explanation/bias_variance.md
       - Confounding & Sensitivity: explanation/confounding.md
       - Proximal OPE: explanation/proximal.md
-  - Notebooks:
-      - Gallery: notebooks/index.md
-      - 00 Introduction: notebooks/00_introduction.ipynb
-      - 01 Estimands and Assumptions: notebooks/01_estimands_and_assumptions.ipynb
-      - 02 Bandit OPE Walkthrough: notebooks/02_bandit_ope_walkthrough.ipynb
-      - 03 MDP OPE Walkthrough: notebooks/03_mdp_ope_walkthrough.ipynb
-      - 04 Confidence Intervals and HCOPE: notebooks/04_confidence_intervals_and_hcope.ipynb
-      - 05 Advanced DR Family: notebooks/05_advanced_dr_family.ipynb
-      - 06 Sensitivity to Confounding: notebooks/06_sensitivity_unobserved_confounding.ipynb
-      - 07 Real Dataset (D4RL): notebooks/07_real_dataset_d4rl.ipynb
-      - 08 Estimator Selection: notebooks/08_estimator_selection_and_debugging.ipynb
   - References: references.md
   - Project Status: project_status.md
 plugins:
