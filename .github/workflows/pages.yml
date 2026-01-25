@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - v4
+      - v5
     tags:
       - "v*"
   pull_request:
     branches:
       - main
       - v4
+      - v5
 
 permissions:
   contents: read
