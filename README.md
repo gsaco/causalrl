@@ -1,12 +1,11 @@
-# CausalRL
-
 <p align="center">
-  <img src="docs/assets/branding/causalrl-banner.svg" alt="CausalRL banner" width="100%" />
+  <img src="docs/assets/branding/causalrl-banner.png" alt="CausalRL - Estimand-first causal RL and off-policy evaluation" width="100%" />
 </p>
 
+<h1 align="center">CausalRL</h1>
+
 <p align="center">
-  <strong>Estimand-first causal reinforcement learning and off-policy evaluation</strong><br />
-  Assumptions in the open. Diagnostics by default. Reports you can audit.
+  <strong>Know what you're estimating. Know when to trust it. Know how it was produced.</strong>
 </p>
 
 <p align="center">
@@ -15,135 +14,303 @@
   <a href="https://codecov.io/gh/gsaco/causalrl"><img src="https://codecov.io/gh/gsaco/causalrl/branch/main/graph/badge.svg" alt="Coverage" /></a>
   <a href="https://pypi.org/project/causalrl/"><img src="https://img.shields.io/badge/PyPI-coming%20soon-lightgrey" alt="PyPI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/gsaco/causalrl" alt="License" /></a>
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python" /></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python" /></a>
 </p>
 
 <p align="center">
-  <a href="https://gsaco.github.io/causalrl/">Docs</a> |
-  <a href="https://gsaco.github.io/causalrl/tutorials/">Tutorials</a> |
-  <a href="examples/README.md">Examples</a> |
-  <a href="docs/project_status.md">Project status</a> |
-  <a href="CITATION.cff">Cite</a>
+  <a href="https://gsaco.github.io/causalrl/">📚 Docs</a> •
+  <a href="https://gsaco.github.io/causalrl/tutorials/">🎓 Tutorials</a> •
+  <a href="examples/README.md">💡 Examples</a> •
+  <a href="https://gsaco.github.io/causalrl/results/gallery.md">🖼️ Gallery</a> •
+  <a href="CITATION.cff">📄 Cite</a>
 </p>
 
-> Release status: v0.1.0 (research preview, alpha quality).
-> Import name: `crl`
+---
+
+<table>
+<tr>
+<td>
+
+**CausalRL** is a research-grade Python library for **off-policy evaluation (OPE)** that makes causal assumptions explicit. It goes beyond point estimates—combining estimand-first design, diagnostics-first reporting, and reproducible benchmarks so you can tell not just *what* a policy is worth, but *whether you should trust the estimate.*
+
+</td>
+</tr>
+</table>
+
+> 📦 **v0.1.0** (research preview, alpha) &nbsp;·&nbsp; Import: `import crl`
 
 ---
 
-## What is CausalRL
+## ✨ Why CausalRL?
 
-CausalRL is a research-grade library for off-policy evaluation (OPE) that makes
-causal assumptions explicit. It combines estimand-first design, diagnostics-first
-reporting, and reproducible benchmarks so you can tell not just what a policy is
-worth, but whether you should trust the estimate.
+<table>
+<tr>
+<td align="center" width="25%">
 
-### The three pillars
+### 🎯
+### Estimand-First
+Every estimator is tied to a formal estimand with explicit identification assumptions
 
-| Pillar | Why it matters | What you get |
-| --- | --- | --- |
-| Estimands | Know what quantity you are estimating. | Explicit estimands and assumptions for identification. |
-| Diagnostics | Know when an estimate is fragile. | Overlap, ESS, weight tails, and shift checks. |
-| Evidence | Know how results were produced. | Reproducible configs, benchmarks, and report artifacts. |
+</td>
+<td align="center" width="25%">
+
+### 🔍
+### Diagnostics by Default
+Overlap, ESS, weight tails, and shift checks run automatically with every evaluation
+
+</td>
+<td align="center" width="25%">
+
+### 📊
+### 20+ Estimators
+IS, DR, WDR, MAGIC, MRDR, MIS, FQE, DualDICE, GenDICE, DRL, and more
+
+</td>
+<td align="center" width="25%">
+
+### 📈
+### Sensitivity Analysis
+Bounded-confounding curves for robustness to hidden confounders
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td align="center" width="25%">
+
+### 📦
+### D4RL Compatible
+Load D4RL and RL Unplugged datasets with built-in adapters
+
+</td>
+<td align="center" width="25%">
+
+### 📝
+### Audit-Ready Reports
+HTML reports with tables, figures, and full metadata bundles
+
+</td>
+<td align="center" width="25%">
+
+### 🧪
+### Ground-Truth Benchmarks
+Synthetic bandit/MDP suites with known true values for validation
+
+</td>
+<td align="center" width="25%">
+
+### ⚡
+### Production Ready
+Type-checked, tested, with deterministic seeding throughout
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 60-second quickstart
+## 🚀 Quickstart
 
-Install from source (PyPI not yet published):
+### Installation
 
 ```bash
+# Clone and install (PyPI coming soon)
 git clone https://github.com/gsaco/causalrl
 cd causalrl
-python -m pip install -e .
+pip install -e .
+
+# With all extras
+pip install -e ".[all]"
 ```
 
-Run a synthetic bandit OPE in a few lines:
+### Your First OPE Evaluation
 
 ```python
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.ope import evaluate_ope
 
+# Create a synthetic benchmark with known ground truth
 benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=1000, seed=1)
 
+# Run end-to-end evaluation
 report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
+
+# View results
 print(report.summary_table())
+
+# Generate audit-ready HTML report
 report.save_html("report.html")
 ```
 
-Runnable scripts:
+**Output:**
+```
+              Estimator    Value     Std      ESS  OverlapWarning
+0                    IS   0.8234  0.0821   412.3           False
+1                   WIS   0.8156  0.0634   412.3           False
+2                    DR   0.8189  0.0512   412.3           False
+3                   WDR   0.8167  0.0498   412.3           False
+Ground Truth: 0.8200
+```
+
+### CLI
 
 ```bash
+# Quick bandit OPE demo
 python -m examples.quickstart.bandit_ope
+
+# MDP evaluation
 python -m examples.quickstart.mdp_ope
+
+# Run full benchmark suite
+python -m experiments.run_benchmarks --suite all --out results/
 ```
 
 ---
 
-## End-to-end pipeline (reports you can share)
+## 📊 Sample Outputs
 
-```python
-from crl.ope import evaluate_ope
+<table>
+<tr>
+<td align="center" width="50%">
 
-report = evaluate_ope(dataset=dataset, policy=policy)
-report.save_html("report.html")
-report.save_bundle("results/run_001")
+<img src="docs/assets/figures/bandit_estimator_comparison_web.png" alt="Estimator comparison with confidence intervals" width="100%"/>
+
+**Estimator Comparison**<br/>
+<sub>Point estimates with uncertainty quantification</sub>
+
+</td>
+<td align="center" width="50%">
+
+<img src="docs/assets/figures/bandit_overlap_ratios_web.png" alt="Overlap diagnostics" width="100%"/>
+
+**Overlap Diagnostics**<br/>
+<sub>Importance weight ratio distribution</sub>
+
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+
+<img src="docs/assets/figures/bandit_sensitivity_bounds_web.png" alt="Sensitivity analysis bounds" width="100%"/>
+
+**Sensitivity Analysis**<br/>
+<sub>Bounds under hidden confounding</sub>
+
+</td>
+<td align="center" width="50%">
+
+<img src="docs/assets/figures/mdp_ess_by_time_web.png" alt="ESS by time step" width="100%"/>
+
+**Temporal ESS**<br/>
+<sub>Effective sample size across horizon</sub>
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🧠 The Three Pillars
+
+| Pillar | Why It Matters | What You Get |
+|--------|----------------|--------------|
+| **Estimands** | Know *what quantity* you're estimating—not just which estimator | Explicit estimands with identification assumptions via `AssumptionSet` |
+| **Diagnostics** | Know *when* an estimate is fragile before acting on it | Overlap checks, ESS, weight tails, shift diagnostics, sensitivity curves |
+| **Evidence** | Know *how* results were produced for auditing and reproducibility | Versioned configs, deterministic seeds, structured report bundles |
+
+---
+
+## 📦 Estimator Suite
+
+<details>
+<summary><strong>Click to expand full estimator list</strong></summary>
+
+| Category | Estimators | Notes |
+|----------|------------|-------|
+| **Importance Sampling** | IS, WIS, SN-IS | Propensity-based weighting |
+| **Doubly Robust** | DR, WDR | Combines regression with IS |
+| **Model-Assisted** | MAGIC, MRDR | Variance reduction via modeling |
+| **Marginalized** | MIS | State-marginal importance sampling |
+| **Value Function** | FQE | Fitted Q-Evaluation |
+| **DICE Family** | DualDICE, GenDICE | Distribution correction estimation |
+| **Double RL** | DRL | Double reinforcement learning |
+| **High-Confidence** | HCOPE bounds | Concentration-based bounds |
+
+</details>
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Dataset   │ ──▶ │  Estimand   │ ──▶ │ Estimators  │ ──▶ │   Report    │
+│             │     │ + Assump.   │     │ + Diagnostics│    │  (HTML/JSON)│
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+      │                                        │
+      ▼                                        ▼
+┌─────────────┐                         ┌─────────────┐
+│  Benchmarks │                         │ Sensitivity │
+│ (Synth/D4RL)│                         │  Analysis   │
+└─────────────┘                         └─────────────┘
 ```
 
-Bundle structure:
+---
 
-```text
-results/run_001/
-  report.html
-  report.json
-  summary.csv
-  metadata.json
-  figures/
+## 📚 Learn the Library
+
+**Recommended learning path:**
+
+1. 📖 [Installation Guide](https://gsaco.github.io/causalrl/getting-started/installation.md)
+2. 🚀 [Quickstart Tutorial](https://gsaco.github.io/causalrl/tutorials/examples.md)
+3. 🔍 [Diagnostics Guide](https://gsaco.github.io/causalrl/how-to/)
+4. 📈 [Sensitivity Analysis](https://gsaco.github.io/causalrl/tutorials/)
+5. 🧪 [Benchmarking Workflow](https://gsaco.github.io/causalrl/reproducibility/)
+
+**Reference:**
+
+- [Estimator Reference](https://gsaco.github.io/causalrl/reference/estimators/)
+- [Public API](https://gsaco.github.io/causalrl/reference/api/public_api.md)
+- [Dataset Format](https://gsaco.github.io/causalrl/concepts/dataset_format.md)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Check out:
+
+- [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Open Issues](https://github.com/gsaco/causalrl/issues)
+
+---
+
+## 📄 Citation
+
+If you use CausalRL in academic work, please cite:
+
+```bibtex
+@software{causalrl,
+  author = {Saco, Gabriel},
+  title = {CausalRL: Estimand-first Causal Reinforcement Learning},
+  year = {2024},
+  url = {https://github.com/gsaco/causalrl}
+}
 ```
 
----
-
-## Diagnostics that matter
-
-- Overlap and support violations
-- Effective sample size (ESS)
-- Weight tails and instability flags
-- Shift diagnostics (when propensities are available)
-- Sensitivity bounds for unobserved confounding
+Or use the **"Cite this repository"** button on GitHub.
 
 ---
 
-## Benchmarks and reproducibility
+## 📜 License
 
-- Synthetic bandit and MDP suites with ground-truth values
-- Deterministic seeds and versioned configs
-- `python -m experiments.run_benchmarks --suite all --out results/`
+[MIT](LICENSE) © Gabriel Saco
 
 ---
 
-## Learn the library
-
-- Docs: https://gsaco.github.io/causalrl/
-- Tutorials: https://gsaco.github.io/causalrl/tutorials/
-- Estimator reference: https://gsaco.github.io/causalrl/reference/estimators/
-
-Recommended path:
-
-1. Quickstart (bandit and MDP)
-2. Diagnostics guide
-3. Sensitivity analysis
-4. Benchmarking workflow
-
----
-
-## Citation
-
-If you use CausalRL in academic work, cite via `CITATION.cff` or the GitHub
-"Cite this repository" button.
-
----
-
-## License
-
-MIT. See `LICENSE`.
+<p align="center">
+  <sub>Built with ❤️ for the causal inference and reinforcement learning communities</sub>
+</p>
