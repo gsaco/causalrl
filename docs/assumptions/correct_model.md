@@ -1,10 +1,11 @@
-# Correct Model Specification
+# Q-Model Realizability
 
 **Assumption**
 - The function approximator used for Q or reward models is well specified.
 
 **Applies to**
-- DR and FQE.
+- FQE and other model-based estimators.
+- DR-family estimators benefit when the Q-model is accurate, but they do not require this assumption for consistency.
 
 **Definition**
 - The regression model class contains the true conditional expectations.

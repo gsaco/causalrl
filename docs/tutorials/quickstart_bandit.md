@@ -14,11 +14,11 @@ it interactively.
 
 ```python
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=1000, seed=1)
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 ```
 
 Plot the estimator comparison and export a report:
@@ -28,8 +28,11 @@ fig = report.plot_estimator_comparison(truth=benchmark.true_policy_value(benchma
 report.save_html("report.html")
 ```
 
-![](../assets/figures/quickstart_bandit_estimator_comparison.png)
+<figure class="crl-figure">
+  <img src="../../assets/figures/bandit_estimator_comparison.svg" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
+  <figcaption>Estimator comparison rendered with the CausalRL grayscale style.</figcaption>
+</figure>
 
 ## Notebook
 
-- [02_bandit_ope_walkthrough.ipynb](../notebooks/02_bandit_ope_walkthrough.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/02_bandit_ope_walkthrough.ipynb)

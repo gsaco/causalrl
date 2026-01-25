@@ -1,27 +1,43 @@
-# Double Reinforcement Learning
+# Double Reinforcement Learning (Bandit)
+
+Implementation: `crl.estimators.double_rl.DoubleRLEstimator`
 
 ## Assumptions
 
 - Sequential ignorability
 - Overlap/positivity
 
+## Requires
+
+- `LoggedBanditDataset`
+- `behavior_action_probs` optional (estimated if contexts are discrete)
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
+
 ## Formula
 
-For bandits, the orthogonalized estimator is
+Orthogonalized score using outcome and propensity models in a bandit setting.
 
-$\hat V = \frac{1}{n} \sum_i \left[ \hat m(x_i) + \frac{\pi(a_i|x_i)}{\hat\mu(a_i|x_i)} (r_i - \hat q(x_i, a_i)) \right]$,
+## Uncertainty
 
-with cross-fitting for nuisance models.
+- Normal-approximation CI by default.
+- Bootstrap CI available via `bootstrap=True`.
 
 ## Failure modes
 
-- Bias if nuisance models are poor.
-- Requires sufficient overlap for stable reweighting.
+- Misspecified nuisance models can increase variance.
+
+## Minimal example
+
+```python
+from crl.estimators.double_rl import DoubleRLEstimator
+
+report = DoubleRLEstimator(estimand).estimate(dataset)
+```
 
 ## References
 
 - Kallus & Uehara (2020)
-
-## Notebook
-
-- [02_bandit_ope_walkthrough.ipynb](../../notebooks/02_bandit_ope_walkthrough.ipynb)

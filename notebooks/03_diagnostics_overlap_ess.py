@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -91,7 +91,9 @@ ess_value = effective_sample_size(weights)
 ess_ratio_value = ess_ratio(weights)
 tail_stats = weight_tail_stats(weights)
 time_stats = weight_time_diagnostics(np.cumprod(ratios, axis=1), dataset.mask)
-shift_stats = state_shift_diagnostics(dataset.observations[dataset.mask], weights=ratios[dataset.mask])
+shift_stats = state_shift_diagnostics(
+    dataset.observations[dataset.mask], weights=ratios[dataset.mask]
+)
 
 diagnostics_obj = Diagnostics(
     ess={"ess": ess_value, "ess_ratio": ess_ratio_value},
@@ -100,6 +102,13 @@ diagnostics_obj = Diagnostics(
     model={},
 )
 diagnostics_obj.to_dict(), shift_stats
+
+# %%
+print(f"ESS: {ess_value:.1f} (ratio={ess_ratio_value:.3f})")
+print(
+    "Tail fraction (q=0.99): "
+    f"{tail_stats['tail_fraction']:.3f} | max weight: {tail_stats['max_weight']:.2f}"
+)
 
 # %% [markdown]
 # ## Bias-variance tradeoff plot

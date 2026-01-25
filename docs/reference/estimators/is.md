@@ -1,9 +1,22 @@
 # Importance Sampling (IS)
 
+Implementation: `crl.estimators.importance_sampling.ISEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
 - Overlap/positivity
+
+## Requires
+
+- `LoggedBanditDataset` or `TrajectoryDataset`
+- `behavior_action_probs` for logged actions
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
+- `weights.tail_fraction`
 
 ## Formula
 
@@ -11,10 +24,23 @@ For trajectory return $G_i$ and importance weight $w_i = \prod_t \pi(a_t|s_t) / 
 
 $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 
+## Uncertainty
+
+- Normal-approximation CI by default.
+- Bootstrap CI available via `bootstrap=True`.
+
 ## Failure modes
 
 - High variance with weak overlap or long horizons.
 - Heavy-tailed weights can dominate the estimate.
+
+## Minimal example
+
+```python
+from crl.estimators.importance_sampling import ISEstimator
+
+report = ISEstimator(estimand, clip_rho=10.0, use_log_weights=True).estimate(dataset)
+```
 
 ## References
 
@@ -22,5 +48,5 @@ $\hat V = \frac{1}{n} \sum_{i=1}^n w_i G_i$.
 
 ## Notebook
 
-- [02_bandit_ope_walkthrough.ipynb](../../notebooks/02_bandit_ope_walkthrough.ipynb)
-- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/02_bandit_ope_walkthrough.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/03_mdp_ope_walkthrough.ipynb)

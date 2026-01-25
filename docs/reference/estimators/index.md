@@ -8,5 +8,5 @@ references, and a notebook link.
 - IS, WIS, PDIS
 - DR, WDR, MAGIC, MRDR
 - MIS, FQE
-- DualDICE, Double RL
+- DualDICE, GenDICE, DRL, Double RL
 - High-confidence lower bounds

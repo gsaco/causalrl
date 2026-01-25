@@ -1,82 +1,872 @@
-<html><head><meta charset='utf-8'><title>CRL OPE Report</title></head><body>
-<h1>Off-Policy Evaluation Report</h1>
-<h2>Summary</h2>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>value</th>
-      <th>stderr</th>
-      <th>ci</th>
-      <th>diagnostics</th>
-      <th>assumptions_checked</th>
-      <th>assumptions_flagged</th>
-      <th>warnings</th>
-      <th>metadata</th>
-      <th>lower_bound</th>
-      <th>upper_bound</th>
-      <th>estimator</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-0.393095</td>
-      <td>0.038707</td>
-      <td>(-0.4689586418751796, -0.3172317897744404)</td>
-      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.7846436986614939, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 600.2303790963533, 'ess_ratio': 0.6002303790963534}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9905292153077274, 'std': 0.8083756021056041, 'q95': 2.556018042816583, 'q99': 2.556018042816583, 'skew': 0.3502581981773205, 'kurtosis': -1.227823478069975, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
-      <td>[sequential_ignorability, overlap]</td>
-      <td>[]</td>
-      <td>[]</td>
-      <td>{'estimator': 'IS', 'num_samples': 1000, 'required_fields': ['behavior_action_probs'], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
-      <td>-0.468959</td>
-      <td>-0.317232</td>
-      <td>IS</td>
-    </tr>
-    <tr>
-      <td>-0.396854</td>
-      <td>0.042185</td>
-      <td>(-0.4795340623004983, -0.31417340185074777)</td>
-      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.7846436986614939, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 600.2303790963533, 'ess_ratio': 0.6002303790963534}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9905292153077274, 'std': 0.8083756021056041, 'q95': 2.556018042816583, 'q99': 2.556018042816583, 'skew': 0.3502581981773205, 'kurtosis': -1.227823478069975, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
-      <td>[sequential_ignorability, overlap]</td>
-      <td>[]</td>
-      <td>[]</td>
-      <td>{'estimator': 'WIS', 'num_samples': 1000, 'required_fields': ['behavior_action_probs'], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
-      <td>-0.479534</td>
-      <td>-0.314173</td>
-      <td>WIS</td>
-    </tr>
-    <tr>
-      <td>-0.423104</td>
-      <td>0.030082</td>
-      <td>(-0.4820637874360876, -0.3641436844986299)</td>
-      <td>{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.7846436986614939, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 600.2303790963533, 'ess_ratio': 0.6002303790963534}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9905292153077274, 'std': 0.8083756021056041, 'q95': 2.556018042816583, 'q99': 2.556018042816583, 'skew': 0.3502581981773205, 'kurtosis': -1.227823478069975, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}}</td>
-      <td>[sequential_ignorability, overlap]</td>
-      <td>[]</td>
-      <td>[]</td>
-      <td>{'estimator': 'DoubleRL', 'config': {'num_folds': 2, 'ridge': 0.001, 'seed': 0, 'min_prob': 1e-06, 'reward_model_factory': None, 'behavior_model_factory': None}, 'required_fields': [], 'diagnostics_keys': ['overlap', 'ess', 'weights', 'max_weight', 'model']}</td>
-      <td>-0.482064</td>
-      <td>-0.364144</td>
-      <td>DoubleRL</td>
-    </tr>
-  </tbody>
-</table>
-<h2>Assumptions</h2>
-<h3>IS</h3>
-<ul>
-<li>Checked: sequential_ignorability, overlap</li>
-<li>Flagged: None</li>
-</ul>
-<h3>WIS</h3>
-<ul>
-<li>Checked: sequential_ignorability, overlap</li>
-<li>Flagged: None</li>
-</ul>
-<h3>DoubleRL</h3>
-<ul>
-<li>Checked: sequential_ignorability, overlap</li>
-<li>Flagged: None</li>
-</ul>
-<h2>Diagnostics</h2>
-<pre>
-{'overlap': {'min_behavior_prob': 0.1097201314139156, 'min_target_prob': 0.038790349205150024, 'fraction_behavior_below_threshold': 0.0, 'fraction_target_below_threshold': 0.0, 'ratio_min': 0.09522924304504984, 'ratio_max': 2.556018042816583, 'ratio_q50': 0.7846436986614939, 'ratio_q90': 2.198968994213679, 'ratio_q99': 2.556018042816583, 'support_violations': 0}, 'ess': {'ess': 600.2303790963533, 'ess_ratio': 0.6002303790963534}, 'weights': {'min': 0.09522924304504984, 'max': 2.556018042816583, 'mean': 0.9905292153077274, 'std': 0.8083756021056041, 'q95': 2.556018042816583, 'q99': 2.556018042816583, 'skew': 0.3502581981773205, 'kurtosis': -1.227823478069975, 'tail_fraction': 0.0}, 'max_weight': 2.556018042816583, 'model': {}, 'shift': {'mmd_rbf': 0.0027634900554596165, 'mean_shift_norm': 0.04225295328079337, 'cov_shift_fro': 0.017903868248594357, 'ess': 600.2303790963533}}
-</pre>
-</body></html>
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Off-Policy Evaluation Report</title>
+  
+  <style>
+  :root {
+  color-scheme: light dark;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f0f3f9;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #0f766e;
+  --good: #16a34a;
+  --warn: #d97706;
+  --bad: #dc2626;
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --radius: 14px;
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #111827;
+  --surface-2: #0f172a;
+  --text: #f9fafb;
+  --muted: #9ca3af;
+  --border: #1f2937;
+  --accent: #14b8a6;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: radial-gradient(circle at top left, rgba(14, 116, 144, 0.12), transparent 50%),
+    radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.1), transparent 45%),
+    var(--bg);
+}
+
+.crl-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.crl-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.crl-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.crl-title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+}
+
+.crl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.crl-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.crl-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crl-btn:hover,
+.crl-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.crl-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.crl-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.crl-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.crl-card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.crl-primary {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 8px 0 4px;
+}
+
+.crl-muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.crl-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.crl-status-good {
+  background: rgba(22, 163, 74, 0.15);
+  color: var(--good);
+}
+
+.crl-status-warn {
+  background: rgba(217, 119, 6, 0.2);
+  color: var(--warn);
+}
+
+.crl-section {
+  margin-bottom: 32px;
+}
+
+.crl-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.crl-table-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.crl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.crl-table thead {
+  background: var(--surface-2);
+}
+
+.crl-table th,
+.crl-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.crl-table th {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.crl-table tbody tr:hover {
+  background: rgba(15, 118, 110, 0.06);
+}
+
+.crl-details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+
+.crl-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+.crl-figure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.crl-figure {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+}
+
+.crl-figure img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.crl-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.crl-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 1000;
+}
+
+.crl-modal-content {
+  background: var(--surface);
+  padding: 20px;
+  border-radius: var(--radius);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.crl-modal-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.crl-modal-close {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 720px) {
+  .crl-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .crl-header-actions {
+    width: 100%;
+  }
+}
+
+  </style>
+  
+</head>
+<body>
+  <div class="crl-page">
+    <header class="crl-header">
+      <div>
+        <p class="crl-eyebrow">CausalRL Report</p>
+        <h1 class="crl-title">Off-Policy Evaluation Report</h1>
+        <p class="crl-meta">
+          <span>Generated 2026-01-24T00:07:16.891348+00:00</span>
+          <span>Version 0.1.0</span>
+          
+          <span>Fingerprint 87253ebe7de8254bb453ce5442e70c252f3a603c32a906a05045e40a376bae0b</span>
+        </p>
+      </div>
+      <div class="crl-header-actions">
+        <button class="crl-btn" data-download-json>Download JSON</button>
+        <button class="crl-btn" data-download-csv>Download CSV</button>
+      </div>
+    </header>
+
+    <section class="crl-summary">
+      <div class="crl-card">
+        <h2>Primary estimate</h2>
+        
+        
+          <p class="crl-primary">-0.0272343</p>
+          <p class="crl-muted">Estimator: IS</p>
+          
+            <p class="crl-muted">CI: [-0.15682, 0.102351]</p>
+          
+        
+      </div>
+      <div class="crl-card">
+        <h2>Data health</h2>
+        
+        
+        
+        <ul class="crl-list">
+          <li>Overlap violations: 0</li>
+          <li>ESS ratio: 0.439807375042398</li>
+          <li>Tail fraction: 0.0</li>
+        </ul>
+      </div>
+      <div class="crl-card">
+        <h2>Decision</h2>
+        
+          <p class="crl-status crl-status-good">Proceed</p>
+          <p class="crl-muted">No blocking warnings detected.</p>
+        
+      </div>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Estimates</h2>
+        <p class="crl-muted">Sortable table of estimator outputs.</p>
+      </div>
+      <div class="crl-table-wrap">
+        <table class="crl-table" data-sortable>
+          <thead>
+            <tr>
+              <th data-type="text">Estimator</th>
+              <th data-type="number">Value</th>
+              <th data-type="number">StdErr</th>
+              <th data-type="number">Lower</th>
+              <th data-type="number">Upper</th>
+              <th data-type="number">Warnings</th>
+            </tr>
+          </thead>
+          <tbody>
+          
+            <tr>
+              <td>IS</td>
+              <td>-0.027234292692463326</td>
+              <td>0.06611637767190308</td>
+              <td>-0.1568200117176415</td>
+              <td>0.10235142633271485</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>WIS</td>
+              <td>-0.025991998193132713</td>
+              <td>0.06242378995891721</td>
+              <td>-0.14834037829110347</td>
+              <td>0.09635638190483803</td>
+              <td>0</td>
+            </tr>
+          
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Diagnostics</h2>
+        <p class="crl-muted">Overlap, ESS, weight tails, and shift metrics.</p>
+      </div>
+      <details class="crl-details" open>
+        <summary>Overlap</summary>
+        <pre>{
+  "fraction_behavior_below_threshold": 0.0,
+  "fraction_target_below_threshold": 0.0,
+  "min_behavior_prob": 0.07632959390848924,
+  "min_target_prob": 0.026157231486371814,
+  "ratio_max": 3.5684002030806057,
+  "ratio_min": 0.04705472051726874,
+  "ratio_q50": 0.18765879697154786,
+  "ratio_q90": 2.6244420066388168,
+  "ratio_q99": 3.5684002030806057,
+  "support_violations": 0
+}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Effective sample size</summary>
+        <pre>{
+  "ess": 219.90368752119898,
+  "ess_ratio": 0.439807375042398
+}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Weight tails</summary>
+        <pre>{
+  "kurtosis": -1.0233732664145163,
+  "max": 3.5684002030806057,
+  "mean": 1.0477952672241582,
+  "min": 0.04705472051726874,
+  "q95": 3.3050985744459047,
+  "q99": 3.5684002030806057,
+  "recommended_clip": 3.5684002030806057,
+  "skew": 0.7313077102896869,
+  "std": 1.1825346419140357,
+  "tail_fraction": 0.0
+}</pre>
+      </details>
+      
+      <details class="crl-details">
+        <summary>Shift</summary>
+        <pre>{
+  "cov_shift_fro": 0.0004537222094861404,
+  "ess": 219.90368752119898,
+  "mean_shift_norm": 0.008085046034013388,
+  "mmd_rbf": 0.0017401005426647131
+}</pre>
+      </details>
+      
+    </section>
+
+    
+
+    
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Metadata</h2>
+        <p class="crl-muted">Dataset, assumptions, configs, and environment.</p>
+      </div>
+      <details class="crl-details">
+        <summary>Dataset summary</summary>
+        <pre>{
+  "action_space_n": 4,
+  "behavior_action_probs_present": true,
+  "behavior_prob_max": 0.5821445995016145,
+  "behavior_prob_min": 0.07632959390848924,
+  "context_dim": 1,
+  "num_samples": 500,
+  "reward_max": 1.4403512335110324,
+  "reward_mean": -0.2375694002833386,
+  "reward_min": -1.551239008736725,
+  "reward_std": 0.7335348450022354,
+  "type": "bandit"
+}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Configs</summary>
+        <pre>{
+  "diagnostics": "default",
+  "estimators": [
+    "IS",
+    "WIS"
+  ],
+  "inference": {},
+  "sensitivity": {}
+}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Environment</summary>
+        <pre>{
+  "package_versions": {
+    "causalrl": "0.1.0",
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "torch": "2.9.1"
+  },
+  "platform": "macOS-15.6.1-arm64-arm-64bit",
+  "python_version": "3.11.9 | packaged by conda-forge | (main, Apr 19 2024, 18:34:54) [Clang 16.0.6 ]"
+}</pre>
+      </details>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Payload</h2>
+        <p class="crl-muted">Complete JSON payload.</p>
+      </div>
+      <details class="crl-details">
+        <summary>Show JSON</summary>
+        <pre>{
+  "diagnostics": {
+    "calibration": {
+      "available": false
+    },
+    "ess": {
+      "ess": 219.90368752119898,
+      "ess_ratio": 0.439807375042398
+    },
+    "overlap": {
+      "fraction_behavior_below_threshold": 0.0,
+      "fraction_target_below_threshold": 0.0,
+      "min_behavior_prob": 0.07632959390848924,
+      "min_target_prob": 0.026157231486371814,
+      "ratio_max": 3.5684002030806057,
+      "ratio_min": 0.04705472051726874,
+      "ratio_q50": 0.18765879697154786,
+      "ratio_q90": 2.6244420066388168,
+      "ratio_q99": 3.5684002030806057,
+      "support_violations": 0
+    },
+    "shift": {
+      "cov_shift_fro": 0.0004537222094861404,
+      "ess": 219.90368752119898,
+      "mean_shift_norm": 0.008085046034013388,
+      "mmd_rbf": 0.0017401005426647131
+    },
+    "slices": {
+      "actions": [
+        {
+          "action": 2,
+          "behavior_prob_mean": 0.101620784880281,
+          "behavior_prob_min": 0.07632959390848924,
+          "count": 45,
+          "ratio_mean": 3.2916943938539287
+        },
+        {
+          "action": 3,
+          "behavior_prob_mean": 0.16324723041179753,
+          "behavior_prob_min": 0.08960169356760034,
+          "count": 89,
+          "ratio_mean": 2.4755966661413296
+        },
+        {
+          "action": 0,
+          "behavior_prob_mean": 0.49512616816592925,
+          "behavior_prob_min": 0.13054535785315619,
+          "count": 182,
+          "ratio_mean": 0.11110709257037596
+        },
+        {
+          "action": 1,
+          "behavior_prob_mean": 0.45837060390429074,
+          "behavior_prob_min": 0.24742608606524297,
+          "count": 184,
+          "ratio_mean": 0.7349010421427479
+        }
+      ]
+    },
+    "weights": {
+      "kurtosis": -1.0233732664145163,
+      "max": 3.5684002030806057,
+      "mean": 1.0477952672241582,
+      "min": 0.04705472051726874,
+      "q95": 3.3050985744459047,
+      "q99": 3.5684002030806057,
+      "recommended_clip": 3.5684002030806057,
+      "skew": 0.7313077102896869,
+      "std": 1.1825346419140357,
+      "tail_fraction": 0.0
+    }
+  },
+  "estimates": [
+    {
+      "assumptions_checked": [
+        "sequential_ignorability",
+        "overlap",
+        "behavior_policy_known"
+      ],
+      "assumptions_flagged": [],
+      "ci": [
+        -0.1568200117176415,
+        0.10235142633271485
+      ],
+      "diagnostics": {
+        "ess": {
+          "ess": 219.90368752119898,
+          "ess_ratio": 0.439807375042398
+        },
+        "max_weight": 3.5684002030806057,
+        "model": {},
+        "overlap": {
+          "fraction_behavior_below_threshold": 0.0,
+          "fraction_target_below_threshold": 0.0,
+          "min_behavior_prob": 0.07632959390848924,
+          "min_target_prob": 0.026157231486371814,
+          "ratio_max": 3.5684002030806057,
+          "ratio_min": 0.04705472051726874,
+          "ratio_q50": 0.18765879697154786,
+          "ratio_q90": 2.6244420066388168,
+          "ratio_q99": 3.5684002030806057,
+          "support_violations": 0
+        },
+        "weights": {
+          "kurtosis": -1.0233732664145163,
+          "max": 3.5684002030806057,
+          "mean": 1.0477952672241582,
+          "min": 0.04705472051726874,
+          "q95": 3.3050985744459047,
+          "q99": 3.5684002030806057,
+          "recommended_clip": 3.5684002030806057,
+          "skew": 0.7313077102896869,
+          "std": 1.1825346419140357,
+          "tail_fraction": 0.0
+        }
+      },
+      "estimator": "IS",
+      "lower_bound": -0.1568200117176415,
+      "metadata": {
+        "clip_rho": null,
+        "diagnostics_keys": [
+          "overlap",
+          "ess",
+          "weights",
+          "max_weight",
+          "model"
+        ],
+        "estimator": "IS",
+        "normalize": false,
+        "num_samples": 500,
+        "required_fields": [
+          "behavior_action_probs"
+        ],
+        "use_log_weights": true
+      },
+      "stderr": 0.06611637767190308,
+      "upper_bound": 0.10235142633271485,
+      "value": -0.027234292692463326,
+      "warnings": []
+    },
+    {
+      "assumptions_checked": [
+        "sequential_ignorability",
+        "overlap",
+        "behavior_policy_known"
+      ],
+      "assumptions_flagged": [],
+      "ci": [
+        -0.14834037829110347,
+        0.09635638190483803
+      ],
+      "diagnostics": {
+        "ess": {
+          "ess": 219.90368752119898,
+          "ess_ratio": 0.439807375042398
+        },
+        "max_weight": 3.5684002030806057,
+        "model": {},
+        "overlap": {
+          "fraction_behavior_below_threshold": 0.0,
+          "fraction_target_below_threshold": 0.0,
+          "min_behavior_prob": 0.07632959390848924,
+          "min_target_prob": 0.026157231486371814,
+          "ratio_max": 3.5684002030806057,
+          "ratio_min": 0.04705472051726874,
+          "ratio_q50": 0.18765879697154786,
+          "ratio_q90": 2.6244420066388168,
+          "ratio_q99": 3.5684002030806057,
+          "support_violations": 0
+        },
+        "weights": {
+          "kurtosis": -1.0233732664145163,
+          "max": 3.5684002030806057,
+          "mean": 1.0477952672241582,
+          "min": 0.04705472051726874,
+          "q95": 3.3050985744459047,
+          "q99": 3.5684002030806057,
+          "recommended_clip": 3.5684002030806057,
+          "skew": 0.7313077102896869,
+          "std": 1.1825346419140357,
+          "tail_fraction": 0.0
+        }
+      },
+      "estimator": "WIS",
+      "lower_bound": -0.14834037829110347,
+      "metadata": {
+        "clip_rho": null,
+        "diagnostics_keys": [
+          "overlap",
+          "ess",
+          "weights",
+          "max_weight",
+          "model"
+        ],
+        "estimator": "WIS",
+        "num_samples": 500,
+        "required_fields": [
+          "behavior_action_probs"
+        ],
+        "use_log_weights": true
+      },
+      "stderr": 0.06242378995891721,
+      "upper_bound": 0.09635638190483803,
+      "value": -0.025991998193132713,
+      "warnings": []
+    }
+  ],
+  "figures": [],
+  "metadata": {
+    "baseline_policy_name": null,
+    "configs": {
+      "diagnostics": "default",
+      "estimators": [
+        "IS",
+        "WIS"
+      ],
+      "inference": {},
+      "sensitivity": {}
+    },
+    "dataset_fingerprint": "87253ebe7de8254bb453ce5442e70c252f3a603c32a906a05045e40a376bae0b",
+    "dataset_summary": {
+      "action_space_n": 4,
+      "behavior_action_probs_present": true,
+      "behavior_prob_max": 0.5821445995016145,
+      "behavior_prob_min": 0.07632959390848924,
+      "context_dim": 1,
+      "num_samples": 500,
+      "reward_max": 1.4403512335110324,
+      "reward_mean": -0.2375694002833386,
+      "reward_min": -1.551239008736725,
+      "reward_std": 0.7335348450022354,
+      "type": "bandit"
+    },
+    "environment": {
+      "package_versions": {
+        "causalrl": "0.1.0",
+        "numpy": "2.4.1",
+        "pandas": "2.3.3",
+        "torch": "2.9.1"
+      },
+      "platform": "macOS-15.6.1-arm64-arm-64bit",
+      "python_version": "3.11.9 | packaged by conda-forge | (main, Apr 19 2024, 18:34:54) [Clang 16.0.6 ]"
+    },
+    "estimand": "PolicyValueEstimand(policy=TabularPolicy, discount=1.0, horizon=1, assumptions=[\u0027behavior_policy_known\u0027, \u0027overlap\u0027, \u0027sequential_ignorability\u0027])",
+    "generated_at": "2026-01-24T00:07:16.891348+00:00",
+    "git_sha": null,
+    "package_version": "0.1.0",
+    "policy_name": "TabularPolicy",
+    "run_name": null,
+    "seed": 0
+  },
+  "mode": "ope",
+  "schema_version": "1.0",
+  "sensitivity": null,
+  "tables": {},
+  "warnings": []
+}</pre>
+      </details>
+    </section>
+  </div>
+
+  <div class="crl-modal" hidden>
+    <div class="crl-modal-content" role="dialog" aria-modal="true" aria-label="Figure viewer">
+      <button class="crl-btn crl-modal-close" data-modal-close>Close</button>
+      <h3 class="crl-modal-title"></h3>
+      <img class="crl-modal-image" alt="" />
+    </div>
+  </div>
+
+  <script type="application/json" id="crl-report-data">{"schema_version": "1.0", "mode": "ope", "metadata": {"run_name": null, "generated_at": "2026-01-24T00:07:16.891348+00:00", "package_version": "0.1.0", "git_sha": null, "dataset_fingerprint": "87253ebe7de8254bb453ce5442e70c252f3a603c32a906a05045e40a376bae0b", "dataset_summary": {"type": "bandit", "num_samples": 500, "context_dim": 1, "action_space_n": 4, "behavior_action_probs_present": true, "reward_mean": -0.2375694002833386, "reward_std": 0.7335348450022354, "reward_min": -1.551239008736725, "reward_max": 1.4403512335110324, "behavior_prob_min": 0.07632959390848924, "behavior_prob_max": 0.5821445995016145}, "policy_name": "TabularPolicy", "baseline_policy_name": null, "estimand": "PolicyValueEstimand(policy=TabularPolicy, discount=1.0, horizon=1, assumptions=['behavior_policy_known', 'overlap', 'sequential_ignorability'])", "seed": 0, "configs": {"inference": {}, "diagnostics": "default", "sensitivity": {}, "estimators": ["IS", "WIS"]}, "environment": {"python_version": "3.11.9 | packaged by conda-forge | (main, Apr 19 2024, 18:34:54) [Clang 16.0.6 ]", "platform": "macOS-15.6.1-arm64-arm-64bit", "package_versions": {"numpy": "2.4.1", "pandas": "2.3.3", "torch": "2.9.1", "causalrl": "0.1.0"}}}, "estimates": [{"estimator": "IS", "value": -0.027234292692463326, "stderr": 0.06611637767190308, "ci": [-0.1568200117176415, 0.10235142633271485], "lower_bound": -0.1568200117176415, "upper_bound": 0.10235142633271485, "assumptions_checked": ["sequential_ignorability", "overlap", "behavior_policy_known"], "assumptions_flagged": [], "warnings": [], "diagnostics": {"overlap": {"min_behavior_prob": 0.07632959390848924, "min_target_prob": 0.026157231486371814, "fraction_behavior_below_threshold": 0.0, "fraction_target_below_threshold": 0.0, "ratio_min": 0.04705472051726874, "ratio_max": 3.5684002030806057, "ratio_q50": 0.18765879697154786, "ratio_q90": 2.6244420066388168, "ratio_q99": 3.5684002030806057, "support_violations": 0}, "ess": {"ess": 219.90368752119898, "ess_ratio": 0.439807375042398}, "weights": {"min": 0.04705472051726874, "max": 3.5684002030806057, "mean": 1.0477952672241582, "std": 1.1825346419140357, "q95": 3.3050985744459047, "q99": 3.5684002030806057, "skew": 0.7313077102896869, "kurtosis": -1.0233732664145163, "tail_fraction": 0.0, "recommended_clip": 3.5684002030806057}, "max_weight": 3.5684002030806057, "model": {}}, "metadata": {"estimator": "IS", "num_samples": 500, "clip_rho": null, "use_log_weights": true, "normalize": false, "required_fields": ["behavior_action_probs"], "diagnostics_keys": ["overlap", "ess", "weights", "max_weight", "model"]}}, {"estimator": "WIS", "value": -0.025991998193132713, "stderr": 0.06242378995891721, "ci": [-0.14834037829110347, 0.09635638190483803], "lower_bound": -0.14834037829110347, "upper_bound": 0.09635638190483803, "assumptions_checked": ["sequential_ignorability", "overlap", "behavior_policy_known"], "assumptions_flagged": [], "warnings": [], "diagnostics": {"overlap": {"min_behavior_prob": 0.07632959390848924, "min_target_prob": 0.026157231486371814, "fraction_behavior_below_threshold": 0.0, "fraction_target_below_threshold": 0.0, "ratio_min": 0.04705472051726874, "ratio_max": 3.5684002030806057, "ratio_q50": 0.18765879697154786, "ratio_q90": 2.6244420066388168, "ratio_q99": 3.5684002030806057, "support_violations": 0}, "ess": {"ess": 219.90368752119898, "ess_ratio": 0.439807375042398}, "weights": {"min": 0.04705472051726874, "max": 3.5684002030806057, "mean": 1.0477952672241582, "std": 1.1825346419140357, "q95": 3.3050985744459047, "q99": 3.5684002030806057, "skew": 0.7313077102896869, "kurtosis": -1.0233732664145163, "tail_fraction": 0.0, "recommended_clip": 3.5684002030806057}, "max_weight": 3.5684002030806057, "model": {}}, "metadata": {"estimator": "WIS", "num_samples": 500, "clip_rho": null, "use_log_weights": true, "required_fields": ["behavior_action_probs"], "diagnostics_keys": ["overlap", "ess", "weights", "max_weight", "model"]}}], "diagnostics": {"overlap": {"min_behavior_prob": 0.07632959390848924, "min_target_prob": 0.026157231486371814, "fraction_behavior_below_threshold": 0.0, "fraction_target_below_threshold": 0.0, "ratio_min": 0.04705472051726874, "ratio_max": 3.5684002030806057, "ratio_q50": 0.18765879697154786, "ratio_q90": 2.6244420066388168, "ratio_q99": 3.5684002030806057, "support_violations": 0}, "ess": {"ess": 219.90368752119898, "ess_ratio": 0.439807375042398}, "weights": {"min": 0.04705472051726874, "max": 3.5684002030806057, "mean": 1.0477952672241582, "std": 1.1825346419140357, "q95": 3.3050985744459047, "q99": 3.5684002030806057, "skew": 0.7313077102896869, "kurtosis": -1.0233732664145163, "tail_fraction": 0.0, "recommended_clip": 3.5684002030806057}, "shift": {"mmd_rbf": 0.0017401005426647131, "mean_shift_norm": 0.008085046034013388, "cov_shift_fro": 0.0004537222094861404, "ess": 219.90368752119898}, "slices": {"actions": [{"action": 2, "count": 45, "behavior_prob_min": 0.07632959390848924, "behavior_prob_mean": 0.101620784880281, "ratio_mean": 3.2916943938539287}, {"action": 3, "count": 89, "behavior_prob_min": 0.08960169356760034, "behavior_prob_mean": 0.16324723041179753, "ratio_mean": 2.4755966661413296}, {"action": 0, "count": 182, "behavior_prob_min": 0.13054535785315619, "behavior_prob_mean": 0.49512616816592925, "ratio_mean": 0.11110709257037596}, {"action": 1, "count": 184, "behavior_prob_min": 0.24742608606524297, "behavior_prob_mean": 0.45837060390429074, "ratio_mean": 0.7349010421427479}]}, "calibration": {"available": false}}, "sensitivity": null, "figures": [], "warnings": [], "tables": {}}</script>
+  
+  <script>
+  (function () {
+  const dataEl = document.getElementById("crl-report-data");
+  const payload = dataEl ? JSON.parse(dataEl.textContent || "{}") : {};
+
+  function download(filename, text, type) {
+    const blob = new Blob([text], { type: type || "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  const jsonBtn = document.querySelector("[data-download-json]");
+  if (jsonBtn) {
+    jsonBtn.addEventListener("click", () => {
+      download("report.json", JSON.stringify(payload, null, 2), "application/json");
+    });
+  }
+
+  const csvBtn = document.querySelector("[data-download-csv]");
+  if (csvBtn) {
+    csvBtn.addEventListener("click", () => {
+      const rows = payload.estimates || [];
+      const headers = ["estimator", "value", "stderr", "lower_bound", "upper_bound"];
+      const lines = [headers.join(",")];
+      rows.forEach((row) => {
+        const line = headers.map((key) => {
+          const val = row[key];
+          return typeof val === "string" ? `"${val.replace(/"/g, '""')}"` : (val ?? "");
+        });
+        lines.push(line.join(","));
+      });
+      download("summary.csv", lines.join("\n"), "text/csv");
+    });
+  }
+
+  document.querySelectorAll("table[data-sortable]").forEach((table) => {
+    const tbody = table.querySelector("tbody");
+    const headers = table.querySelectorAll("thead th");
+    headers.forEach((header, index) => {
+      header.addEventListener("click", () => {
+        const type = header.getAttribute("data-type") || "text";
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const asc = !header.classList.contains("sorted-asc");
+        headers.forEach((h) => h.classList.remove("sorted-asc", "sorted-desc"));
+        header.classList.add(asc ? "sorted-asc" : "sorted-desc");
+        rows.sort((a, b) => {
+          const aText = a.children[index].textContent.trim();
+          const bText = b.children[index].textContent.trim();
+          if (type === "number") {
+            const aNum = parseFloat(aText || "0");
+            const bNum = parseFloat(bText || "0");
+            return asc ? aNum - bNum : bNum - aNum;
+          }
+          return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+  });
+
+  const modal = document.querySelector(".crl-modal");
+  const modalImage = document.querySelector(".crl-modal-image");
+  const modalTitle = document.querySelector(".crl-modal-title");
+  const closeBtn = document.querySelector("[data-modal-close]");
+
+  function closeModal() {
+    if (!modal) return;
+    modal.hidden = true;
+  }
+
+  document.querySelectorAll("[data-figure-src]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!modal || !modalImage || !modalTitle) return;
+      modalImage.src = btn.getAttribute("data-figure-src");
+      modalTitle.textContent = btn.getAttribute("data-figure-title") || "Figure";
+      modal.hidden = false;
+    });
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeModal);
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeModal();
+    }
+  });
+})();
+
+  </script>
+  
+</body>
+</html>

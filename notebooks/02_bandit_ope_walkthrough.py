@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: .venv
 #     language: python
 #     name: python3
 # ---
@@ -23,7 +23,7 @@
 # ## Setup
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -34,7 +34,7 @@ from pathlib import Path
 import numpy as np
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.behavior import BehaviorPolicyFit, behavior_diagnostics, fit_behavior_policy
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -62,7 +62,7 @@ estimand = PolicyValueEstimand(
     policy=benchmark.target_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 
 report = evaluate(
@@ -94,6 +94,15 @@ extra_diag["propensity"]
 # %%
 dataset_est = behavior_fit.apply(dataset)
 dataset_est.describe()
+
+# %%
+print(
+    summary[["estimator", "value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+best = summary.sort_values("stderr").iloc[0]
+print(f"Lowest stderr: {best['estimator']} (stderr={best['stderr']:.4f})")
 
 # %% [markdown]
 # ## Custom estimator configuration

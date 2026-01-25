@@ -1,26 +1,43 @@
 # Marginalized Importance Sampling (MIS)
 
+Implementation: `crl.estimators.mis.MarginalizedImportanceSamplingEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
 - Overlap/positivity
-- Markov
+- Markov property
+
+## Requires
+
+- `TrajectoryDataset` with `state_space_n`
+
+## Diagnostics to check
+
+- `overlap.support_violations`
+- `ess.ess_ratio`
 
 ## Formula
 
-MIS replaces cumulative ratios with marginal action ratios at each time step:
+MIS replaces cumulative importance ratios with marginal state-action ratios computed from counts.
 
-$\hat V = \frac{1}{n} \sum_i \sum_t \gamma^t \frac{\pi(a_{it}|s_{it})}{\hat\mu_t(a_{it}|s_{it})} r_{it}$.
+## Uncertainty
+
+- Normal-approximation CI by default.
+- Bootstrap CI available via `bootstrap=True`.
 
 ## Failure modes
 
-- Requires discrete state representation or density estimation.
-- Sensitive to small counts per state/time.
+- Requires discrete state space; sparse counts can inflate variance.
+
+## Minimal example
+
+```python
+from crl.estimators.mis import MarginalizedImportanceSamplingEstimator
+
+report = MarginalizedImportanceSamplingEstimator(estimand).estimate(dataset)
+```
 
 ## References
 
 - Xie et al. (2019)
-
-## Notebook
-
-- [06_long_horizon_mis_vs_is.ipynb](../../notebooks/06_long_horizon_mis_vs_is.ipynb)

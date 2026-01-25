@@ -13,13 +13,13 @@ trajectory data changes estimator behavior and diagnostics.
 
 ```python
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 benchmark = SyntheticMDP(SyntheticMDPConfig(seed=0, horizon=5))
 dataset = benchmark.sample(num_trajectories=300, seed=1)
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 ```
 
 ## Notebook
 
-- [03_mdp_ope_walkthrough.ipynb](../notebooks/03_mdp_ope_walkthrough.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/03_mdp_ope_walkthrough.ipynb)

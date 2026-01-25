@@ -7,8 +7,13 @@ bridge functions.
 ## Assumptions
 
 - Proxy variables are correlated with the unobserved confounder.
-- Bridge functions are correctly specified.
+- Bridge functions are identifiable and well-posed.
 - Sufficient variability to solve the moment conditions.
+
+## Practical guidance
+
+- Use `ProximalPolicyValueEstimand` to make proximal assumptions explicit.
+- Inspect bridge fit diagnostics (MSE, conditioning) before trusting estimates.
 
 ## Limitations
 

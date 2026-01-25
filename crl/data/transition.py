@@ -187,6 +187,18 @@ class TransitionDataset:
             )
         return summary
 
+    def summary(self) -> dict[str, Any]:
+        """Alias for describe()."""
+
+        return self.describe()
+
+    def fingerprint(self) -> str:
+        """Return a stable fingerprint for the dataset."""
+
+        from crl.data.fingerprint import fingerprint_dataset
+
+        return fingerprint_dataset(self)
+
     def to_trajectory(self) -> TrajectoryDataset:
         """Convert transitions to a TrajectoryDataset if episodes are known."""
 
@@ -247,6 +259,104 @@ class TransitionDataset:
             action_space_n=int(self.action_space_n),
             state_space_n=state_space_n,
             metadata=self.metadata,
+        )
+
+    @classmethod
+    def from_dataframe(
+        cls,
+        df: Any,
+        *,
+        state_columns: list[str],
+        next_state_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        done_column: str = "done",
+        behavior_prob_column: str | None = None,
+        episode_id_column: str | None = None,
+        timestep_column: str | None = None,
+        discount: float = 1.0,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TransitionDataset":
+        """Create a TransitionDataset from a pandas DataFrame."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_dataframe().") from exc
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("df must be a pandas DataFrame.")
+        if not state_columns or not next_state_columns:
+            raise ValueError("state_columns and next_state_columns must be non-empty.")
+        required = [action_column, reward_column, done_column]
+        for col in required + state_columns + next_state_columns:
+            if col not in df.columns:
+                raise ValueError(f"Missing required column: {col}")
+
+        states = df[state_columns].to_numpy()
+        next_states = df[next_state_columns].to_numpy()
+        actions = df[action_column].to_numpy()
+        rewards = df[reward_column].to_numpy()
+        dones = df[done_column].to_numpy()
+        behavior = (
+            df[behavior_prob_column].to_numpy()
+            if behavior_prob_column is not None
+            else None
+        )
+        episode_ids = df[episode_id_column].to_numpy() if episode_id_column else None
+        timesteps = df[timestep_column].to_numpy() if timestep_column else None
+
+        return cls(
+            states=states,
+            actions=actions,
+            rewards=rewards,
+            next_states=next_states,
+            dones=dones,
+            behavior_action_probs=behavior,
+            discount=float(discount),
+            action_space_n=action_space_n,
+            episode_ids=episode_ids,
+            timesteps=timesteps,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str,
+        *,
+        state_columns: list[str],
+        next_state_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        done_column: str = "done",
+        behavior_prob_column: str | None = None,
+        episode_id_column: str | None = None,
+        timestep_column: str | None = None,
+        discount: float = 1.0,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TransitionDataset":
+        """Create a TransitionDataset from a parquet file."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_parquet().") from exc
+        df = pd.read_parquet(path)
+        return cls.from_dataframe(
+            df,
+            state_columns=state_columns,
+            next_state_columns=next_state_columns,
+            action_column=action_column,
+            reward_column=reward_column,
+            done_column=done_column,
+            behavior_prob_column=behavior_prob_column,
+            episode_id_column=episode_id_column,
+            timestep_column=timestep_column,
+            discount=discount,
+            action_space_n=action_space_n,
+            metadata=metadata,
         )
 
     def __repr__(self) -> str:

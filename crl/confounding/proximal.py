@@ -8,7 +8,20 @@ from typing import Any
 import numpy as np
 
 from crl.data.datasets import LoggedBanditDataset
+from crl.estimands.proximal_policy_value import ProximalPolicyValueEstimand
+from crl.estimators.base import (
+    DiagnosticsConfig,
+    EstimatorReport,
+    OPEEstimator,
+    compute_ci,
+)
+from crl.estimators.stats import mean_stderr
 from crl.policies.base import Policy
+from crl.utils.validation import (
+    require_finite,
+    require_in_unit_interval,
+    require_ndarray,
+)
 
 
 @dataclass
@@ -23,6 +36,30 @@ class ProximalBanditDataset:
     behavior_action_probs: np.ndarray | None
     action_space_n: int
     metadata: dict[str, Any] | None = None
+
+    def __post_init__(self) -> None:
+        self.validate()
+
+    def validate(self) -> None:
+        """Validate shapes and value ranges for proximal bandit data."""
+
+        require_ndarray("contexts", self.contexts)
+        require_ndarray("actions", self.actions)
+        require_ndarray("rewards", self.rewards)
+        require_ndarray("proxy_treatment", self.proxy_treatment)
+        require_ndarray("proxy_outcome", self.proxy_outcome)
+        if self.behavior_action_probs is not None:
+            require_ndarray("behavior_action_probs", self.behavior_action_probs)
+
+        require_finite("contexts", self.contexts)
+        require_finite("rewards", self.rewards)
+        require_finite("proxy_treatment", self.proxy_treatment)
+        require_finite("proxy_outcome", self.proxy_outcome)
+        if self.behavior_action_probs is not None:
+            require_finite("behavior_action_probs", self.behavior_action_probs)
+            require_in_unit_interval(
+                "behavior_action_probs", self.behavior_action_probs
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -85,6 +122,84 @@ class ProximalBanditEstimator:
             proxy_o, contexts, policy_probs, data.action_space_n
         )
         return float(np.mean(expected_phi @ theta))
+
+
+class ProximalOPEEstimator(OPEEstimator):
+    """Proximal OPE estimator that returns an EstimatorReport."""
+
+    required_assumptions = ["bridge_identifiable"]
+    required_fields = ["proxy_treatment", "proxy_outcome"]
+    diagnostics_keys = ["model"]
+
+    def __init__(
+        self,
+        estimand: ProximalPolicyValueEstimand,
+        run_diagnostics: bool = True,
+        diagnostics_config: DiagnosticsConfig | None = None,
+        config: ProximalConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
+    ) -> None:
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
+        self.config = config or ProximalConfig()
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
+
+    def estimate(self, data: ProximalBanditDataset) -> EstimatorReport:
+        self._validate_dataset(data)
+
+        contexts = np.asarray(data.contexts)
+        actions = np.asarray(data.actions).astype(int)
+        rewards = np.asarray(data.rewards, dtype=float)
+        proxy_t = np.asarray(data.proxy_treatment, dtype=float)
+        proxy_o = np.asarray(data.proxy_outcome, dtype=float)
+
+        phi = _bridge_features(proxy_o, actions, contexts)
+        psi = _instrument_features(proxy_t, actions, contexts)
+
+        xtx = psi.T @ phi + self.config.ridge * np.eye(phi.shape[1])
+        xty = psi.T @ rewards
+        theta = np.linalg.solve(xtx, xty)
+
+        policy_probs = self.estimand.policy.action_probs(contexts)
+        expected_phi = _expected_bridge_features(
+            proxy_o, contexts, policy_probs, data.action_space_n
+        )
+        per_sample_values = expected_phi @ theta
+        value = float(np.mean(per_sample_values))
+        stderr = mean_stderr(per_sample_values)
+
+        residuals = rewards - phi @ theta
+        diagnostics = {
+            "model": {
+                "bridge_mse": float(np.mean(residuals**2)),
+                "bridge_condition": float(np.linalg.cond(xtx)),
+            }
+        }
+
+        return self._build_report(
+            value=value,
+            stderr=stderr,
+            ci=compute_ci(value, stderr),
+            diagnostics=diagnostics,
+            warnings=[],
+            metadata={
+                "estimator": "ProximalOPE",
+                "config": self.config.__dict__,
+            },
+            data=data,
+        )
 
 
 def _bridge_features(

@@ -171,10 +171,127 @@ class LoggedBanditDataset:
             )
         return summary
 
+    def summary(self) -> dict[str, Any]:
+        """Alias for describe()."""
+
+        return self.describe()
+
+    def fingerprint(self) -> str:
+        """Return a stable fingerprint for the dataset."""
+
+        from crl.data.fingerprint import fingerprint_dataset
+
+        return fingerprint_dataset(self)
+
     def __repr__(self) -> str:
         return (
             "LoggedBanditDataset(num_samples="
             f"{self.num_samples}, action_space_n={self.action_space_n})"
+        )
+
+    @classmethod
+    def from_numpy(
+        cls,
+        *,
+        contexts: np.ndarray,
+        actions: np.ndarray,
+        rewards: np.ndarray,
+        behavior_action_probs: np.ndarray | None = None,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "LoggedBanditDataset":
+        """Create a LoggedBanditDataset from numpy arrays."""
+
+        contexts_arr = np.asarray(contexts)
+        actions_arr = np.asarray(actions)
+        rewards_arr = np.asarray(rewards)
+        behavior_arr = (
+            np.asarray(behavior_action_probs)
+            if behavior_action_probs is not None
+            else None
+        )
+        if action_space_n is None:
+            if actions_arr.size == 0:
+                raise ValueError("action_space_n is required for empty action arrays.")
+            action_space_n = int(np.max(actions_arr)) + 1
+        return cls(
+            contexts=contexts_arr,
+            actions=actions_arr,
+            rewards=rewards_arr,
+            behavior_action_probs=behavior_arr,
+            action_space_n=int(action_space_n),
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_dataframe(
+        cls,
+        df: Any,
+        *,
+        context_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "LoggedBanditDataset":
+        """Create a LoggedBanditDataset from a pandas DataFrame."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_dataframe().") from exc
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("df must be a pandas DataFrame.")
+        if not context_columns:
+            raise ValueError("context_columns must contain at least one column name.")
+        for col in context_columns + [action_column, reward_column]:
+            if col not in df.columns:
+                raise ValueError(f"Missing required column: {col}")
+        contexts = df[context_columns].to_numpy()
+        actions = df[action_column].to_numpy()
+        rewards = df[reward_column].to_numpy()
+        behavior = None
+        if behavior_prob_column is not None:
+            if behavior_prob_column not in df.columns:
+                raise ValueError(f"Missing column: {behavior_prob_column}")
+            behavior = df[behavior_prob_column].to_numpy()
+        return cls.from_numpy(
+            contexts=contexts,
+            actions=actions,
+            rewards=rewards,
+            behavior_action_probs=behavior,
+            action_space_n=action_space_n,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str,
+        *,
+        context_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        action_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "LoggedBanditDataset":
+        """Create a LoggedBanditDataset from a parquet file."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_parquet().") from exc
+        df = pd.read_parquet(path)
+        return cls.from_dataframe(
+            df,
+            context_columns=context_columns,
+            action_column=action_column,
+            reward_column=reward_column,
+            behavior_prob_column=behavior_prob_column,
+            action_space_n=action_space_n,
+            metadata=metadata,
         )
 
     @classmethod
@@ -420,10 +537,204 @@ class TrajectoryDataset:
             )
         return summary
 
+    def summary(self) -> dict[str, Any]:
+        """Alias for describe()."""
+
+        return self.describe()
+
+    def fingerprint(self) -> str:
+        """Return a stable fingerprint for the dataset."""
+
+        from crl.data.fingerprint import fingerprint_dataset
+
+        return fingerprint_dataset(self)
+
     def __repr__(self) -> str:
         return (
             "TrajectoryDataset(num_trajectories="
             f"{self.num_trajectories}, horizon={self.horizon}, action_space_n={self.action_space_n})"
+        )
+
+    @classmethod
+    def from_numpy(
+        cls,
+        *,
+        observations: np.ndarray,
+        actions: np.ndarray,
+        rewards: np.ndarray,
+        next_observations: np.ndarray,
+        mask: np.ndarray | None = None,
+        discount: float,
+        action_space_n: int | None = None,
+        behavior_action_probs: np.ndarray | None = None,
+        state_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TrajectoryDataset":
+        """Create a TrajectoryDataset from numpy arrays."""
+
+        obs_arr = np.asarray(observations)
+        actions_arr = np.asarray(actions)
+        rewards_arr = np.asarray(rewards)
+        next_obs_arr = np.asarray(next_observations)
+        behavior_arr = (
+            np.asarray(behavior_action_probs)
+            if behavior_action_probs is not None
+            else None
+        )
+        if mask is None:
+            mask_arr = np.ones_like(actions_arr, dtype=bool)
+        else:
+            mask_arr = np.asarray(mask, dtype=bool)
+        if action_space_n is None:
+            if actions_arr.size == 0:
+                raise ValueError("action_space_n is required for empty action arrays.")
+            action_space_n = int(np.max(actions_arr)) + 1
+        return cls(
+            observations=obs_arr,
+            actions=actions_arr,
+            rewards=rewards_arr,
+            next_observations=next_obs_arr,
+            behavior_action_probs=behavior_arr,
+            mask=mask_arr,
+            discount=float(discount),
+            action_space_n=int(action_space_n),
+            state_space_n=state_space_n,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_dataframe(
+        cls,
+        df: Any,
+        *,
+        episode_id_column: str = "episode_id",
+        timestep_column: str = "timestep",
+        observation_columns: list[str],
+        next_observation_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        discount: float = 1.0,
+        action_space_n: int | None = None,
+        state_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TrajectoryDataset":
+        """Create a TrajectoryDataset from a long-form pandas DataFrame."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_dataframe().") from exc
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("df must be a pandas DataFrame.")
+        required = [
+            episode_id_column,
+            timestep_column,
+            action_column,
+            reward_column,
+        ]
+        for col in required:
+            if col not in df.columns:
+                raise ValueError(f"Missing required column: {col}")
+        if not observation_columns or not next_observation_columns:
+            raise ValueError("Observation column lists must be non-empty.")
+        for col in observation_columns + next_observation_columns:
+            if col not in df.columns:
+                raise ValueError(f"Missing required column: {col}")
+
+        df_sorted = df.sort_values([episode_id_column, timestep_column])
+        episodes = df_sorted[episode_id_column].to_numpy()
+        timesteps = df_sorted[timestep_column].to_numpy()
+        obs_values = df_sorted[observation_columns].to_numpy()
+        next_values = df_sorted[next_observation_columns].to_numpy()
+        actions_values = df_sorted[action_column].to_numpy()
+        rewards_values = df_sorted[reward_column].to_numpy()
+        behavior_values = (
+            df_sorted[behavior_prob_column].to_numpy()
+            if behavior_prob_column is not None
+            else None
+        )
+
+        unique_eps = np.unique(episodes)
+        num_traj = unique_eps.size
+        horizon = int(np.max(timesteps)) + 1
+        obs_dim = obs_values.shape[1]
+        next_dim = next_values.shape[1]
+
+        obs = np.zeros((num_traj, horizon, obs_dim), dtype=obs_values.dtype)
+        next_obs = np.zeros((num_traj, horizon, next_dim), dtype=next_values.dtype)
+        actions = np.zeros((num_traj, horizon), dtype=actions_values.dtype)
+        rewards = np.zeros((num_traj, horizon), dtype=rewards_values.dtype)
+        mask = np.zeros((num_traj, horizon), dtype=bool)
+        behavior_probs = (
+            np.zeros((num_traj, horizon), dtype=behavior_values.dtype)
+            if behavior_values is not None
+            else None
+        )
+
+        index_map = {int(ep): idx for idx, ep in enumerate(unique_eps)}
+        for idx in range(episodes.shape[0]):
+            ep = index_map[int(episodes[idx])]
+            t = int(timesteps[idx])
+            obs[ep, t] = obs_values[idx]
+            next_obs[ep, t] = next_values[idx]
+            actions[ep, t] = actions_values[idx]
+            rewards[ep, t] = rewards_values[idx]
+            mask[ep, t] = True
+            if behavior_probs is not None:
+                assert behavior_values is not None
+                behavior_probs[ep, t] = behavior_values[idx]
+
+        return cls.from_numpy(
+            observations=obs,
+            actions=actions,
+            rewards=rewards,
+            next_observations=next_obs,
+            behavior_action_probs=behavior_probs,
+            mask=mask,
+            discount=discount,
+            action_space_n=action_space_n,
+            state_space_n=state_space_n,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str,
+        *,
+        episode_id_column: str = "episode_id",
+        timestep_column: str = "timestep",
+        observation_columns: list[str],
+        next_observation_columns: list[str],
+        action_column: str = "action",
+        reward_column: str = "reward",
+        behavior_prob_column: str | None = None,
+        discount: float = 1.0,
+        action_space_n: int | None = None,
+        state_space_n: int | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> "TrajectoryDataset":
+        """Create a TrajectoryDataset from a parquet file."""
+
+        try:
+            import pandas as pd
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise ImportError("pandas is required for from_parquet().") from exc
+        df = pd.read_parquet(path)
+        return cls.from_dataframe(
+            df,
+            episode_id_column=episode_id_column,
+            timestep_column=timestep_column,
+            observation_columns=observation_columns,
+            next_observation_columns=next_observation_columns,
+            action_column=action_column,
+            reward_column=reward_column,
+            behavior_prob_column=behavior_prob_column,
+            discount=discount,
+            action_space_n=action_space_n,
+            state_space_n=state_space_n,
+            metadata=metadata,
         )
 
     @classmethod

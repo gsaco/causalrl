@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from typing import Any
 
@@ -26,12 +27,15 @@ class DualDICEConfig:
     normalize: bool = True
 
 
+DUALDICE_FEATURE_WARN_THRESHOLD = 5000
+
+
 class DualDICEEstimator(OPEEstimator):
     """DualDICE estimator (Nachum et al., 2019) for discrete MDPs."""
 
     required_assumptions = ["sequential_ignorability", "markov"]
     required_fields = ["state_space_n"]
-    diagnostics_keys: list[str] = []
+    diagnostics_keys: list[str] = ["density_ratio"]
 
     def __init__(
         self,
@@ -39,9 +43,24 @@ class DualDICEEstimator(OPEEstimator):
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
         config: DualDICEConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
-        super().__init__(estimand, run_diagnostics, diagnostics_config)
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
         self.config = config or DualDICEConfig()
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         self._validate_dataset(data)
@@ -57,6 +76,12 @@ class DualDICEEstimator(OPEEstimator):
         gamma = data.discount
 
         num_features = num_states * num_actions
+        if num_features > DUALDICE_FEATURE_WARN_THRESHOLD:
+            warnings.warn(
+                "DualDICE builds dense one-hot features of size state_space_n * action_space_n. "
+                "Memory scales as O((S*A)^2); consider reducing state/action spaces or using another estimator.",
+                UserWarning,
+            )
         idx = obs.astype(int) * num_actions + actions.astype(int)
         idx = idx[mask]
 
@@ -93,15 +118,19 @@ class DualDICEEstimator(OPEEstimator):
         value = float(np.mean(traj_values))
         stderr = mean_stderr(traj_values)
 
-        diagnostics: dict[str, Any] = {}
-        warnings: list[str] = []
+        diagnostics: dict[str, Any] = {
+            "density_ratio": _ratio_stats(density_ratio)
+        }
+        warning_messages: list[str] = [
+            "Uncertainty for density-ratio estimators may be unreliable; interpret CI cautiously."
+        ]
 
         return self._build_report(
             value=value,
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
-            warnings=warnings,
+            warnings=warning_messages,
             metadata={"estimator": "DualDICE", "config": self.config.__dict__},
             data=data,
         )
@@ -126,3 +155,22 @@ class DualDICEEstimator(OPEEstimator):
         values = np.zeros((data.num_trajectories, data.horizon), dtype=float)
         values[mask] = values_flat
         return values.sum(axis=1)
+
+
+def _ratio_stats(values: np.ndarray) -> dict[str, float]:
+    values = np.asarray(values, dtype=float)
+    if values.size == 0:
+        return {
+            "min": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "q95": 0.0,
+            "q99": 0.0,
+        }
+    return {
+        "min": float(np.min(values)),
+        "max": float(np.max(values)),
+        "mean": float(np.mean(values)),
+        "q95": float(np.quantile(values, 0.95)),
+        "q99": float(np.quantile(values, 0.99)),
+    }

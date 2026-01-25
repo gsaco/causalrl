@@ -1,20 +1,47 @@
 # Fitted Q Evaluation (FQE)
 
+Implementation: `crl.estimators.fqe.FQEEstimator`
+
 ## Assumptions
 
 - Sequential ignorability
 - Overlap/positivity
-- Markov + function approximation
+- Markov property
+- Q-model realizability
+
+## Requires
+
+- `TrajectoryDataset`
+- `behavior_action_probs` optional (used only for diagnostics)
+
+## Diagnostics to check
+
+- `model.q_model_mse`
+- `model.bellman_residual_mse`
+- `overlap.support_violations` (if propensities provided)
 
 ## Formula
 
 FQE fits a Q-function by iterative Bellman regression on logged data, then
 estimates $V^\pi$ by averaging $\hat V(s_0)$ under the target policy.
 
+## Uncertainty
+
+- Normal-approximation CI by default.
+- Block bootstrap recommended for sequential dependence (`bootstrap=True`).
+
 ## Failure modes
 
 - Extrapolation error for out-of-distribution state-action pairs.
 - Sensitive to model capacity and optimization.
+
+## Minimal example
+
+```python
+from crl.estimators.fqe import FQEEstimator
+
+report = FQEEstimator(estimand).estimate(dataset)
+```
 
 ## Bootstrap notes
 
@@ -28,5 +55,5 @@ estimates $V^\pi$ by averaging $\hat V(s_0)$ under the target policy.
 
 ## Notebook
 
-- [03_mdp_ope_walkthrough.ipynb](../../notebooks/03_mdp_ope_walkthrough.ipynb)
-- [04_confidence_intervals_and_hcope.ipynb](../../notebooks/04_confidence_intervals_and_hcope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/03_mdp_ope_walkthrough.ipynb)
+- [04_confidence_intervals_and_hcope.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/04_confidence_intervals_and_hcope.ipynb)

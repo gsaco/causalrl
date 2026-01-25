@@ -7,6 +7,7 @@ from crl.utils.validation import (
     require_ndarray,
     require_same_length,
     require_shape,
+    validate_dataset,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "require_same_length",
     "require_shape",
     "set_seed",
+    "validate_dataset",
 ]

@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -29,7 +29,7 @@
 # Suggested environment:
 #
 # ```
-# pip install "causalrl[plots]"
+# pip install ".[plots]"
 # ```
 
 # %%
@@ -38,16 +38,25 @@ from __future__ import annotations
 import numpy as np
 
 from crl.assumptions import Assumption, AssumptionSet
-from crl.assumptions_catalog import CORRECT_MODEL, MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    CORRECT_MODEL,
+    MARKOV,
+    OVERLAP,
+    SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
+from crl.diagnostics.plots import plot_weight_histogram
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
 from crl.estimators.importance_sampling import ISEstimator
 from crl.policies import UniformPolicy
 from crl.utils.seeding import set_seed
+from crl.viz import configure_notebook_display
 
 # %%
 set_seed(0)
 np.random.seed(0)
+configure_notebook_display()
 
 # %% [markdown]
 # ## Custom assumptions
@@ -64,7 +73,7 @@ stationarity = Assumption(
     description="The environment dynamics do not drift during collection.",
 )
 
-assumptions = AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, stationarity])
+assumptions = AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, stationarity])
 assumptions.to_dict()
 
 # %% [markdown]
@@ -101,7 +110,7 @@ control_estimand = PolicyValueEstimand(
     policy=control_policy,
     discount=1.0,
     horizon=1,
-    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+    assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
 )
 
 contrast = PolicyContrastEstimand(treatment=estimand, control=control_estimand)
@@ -128,6 +137,34 @@ dataset_bad.behavior_action_probs = np.clip(
 
 report = ISEstimator(estimand).estimate(dataset_bad)
 report.diagnostics
+
+# %% [markdown]
+# ## Results snapshot
+#
+# The overlap stress test produces large weights. We summarize the estimate and
+# visualize the weight distribution.
+
+# %%
+summary = report.to_dataframe()
+print(
+    summary[["value", "lower_bound", "upper_bound"]]
+    .round(3)
+    .to_string(index=False)
+)
+summary
+
+# %%
+weights = (
+    benchmark.target_policy.action_prob(dataset_bad.contexts, dataset_bad.actions)
+    / dataset_bad.behavior_action_probs
+)
+fig_weights = plot_weight_histogram(
+    weights,
+    log_y=True,
+    title="Weight histogram under overlap stress",
+    clip_quantile=0.995,
+)
+fig_weights
 
 # %% [markdown]
 # ## Takeaways

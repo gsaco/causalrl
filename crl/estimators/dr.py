@@ -17,8 +17,10 @@ from crl.estimators.base import (
 )
 from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
+from crl.estimators.dr_core import dr_values_from_qv
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
+from crl.utils.cache import get_or_set
 
 
 @dataclass
@@ -141,7 +143,7 @@ class DoublyRobustEstimator(OPEEstimator):
     Estimand:
         PolicyValueEstimand for the target policy.
     Assumptions:
-        Sequential ignorability, overlap, and correct model specification.
+        Sequential ignorability, overlap, Markov property, and known behavior propensities.
     Inputs:
         TrajectoryDataset (n, t).
     Outputs:
@@ -150,7 +152,12 @@ class DoublyRobustEstimator(OPEEstimator):
         Bias if both the Q model and propensities are misspecified.
     """
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = ["overlap", "ess", "weights", "max_weight", "model"]
 
@@ -160,9 +167,24 @@ class DoublyRobustEstimator(OPEEstimator):
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
         config: DRCrossFitConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
-        super().__init__(estimand, run_diagnostics, diagnostics_config)
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
         self.config = config or DRCrossFitConfig()
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         """Estimate policy value via cross-fitted DR."""
@@ -220,27 +242,37 @@ class DoublyRobustEstimator(OPEEstimator):
     def _fit_q_model(
         self, data: TrajectoryDataset, indices: np.ndarray
     ) -> LinearQModel:
-        obs = data.observations[indices][data.mask[indices]]
-        next_obs = data.next_observations[indices][data.mask[indices]]
-        actions = data.actions[indices][data.mask[indices]]
-        rewards = data.rewards[indices][data.mask[indices]]
-        policy_probs_next = self.estimand.policy.action_probs(next_obs)
+        cache_key = (
+            "dr_q_model",
+            self.config.num_iterations,
+            self.config.ridge,
+            indices.tobytes(),
+        )
 
-        q_model = LinearQModel(
-            action_space_n=data.action_space_n,
-            state_space_n=data.state_space_n,
-            ridge=self.config.ridge,
-        )
-        q_model.fit(
-            observations=obs,
-            actions=actions,
-            rewards=rewards,
-            next_observations=next_obs,
-            policy_probs_next=policy_probs_next,
-            discount=data.discount,
-            num_iterations=self.config.num_iterations,
-        )
-        return q_model
+        def _build() -> LinearQModel:
+            obs = data.observations[indices][data.mask[indices]]
+            next_obs = data.next_observations[indices][data.mask[indices]]
+            actions = data.actions[indices][data.mask[indices]]
+            rewards = data.rewards[indices][data.mask[indices]]
+            policy_probs_next = self.estimand.policy.action_probs(next_obs)
+
+            q_model = LinearQModel(
+                action_space_n=data.action_space_n,
+                state_space_n=data.state_space_n,
+                ridge=self.config.ridge,
+            )
+            q_model.fit(
+                observations=obs,
+                actions=actions,
+                rewards=rewards,
+                next_observations=next_obs,
+                policy_probs_next=policy_probs_next,
+                discount=data.discount,
+                num_iterations=self.config.num_iterations,
+            )
+            return q_model
+
+        return get_or_set(data, cache_key, _build)
 
     def _dr_values(
         self, data: TrajectoryDataset, indices: np.ndarray, q_model: LinearQModel
@@ -267,12 +299,18 @@ class DoublyRobustEstimator(OPEEstimator):
         v_hat = q_model.predict_v(obs_flat, policy_probs_flat)
         v_hat_next = q_model.predict_v(next_obs_flat, policy_probs_next)
 
-        td_residual = rewards[mask] + data.discount * v_hat_next - q_hat
+        q_matrix = np.zeros_like(rewards, dtype=float)
+        v_matrix = np.zeros((rewards.shape[0], rewards.shape[1] + 1), dtype=float)
 
-        td_matrix = np.zeros_like(rewards, dtype=float)
-        v_matrix = np.zeros_like(rewards, dtype=float)
-        td_matrix[mask] = td_residual
-        v_matrix[mask] = v_hat
+        q_matrix[mask] = q_hat
+        v_matrix[:, :-1][mask] = v_hat
+        v_matrix[:, 1:][mask] = v_hat_next
 
-        dr_values = v_matrix[:, 0] + np.sum(cumulative * td_matrix, axis=1)
-        return dr_values
+        return dr_values_from_qv(
+            rewards=rewards,
+            mask=mask,
+            discount=data.discount,
+            cumulative_rho=cumulative,
+            v_hat=v_matrix,
+            q_hat=q_matrix,
+        )

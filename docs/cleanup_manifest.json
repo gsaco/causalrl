@@ -1,0 +1,93 @@
+[
+  {
+    "path": "docs/api",
+    "action": "archived",
+    "replacement": "docs/reference/api",
+    "reason": "Superseded API docs not linked in mkdocs navigation; duplicated content.",
+    "risk": "med"
+  },
+  {
+    "path": "docs/methods",
+    "action": "archived",
+    "replacement": "docs/reference/estimators",
+    "reason": "Legacy method summaries replaced by estimator reference and diagnostics docs; not in mkdocs nav.",
+    "risk": "med"
+  },
+  {
+    "path": "dist",
+    "action": "deleted",
+    "replacement": "dist/ (regenerate with python -m build)",
+    "reason": "Build artifacts; safe to regenerate.",
+    "risk": "low"
+  },
+  {
+    "path": "site",
+    "action": "deleted",
+    "replacement": "site/ (regenerate with mkdocs build)",
+    "reason": "MkDocs build output; safe to regenerate.",
+    "risk": "low"
+  },
+  {
+    "path": "causalrl.egg-info",
+    "action": "deleted",
+    "replacement": "causalrl.egg-info/ (regenerate with pip install -e .)",
+    "reason": "Editable-install metadata; safe to regenerate.",
+    "risk": "low"
+  },
+  {
+    "path": "docs/notebooks/docs/assets",
+    "action": "deleted",
+    "replacement": "docs/assets",
+    "reason": "Notebook outputs created from non-root working dir; no repo references.",
+    "risk": "low"
+  },
+  {
+    "path": "notebooks/docs/assets",
+    "action": "deleted",
+    "replacement": "docs/assets",
+    "reason": "Notebook outputs created from non-root working dir; no repo references.",
+    "risk": "low"
+  },
+  {
+    "path": ".DS_Store",
+    "action": "deleted",
+    "replacement": "none",
+    "reason": "OS metadata file.",
+    "risk": "low"
+  },
+  {
+    "path": "docs/.DS_Store",
+    "action": "deleted",
+    "replacement": "none",
+    "reason": "OS metadata file.",
+    "risk": "low"
+  },
+  {
+    "path": "docs/assets/.DS_Store",
+    "action": "deleted",
+    "replacement": "none",
+    "reason": "OS metadata file.",
+    "risk": "low"
+  },
+  {
+    "path": "docs/notebooks/docs",
+    "action": "deleted",
+    "replacement": "none",
+    "reason": "Empty directory left after removing generated assets.",
+    "risk": "low"
+  },
+  {
+    "path": "notebooks/docs",
+    "action": "deleted",
+    "replacement": "none",
+    "reason": "Empty directory left after removing generated assets.",
+    "risk": "low"
+  },
+  {
+    "path": "notebooks",
+    "action": "kept",
+    "replacement": "none",
+    "reason": "README and tutorials link to notebooks; contains jupytext .py sources.",
+    "risk": "high"
+  }
+]

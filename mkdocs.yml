@@ -1,25 +1,99 @@
-site_name: causalrl
+site_name: CausalRL
 repo_url: https://github.com/gsaco/causalrl
 site_url: https://gsaco.github.io/causalrl/
 theme:
   name: material
+  custom_dir: docs/overrides
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/chart-scatter-plot
+    repo: fontawesome/brands/github
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.instant
+    - navigation.instant.progress
+    - search.highlight
+    - search.suggest
+    - search.share
+    - toc.follow
+    - header.autohide
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
 nav:
   - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart (Bandit): getting-started/quickstart_bandit.md
+      - Quickstart (MDP): getting-started/quickstart_mdp.md
   - Tutorials:
       - Overview: tutorials/index.md
+      - Examples: tutorials/examples.md
       - Quickstart (Bandit): tutorials/quickstart_bandit.md
       - Quickstart (MDP): tutorials/quickstart_mdp.md
+      - Bandit OPE Script: tutorials/bandit_ope.md
+      - MDP OPE Script: tutorials/mdp_ope.md
+      - Benchmarks: tutorials/benchmarks.md
       - Diagnostics: tutorials/diagnostics.md
       - Confidence Intervals: tutorials/confidence_intervals.md
       - Sensitivity Analysis: tutorials/sensitivity.md
       - Long-Horizon MIS vs IS: tutorials/long_horizon_mis.md
       - Proximal OPE (Advanced): tutorials/proximal_ope.md
+  - Results:
+      - Gallery: results/gallery.md
+      - Report Preview: results/report_preview.md
   - How-to:
+      - Integrate Logged Data: how-to/integrate_logged_data.md
+      - Logged Bandit from DataFrame: how-to/logged_bandit_from_dataframe.md
+      - Trajectory Dataset from Parquet: how-to/trajectory_dataset_from_parquet.md
+      - Behavior Propensities Missing: how-to/behavior_propensities_missing.md
+      - Custom Policy Wrapper: how-to/custom_policy_wrapper.md
+      - Diagnostics Interpretation: how-to/diagnostics_interpretation.md
+      - Export and Reporting: how-to/export_and_reporting.md
+      - Benchmarking and Model Selection: how-to/benchmarking_and_model_selection.md
+      - Performance Tuning: how-to/performance_tuning.md
       - Run OPE Pipeline: how-to/run_ope_pipeline.md
       - Generate Reports: how-to/generate_reports.md
       - Run Benchmarks: how-to/run_benchmarks.md
       - Sensitivity Bounds: how-to/sensitivity_bounds.md
       - Release Process: how-to/release.md
+  - Concepts:
+      - Core Concepts: concepts/core_concepts.md
+      - Dataset Format: concepts/dataset_format.md
+      - Estimands: concepts/estimands.md
+      - Assumptions and Identification: concepts/assumptions_identification.md
+      - Assumption Cards:
+          - Sequential Ignorability: assumptions/sequential_ignorability.md
+          - Overlap (Positivity): assumptions/overlap.md
+          - Behavior Policy Known: assumptions/behavior_policy_known.md
+          - Markov: assumptions/markov.md
+          - Correct Model: assumptions/correct_model.md
+          - Bounded Rewards: assumptions/bounded_rewards.md
+          - Bounded Confounding: assumptions/bounded_confounding.md
+      - Diagnostics: concepts/diagnostics.md
+      - Sensitivity: concepts/sensitivity.md
+      - Limitations: concepts/limitations.md
   - Reference:
       - API Overview: reference/api/index.md
       - Public API: reference/api/public_api.md
@@ -51,6 +125,8 @@ nav:
           - MIS: reference/estimators/mis.md
           - FQE: reference/estimators/fqe.md
           - DualDICE: reference/estimators/dual_dice.md
+          - GenDICE: reference/estimators/gendice.md
+          - DRL: reference/estimators/drl.md
           - Double RL: reference/estimators/double_rl.md
           - High-Confidence OPE: reference/estimators/hcope.md
       - Config Schemas: reference/configs.md
@@ -61,24 +137,31 @@ nav:
       - Bias-Variance Tradeoffs: explanation/bias_variance.md
       - Confounding & Sensitivity: explanation/confounding.md
       - Proximal OPE: explanation/proximal.md
-  - Notebooks:
-      - Gallery: notebooks/index.md
-      - 00 Introduction: notebooks/00_introduction.ipynb
-      - 01 Estimands and Assumptions: notebooks/01_estimands_and_assumptions.ipynb
-      - 02 Bandit OPE Walkthrough: notebooks/02_bandit_ope_walkthrough.ipynb
-      - 03 MDP OPE Walkthrough: notebooks/03_mdp_ope_walkthrough.ipynb
-      - 04 Confidence Intervals and HCOPE: notebooks/04_confidence_intervals_and_hcope.ipynb
-      - 05 Advanced DR Family: notebooks/05_advanced_dr_family.ipynb
-      - 06 Sensitivity to Confounding: notebooks/06_sensitivity_unobserved_confounding.ipynb
-      - 07 Real Dataset (D4RL): notebooks/07_real_dataset_d4rl.ipynb
-      - 08 Estimator Selection: notebooks/08_estimator_selection_and_debugging.ipynb
+  - Reproducibility:
+      - Seeds and Configs: reproducibility/seeds_and_configs.md
+      - Benchmark Suites: reproducibility/benchmark_suites.md
+      - Environment: reproducibility/environment.md
   - References: references.md
-  - Project Status: project_status.md
+  - Project:
+      - Project Status: project_status.md
+      - Research Roadmap: repo_cleanup_and_research_recommendations.md
+      - Changelog: changelog.md
+      - Citing: citing.md
+      - Contributing: contributing.md
 plugins:
   - search
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
   - mkdocs-jupyter:
       include_source: true
-      execute: true
+      execute: false
       allow_errors: false
   - mkdocstrings:
       handlers:
@@ -87,5 +170,40 @@ plugins:
             show_source: false
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.mark
+  - pymdownx.keys
   - toc:
       permalink: true
+      toc_depth: 3
+extra_css:
+  - stylesheets/extra.css
+extra:
+  version: "0.1.0"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gsaco/causalrl
+  generator: false

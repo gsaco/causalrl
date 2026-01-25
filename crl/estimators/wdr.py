@@ -19,8 +19,10 @@ from crl.estimators.base import (
 from crl.estimators.crossfit import make_folds
 from crl.estimators.diagnostics import run_diagnostics
 from crl.estimators.dr import LinearQModel
+from crl.estimators.dr_core import discounted_powers
 from crl.estimators.stats import mean_stderr
 from crl.estimators.utils import compute_action_probs
+from crl.utils.cache import get_or_set
 
 
 @dataclass
@@ -36,7 +38,12 @@ class WDRConfig:
 class WeightedDoublyRobustEstimator(OPEEstimator):
     """Weighted doubly robust estimator (Thomas & Brunskill, 2016)."""
 
-    required_assumptions = ["sequential_ignorability", "overlap", "markov"]
+    required_assumptions = [
+        "sequential_ignorability",
+        "overlap",
+        "markov",
+        "behavior_policy_known",
+    ]
     required_fields = ["behavior_action_probs"]
     diagnostics_keys = [
         "overlap",
@@ -53,9 +60,24 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
         run_diagnostics: bool = True,
         diagnostics_config: DiagnosticsConfig | None = None,
         config: WDRConfig | None = None,
+        bootstrap: bool = False,
+        bootstrap_config: Any | None = None,
     ) -> None:
-        super().__init__(estimand, run_diagnostics, diagnostics_config)
+        super().__init__(
+            estimand,
+            run_diagnostics,
+            diagnostics_config,
+            bootstrap,
+            bootstrap_config,
+        )
         self.config = config or WDRConfig()
+        self._bootstrap_params.update(
+            {
+                "config": self.config,
+                "bootstrap": False,
+                "bootstrap_config": None,
+            }
+        )
 
     def estimate(self, data: TrajectoryDataset) -> EstimatorReport:
         self._validate_dataset(data)
@@ -115,27 +137,37 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
     def _fit_q_model(
         self, data: TrajectoryDataset, indices: np.ndarray
     ) -> LinearQModel:
-        obs = data.observations[indices][data.mask[indices]]
-        next_obs = data.next_observations[indices][data.mask[indices]]
-        actions = data.actions[indices][data.mask[indices]]
-        rewards = data.rewards[indices][data.mask[indices]]
-        policy_probs_next = self.estimand.policy.action_probs(next_obs)
+        cache_key = (
+            "wdr_q_model",
+            self.config.num_iterations,
+            self.config.ridge,
+            indices.tobytes(),
+        )
 
-        q_model = LinearQModel(
-            action_space_n=data.action_space_n,
-            state_space_n=data.state_space_n,
-            ridge=self.config.ridge,
-        )
-        q_model.fit(
-            observations=obs,
-            actions=actions,
-            rewards=rewards,
-            next_observations=next_obs,
-            policy_probs_next=policy_probs_next,
-            discount=data.discount,
-            num_iterations=self.config.num_iterations,
-        )
-        return q_model
+        def _build() -> LinearQModel:
+            obs = data.observations[indices][data.mask[indices]]
+            next_obs = data.next_observations[indices][data.mask[indices]]
+            actions = data.actions[indices][data.mask[indices]]
+            rewards = data.rewards[indices][data.mask[indices]]
+            policy_probs_next = self.estimand.policy.action_probs(next_obs)
+
+            q_model = LinearQModel(
+                action_space_n=data.action_space_n,
+                state_space_n=data.state_space_n,
+                ridge=self.config.ridge,
+            )
+            q_model.fit(
+                observations=obs,
+                actions=actions,
+                rewards=rewards,
+                next_observations=next_obs,
+                policy_probs_next=policy_probs_next,
+                discount=data.discount,
+                num_iterations=self.config.num_iterations,
+            )
+            return q_model
+
+        return get_or_set(data, cache_key, _build)
 
     def _wdr_values(
         self, data: TrajectoryDataset, indices: np.ndarray, q_model: LinearQModel
@@ -171,10 +203,17 @@ class WeightedDoublyRobustEstimator(OPEEstimator):
 
         weights = cumulative * mask
         weights_sum = weights.sum(axis=0)
+        weights_norm = np.zeros_like(weights, dtype=float)
         with np.errstate(divide="ignore", invalid="ignore"):
-            weights_norm = np.divide(weights, weights_sum, where=weights_sum > 0)
+            np.divide(
+                weights,
+                weights_sum,
+                out=weights_norm,
+                where=weights_sum > 0,
+            )
 
+        discounts = discounted_powers(data.discount, data.horizon).reshape(1, -1)
         values = weights_norm[:, 0] * v_matrix[:, 0] + np.sum(
-            weights_norm * td_matrix, axis=1
+            weights_norm * discounts * td_matrix, axis=1
         )
         return values

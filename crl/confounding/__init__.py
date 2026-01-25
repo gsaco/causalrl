@@ -4,6 +4,12 @@ from crl.confounding.proximal import (
     ProximalBanditDataset,
     ProximalBanditEstimator,
     ProximalConfig,
+    ProximalOPEEstimator,
 )
 
-__all__ = ["ProximalBanditDataset", "ProximalBanditEstimator", "ProximalConfig"]
+__all__ = [
+    "ProximalBanditDataset",
+    "ProximalBanditEstimator",
+    "ProximalConfig",
+    "ProximalOPEEstimator",
+]

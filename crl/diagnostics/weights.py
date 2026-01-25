@@ -40,6 +40,7 @@ def weight_tail_stats(
             "skew": 0.0,
             "kurtosis": 0.0,
             "tail_fraction": 0.0,
+            "recommended_clip": 0.0,
         }
 
     mean = float(np.mean(w))
@@ -64,6 +65,7 @@ def weight_tail_stats(
         "skew": skew,
         "kurtosis": kurtosis,
         "tail_fraction": float(np.mean(w > threshold)),
+        "recommended_clip": q99,
     }
 
 

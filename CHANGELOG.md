@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added dataset constructors for numpy arrays and pandas dataframes.
+- Added policy adapters for sklearn and torch, plus callable policy wrappers.
+- Added bootstrap CI support and standardized report exports.
+- Added benchmark suite config and metadata capture in outputs.
+- Expanded docs and tests for datasets, estimators, and workflows.
+
 ## 0.1.0
 
 - Initial CRL package with dataset contracts, policies, estimands, and OPE estimators.

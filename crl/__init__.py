@@ -10,7 +10,20 @@ from crl.data import (
     TransitionDataset,
 )
 from crl.estimands.policy_value import PolicyContrastEstimand, PolicyValueEstimand
-from crl.ope import OpeReport, evaluate
+from crl.estimands.proximal_policy_value import ProximalPolicyValueEstimand
+from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
+from crl.evaluation import (
+    DecisionResult,
+    DecisionSpec,
+    DiagnosticsSpec,
+    EvaluationResult,
+    EvaluationSpec,
+    InferenceSpec,
+    ReportSpec,
+    SensitivitySpec,
+    evaluate_many,
+)
+from crl.ope import OpeReport, evaluate, evaluate_ope, run_spec
 from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed
 from crl.version import __version__
@@ -21,12 +34,25 @@ __all__ = [
     "AssumptionSet",
     "PolicyValueEstimand",
     "PolicyContrastEstimand",
+    "ProximalPolicyValueEstimand",
+    "SensitivityPolicyValueEstimand",
+    "EvaluationSpec",
+    "InferenceSpec",
+    "DiagnosticsSpec",
+    "SensitivitySpec",
+    "ReportSpec",
+    "EvaluationResult",
+    "DecisionSpec",
+    "DecisionResult",
+    "evaluate_many",
     "BanditDataset",
     "LoggedBanditDataset",
     "TrajectoryDataset",
     "TransitionDataset",
     "OpeReport",
     "evaluate",
+    "evaluate_ope",
+    "run_spec",
     "BehaviorPolicyFit",
     "fit_behavior_policy",
     "SelectionResult",

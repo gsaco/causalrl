@@ -6,9 +6,7 @@ from typing import Any
 
 import numpy as np
 
-from crl.diagnostics.ess import effective_sample_size
-from crl.diagnostics.overlap import compute_overlap_metrics
-from crl.diagnostics.weights import weight_tail_stats
+from crl.diagnostics.registry import run_suite
 from crl.estimators.base import DiagnosticsConfig
 
 
@@ -38,38 +36,16 @@ def run_diagnostics(
         Returns empty diagnostics if inputs are empty.
     """
 
-    overlap = compute_overlap_metrics(
-        target_action_probs,
-        behavior_action_probs,
+    diagnostics, warnings = run_suite(
+        ["overlap", "ess", "weights"],
+        weights=weights,
+        target_action_probs=target_action_probs,
+        behavior_action_probs=behavior_action_probs,
         mask=mask,
-        threshold=config.min_behavior_prob,
+        config=config,
+        contexts=None,
     )
-    ess = effective_sample_size(weights)
-    ess_ratio = ess / weights.size if weights.size else 0.0
-    tail = weight_tail_stats(
-        weights,
-        quantile=config.weight_tail_quantile,
-        threshold=config.weight_tail_threshold,
-    )
-    diagnostics = {
-        "overlap": overlap,
-        "ess": {"ess": ess, "ess_ratio": ess_ratio},
-        "weights": tail,
-        "max_weight": tail.get("max", 0.0),
-        "model": model_metrics or {},
-    }
-
-    warnings: list[str] = []
-    if overlap["support_violations"] > 0:
-        warnings.append(
-            "Detected overlap violations: target actions with low behavior support."
-        )
-    if overlap["fraction_behavior_below_threshold"] > 0.0:
-        warnings.append("Behavior policy probabilities below minimum threshold.")
-    if ess_ratio < config.ess_threshold:
-        warnings.append(
-            "Effective sample size ratio below threshold; estimates may be unstable."
-        )
-    if tail["tail_fraction"] > 0.01:
-        warnings.append("Heavy-tailed importance weights detected.")
+    tail = diagnostics.get("weights", {})
+    diagnostics["max_weight"] = tail.get("max", 0.0)
+    diagnostics["model"] = model_metrics or {}
     return diagnostics, warnings

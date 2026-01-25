@@ -5,7 +5,13 @@ from __future__ import annotations
 from typing import Any
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import (
+    MARKOV,
+    OVERLAP,
+    Q_MODEL_REALIZABLE,
+    SEQUENTIAL_IGNORABILITY,
+    BEHAVIOR_POLICY_KNOWN,
+)
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
@@ -24,7 +30,7 @@ def run_bandit_benchmark(
     Estimand:
         Policy value under intervention for the benchmark target policy.
     Assumptions:
-        Sequential ignorability and overlap.
+        Sequential ignorability, overlap, and known behavior propensities.
     Inputs:
         num_samples: Number of logged bandit samples.
         seed: Random seed for sampling.
@@ -43,7 +49,7 @@ def run_bandit_benchmark(
         policy=bench.target_policy,
         discount=1.0,
         horizon=1,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
     )
 
     estimators = [ISEstimator(estimand), WISEstimator(estimand)]
@@ -73,7 +79,7 @@ def run_mdp_benchmark(
     Estimand:
         Policy value under intervention for the benchmark target policy.
     Assumptions:
-        Sequential ignorability, overlap, and Markov property.
+        Sequential ignorability, overlap, Markov property, and known behavior propensities.
     Inputs:
         num_trajectories: Number of logged trajectories.
         seed: Random seed for sampling.
@@ -92,7 +98,15 @@ def run_mdp_benchmark(
         policy=bench.target_policy,
         discount=dataset.discount,
         horizon=dataset.horizon,
-        assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+        assumptions=AssumptionSet(
+            [
+                SEQUENTIAL_IGNORABILITY,
+                OVERLAP,
+                BEHAVIOR_POLICY_KNOWN,
+                MARKOV,
+                Q_MODEL_REALIZABLE,
+            ]
+        ),
     )
 
     estimators = [
@@ -129,7 +143,7 @@ def run_all_benchmarks(
     Estimand:
         Policy value under intervention for each benchmark target policy.
     Assumptions:
-        Sequential ignorability and overlap (plus Markov for MDP).
+        Sequential ignorability, overlap, and known behavior propensities (plus Markov for MDP).
     Inputs:
         num_samples: Number of bandit samples.
         num_trajectories: Number of MDP trajectories.

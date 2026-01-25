@@ -5,8 +5,10 @@ listed here may change without notice.
 
 ## Core entry points
 
-- `crl.evaluate` - end-to-end OPE pipeline returning an `OpeReport`.
-- `crl.ope.evaluate` - same entry point, explicit module import.
+- `crl.evaluate_ope` - end-to-end OPE pipeline returning an `OpeReport`.
+- `crl.run_spec` - run an `EvaluationSpec` and return an `EvaluationResult`.
+- `crl.evaluate` - compatibility wrapper (spec usage deprecated).
+- `crl.ope.evaluate_ope` - same entry point, explicit module import.
 - `crl.ope.OpeReport` - aggregate report for an OPE run.
 - `crl.set_seed` - seed Python/NumPy/torch RNGs.
 
@@ -14,6 +16,8 @@ listed here may change without notice.
 
 - `crl.PolicyValueEstimand`
 - `crl.PolicyContrastEstimand`
+- `crl.SensitivityPolicyValueEstimand`
+- `crl.ProximalPolicyValueEstimand`
 - `crl.Assumption`
 - `crl.AssumptionSet`
 
@@ -29,6 +33,14 @@ listed here may change without notice.
 - `crl.fit_behavior_policy`
 - `crl.BehaviorPolicyFit`
 
+## Policies
+
+- `crl.policies.Policy`
+- `crl.policies.StochasticPolicy`
+- `crl.policies.CallablePolicy`
+- `crl.policies.TabularPolicy`
+- `crl.policies.TorchMLPPolicy`
+
 ## Estimator selection
 
 - `crl.select_estimator`
@@ -43,6 +55,7 @@ listed here may change without notice.
 
 - `crl.estimators.OPEEstimator`
 - `crl.estimators.EstimatorReport`
+- `crl.estimators.UncertaintySummary`
 - `crl.estimators.DiagnosticsConfig`
 - `crl.estimators.ISEstimator`
 - `crl.estimators.WISEstimator`
@@ -54,7 +67,9 @@ listed here may change without notice.
 - `crl.estimators.MarginalizedImportanceSamplingEstimator`
 - `crl.estimators.FQEEstimator`
 - `crl.estimators.DualDICEEstimator`
+- `crl.estimators.GenDICEEstimator`
 - `crl.estimators.DoubleRLEstimator`
+- `crl.estimators.DRLEstimator`
 - `crl.estimators.HighConfidenceISEstimator`
 
 ## API namespace

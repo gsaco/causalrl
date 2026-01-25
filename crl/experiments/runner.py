@@ -5,6 +5,10 @@ from __future__ import annotations
 import base64
 import csv
 import json
+import platform
+import subprocess
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -12,13 +16,16 @@ import pandas as pd
 import yaml
 
 from crl.assumptions import AssumptionSet
-from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY
+from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BEHAVIOR_POLICY_KNOWN
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.harness import run_all_benchmarks
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.data.datasets import LoggedBanditDataset, TrajectoryDataset
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.ope import evaluate
+from crl.reporting import EstimateRow, ReportData, ReportMetadata
+from crl.reporting.html import render_html
+from crl.version import __version__
 from crl.viz.plots import plot_bias_variance_tradeoff, plot_estimator_comparison
 
 
@@ -33,7 +40,7 @@ def run_benchmarks_to_table(
     Estimand:
         Policy value under intervention for each benchmark target policy.
     Assumptions:
-        Sequential ignorability and overlap (plus Markov for MDP).
+        Sequential ignorability, overlap, and known behavior propensities (plus Markov for MDP).
     Inputs:
         output_dir: Directory for result files.
         num_samples: Number of bandit samples.
@@ -70,6 +77,7 @@ def run_benchmark_suite(
     output_dir: str | Path,
     seeds: list[int],
     config_dir: str | Path = "configs/benchmarks",
+    config_path: str | Path | None = None,
 ) -> pd.DataFrame:
     """Run a benchmark suite defined by YAML configs."""
 
@@ -78,7 +86,7 @@ def run_benchmark_suite(
     figures_dir = output_dir / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    specs = _load_suite_specs(suite, config_dir)
+    specs = _load_suite_specs(suite, config_dir, config_path)
     results: list[dict[str, Any]] = []
     for seed in seeds:
         for spec in specs:
@@ -92,11 +100,28 @@ def run_benchmark_suite(
 
     _write_figures(aggregate, figures_dir)
     _write_html_report(aggregate, figures_dir, output_dir / "report.html")
+    _write_metadata(
+        output_dir,
+        suite=suite,
+        seeds=seeds,
+        config_dir=config_dir,
+        config_path=config_path,
+        num_specs=len(specs),
+    )
 
     return df
 
 
-def _load_suite_specs(suite: str, config_dir: str | Path) -> list[dict[str, Any]]:
+def _load_suite_specs(
+    suite: str, config_dir: str | Path, config_path: str | Path | None
+) -> list[dict[str, Any]]:
+    if config_path is not None:
+        path = Path(config_path)
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return [
+            dict(spec, suite=data.get("suite", suite))
+            for spec in data.get("benchmarks", [])
+        ]
     config_dir = Path(config_dir)
     if suite == "all":
         all_path = config_dir / "all.yaml"
@@ -134,7 +159,7 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
             policy=policy,
             discount=1.0,
             horizon=1,
-            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP]),
+            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN]),
         )
     else:
         mdp_config = SyntheticMDPConfig(seed=seed, **spec.get("config", {}))
@@ -150,7 +175,7 @@ def _run_spec(spec: dict[str, Any], seed: int) -> list[dict[str, Any]]:
             policy=policy,
             discount=dataset.discount,
             horizon=dataset.horizon,
-            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, MARKOV]),
+            assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
         )
 
     report = evaluate(
@@ -225,18 +250,109 @@ def _write_figures(aggregate: pd.DataFrame, figures_dir: Path) -> None:
 def _write_html_report(
     aggregate: pd.DataFrame, figures_dir: Path, output_path: Path
 ) -> None:
-    html_parts = [
-        "<html><head><meta charset='utf-8'><title>CRL Benchmarks</title></head><body>",
-        "<h1>Benchmark Summary</h1>",
-        aggregate.to_html(index=False),
-        "<h2>Figures</h2>",
-    ]
+    estimates: list[EstimateRow] = []
+    for _, row in aggregate.iterrows():
+        estimates.append(
+            EstimateRow(
+                estimator=str(row.get("estimator", "")),
+                value=float(row.get("estimate_mean", 0.0)),
+                stderr=float(row.get("estimate_std", 0.0))
+                if not pd.isna(row.get("estimate_std", 0.0))
+                else None,
+                ci=None,
+                lower_bound=None,
+                upper_bound=None,
+                metadata={
+                    "benchmark": row.get("benchmark"),
+                    "suite": row.get("suite"),
+                    "bias": row.get("bias"),
+                    "variance": row.get("variance"),
+                    "mse": row.get("mse"),
+                },
+            )
+        )
+
+    figures_payload: list[dict[str, Any]] = []
     for fig_path in sorted(figures_dir.glob("*.png")):
         img = _to_base64(fig_path)
-        html_parts.append(f"<h3>{fig_path.stem}</h3>")
-        html_parts.append(f"<img src='data:image/png;base64,{img}' />")
-    html_parts.append("</body></html>")
-    output_path.write_text("\n".join(html_parts), encoding="utf-8")
+        figures_payload.append(
+            {
+                "id": fig_path.stem,
+                "title": fig_path.stem.replace("_", " ").title(),
+                "src": f"data:image/png;base64,{img}",
+            }
+        )
+
+    report = ReportData(
+        mode="benchmarks",
+        metadata=ReportMetadata(
+            run_name="benchmark_suite",
+            package_version=__version__,
+            configs={"rows": len(aggregate)},
+        ),
+        estimates=estimates,
+        diagnostics={"aggregate": aggregate.to_dict(orient="records")},
+        figures=figures_payload,
+    )
+
+    html = render_html(report, title="CRL Benchmarks")
+    output_path.write_text(html, encoding="utf-8")
+
+
+def _write_metadata(
+    output_dir: Path,
+    *,
+    suite: str,
+    seeds: list[int],
+    config_dir: str | Path,
+    config_path: str | Path | None,
+    num_specs: int,
+) -> None:
+    metadata = {
+        "suite": suite,
+        "seeds": seeds,
+        "num_specs": num_specs,
+        "config_dir": str(config_dir),
+        "config_path": None if config_path is None else str(config_path),
+        "crl_version": __version__,
+        "python_version": sys.version,
+        "platform": platform.platform(),
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "git_sha": _git_sha(),
+        "package_versions": _package_versions(
+            ["numpy", "pandas", "torch", "pyyaml", "causalrl"]
+        ),
+    }
+    (output_dir / "metadata.json").write_text(
+        json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8"
+    )
+
+
+def _git_sha() -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except Exception:
+        return None
+    return result.stdout.strip() or None
+
+
+def _package_versions(names: list[str]) -> dict[str, str | None]:
+    try:
+        from importlib import metadata
+    except Exception:
+        return {name: None for name in names}
+    versions: dict[str, str | None] = {}
+    for name in names:
+        try:
+            versions[name] = metadata.version(name)
+        except Exception:
+            versions[name] = None
+    return versions
 
 
 def _to_base64(path: Path) -> str:

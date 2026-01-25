@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
+from crl.data.base import require_fields
 from crl.estimands.policy_value import PolicyValueEstimand
 from crl.estimators import (
     DoubleRLEstimator,
@@ -47,23 +48,40 @@ def select_estimator(
 
     best_estimator: OPEEstimator | None = None
     best_score = float("-inf")
+    failures: list[str] = []
     for estimator in estimators:
-        report = estimator.estimate(dataset)
-        score = score_fn(report)
-        scores.append(
-            {
-                "estimator": report.metadata.get("estimator", type(estimator).__name__),
-                "score": score,
-                "diagnostics": report.diagnostics,
-                "warnings": report.warnings,
-            }
-        )
-        if score > best_score:
-            best_score = score
-            best_estimator = estimator
+        name = type(estimator).__name__
+        try:
+            if getattr(estimator, "required_fields", None):
+                require_fields(dataset, estimator.required_fields)
+            report = estimator.estimate(dataset)
+            score = score_fn(report)
+            scores.append(
+                {
+                    "estimator": report.metadata.get("estimator", name),
+                    "score": score,
+                    "diagnostics": report.diagnostics,
+                    "warnings": report.warnings,
+                }
+            )
+            if score > best_score:
+                best_score = score
+                best_estimator = estimator
+        except Exception as exc:  # pragma: no cover - scored failures
+            failures.append(f"{name}: {exc}")
+            scores.append(
+                {
+                    "estimator": name,
+                    "score": float("-inf"),
+                    "diagnostics": {},
+                    "warnings": [],
+                    "error": str(exc),
+                }
+            )
 
     if best_estimator is None:
-        raise ValueError("No estimators were provided for selection.")
+        detail = "; ".join(failures) if failures else "no viable estimators"
+        raise ValueError(f"Estimator selection failed: {detail}.")
 
     if return_scores:
         return SelectionResult(best=best_estimator, scores=scores)

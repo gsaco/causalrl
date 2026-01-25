@@ -4,7 +4,8 @@
 - The behavior policy assigns non-zero probability to actions the target policy takes.
 
 **Applies to**
-- IS, WIS, PDIS, DR, FQE.
+- IS, WIS, PDIS, DR, WDR, MAGIC, MRDR, MIS, DRL, HCOPE, Double RL.
+- FQE uses overlap for diagnostics but can run without propensities.
 
 **Definition**
 - For all states with positive probability under the target policy, the behavior

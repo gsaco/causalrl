@@ -1,0 +1,26 @@
+suite: default
+benchmarks:
+  - name: bandit_default
+    type: bandit
+    num_samples: 1000
+    estimators: ["is", "wis", "double_rl"]
+    behavior_known: true
+    config:
+      num_contexts: 5
+      num_actions: 4
+      reward_noise_std: 0.1
+      behavior_scale: 1.0
+      target_scale: 1.0
+  - name: mdp_default
+    type: mdp
+    num_trajectories: 200
+    estimators: ["is", "wis", "pdis", "dr", "wdr", "mis", "fqe"]
+    behavior_known: true
+    config:
+      num_states: 6
+      num_actions: 3
+      horizon: 5
+      discount: 0.95
+      reward_noise_std: 0.1
+      behavior_scale: 1.0
+      target_scale: 1.0

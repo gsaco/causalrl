@@ -8,8 +8,11 @@ assumptions in the API and documentation.
 - Sequential ignorability: no unmeasured confounding given observed history.
 - Overlap: behavior policy supports target policy actions.
 - Markov: state is sufficient for future evolution.
-- Correct model: function approximation matches the data-generating process.
+- Behavior policy known: propensities are known or correctly specified.
+- Q-model realizability: value function lies in the chosen model class.
+- Bridge identifiability: proximal bridge functions are well-posed.
 - Bounded rewards: needed for high-confidence bounds.
+- Bounded confounding: hidden bias is limited by a sensitivity parameter.
 
 ## Practical guidance
 

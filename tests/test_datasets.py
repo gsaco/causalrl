@@ -232,3 +232,82 @@ def test_transition_to_trajectory():
     )
     traj = dataset.to_trajectory()
     assert traj.num_trajectories == 2
+
+
+def test_logged_bandit_from_numpy():
+    contexts = np.zeros((3, 2))
+    actions = np.array([0, 1, 0])
+    rewards = np.array([1.0, 0.5, 0.25])
+    behavior_action_probs = np.array([0.6, 0.4, 0.6])
+    dataset = LoggedBanditDataset.from_numpy(
+        contexts=contexts,
+        actions=actions,
+        rewards=rewards,
+        behavior_action_probs=behavior_action_probs,
+    )
+    assert dataset.action_space_n == 2
+    assert dataset.num_samples == 3
+
+
+def test_logged_bandit_from_dataframe():
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "x0": [0.1, 0.2, 0.3],
+            "x1": [1.0, 0.0, 1.0],
+            "action": [0, 1, 0],
+            "reward": [1.0, 0.5, 0.25],
+            "propensity": [0.6, 0.4, 0.6],
+        }
+    )
+    dataset = LoggedBanditDataset.from_dataframe(
+        df,
+        context_columns=["x0", "x1"],
+        behavior_prob_column="propensity",
+    )
+    assert dataset.contexts.shape == (3, 2)
+    assert dataset.behavior_action_probs is not None
+
+
+def test_trajectory_from_numpy():
+    obs = np.zeros((2, 3, 1))
+    next_obs = np.ones((2, 3, 1))
+    actions = np.array([[0, 1, 0], [1, 0, 1]])
+    rewards = np.ones((2, 3))
+    dataset = TrajectoryDataset.from_numpy(
+        observations=obs,
+        actions=actions,
+        rewards=rewards,
+        next_observations=next_obs,
+        discount=0.9,
+        action_space_n=2,
+    )
+    assert dataset.num_trajectories == 2
+    assert dataset.horizon == 3
+
+
+def test_trajectory_from_dataframe():
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "episode_id": [0, 0, 1],
+            "timestep": [0, 1, 0],
+            "obs": [0.0, 0.1, 0.2],
+            "next_obs": [0.1, 0.2, 0.3],
+            "action": [0, 1, 0],
+            "reward": [1.0, 0.5, 0.25],
+            "propensity": [0.6, 0.4, 0.6],
+        }
+    )
+    dataset = TrajectoryDataset.from_dataframe(
+        df,
+        observation_columns=["obs"],
+        next_observation_columns=["next_obs"],
+        behavior_prob_column="propensity",
+        discount=0.9,
+        action_space_n=2,
+    )
+    assert dataset.num_trajectories == 2
+    assert dataset.behavior_action_probs is not None

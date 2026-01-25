@@ -5,6 +5,11 @@
 - Current release: v0.1.0 (research preview, alpha quality).
 - API may evolve as estimator coverage and diagnostics expand.
 
+## Versioning and deprecations
+
+- We follow SemVer; breaking changes are expected in 0.x, with tighter stability after 1.0.
+- Deprecated public APIs warn for at least one minor release before removal.
+
 ## Current scope
 
 - Unconfounded OPE with explicit estimands, diagnostics, and synthetic benchmarks

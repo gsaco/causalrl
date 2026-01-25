@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }}</title>
+  {% if assets_mode == "inline" %}
+  <style>
+  {{ css_text | safe }}
+  </style>
+  {% else %}
+  <link rel="stylesheet" href="report.css" />
+  {% endif %}
+</head>
+<body>
+  <div class="crl-page">
+    <header class="crl-header">
+      <div>
+        <p class="crl-eyebrow">CausalRL Report</p>
+        <h1 class="crl-title">{{ title }}</h1>
+        <p class="crl-meta">
+          {% if payload.metadata.generated_at %}<span>Generated {{ payload.metadata.generated_at }}</span>{% endif %}
+          {% if payload.metadata.package_version %}<span>Version {{ payload.metadata.package_version }}</span>{% endif %}
+          {% if payload.metadata.git_sha %}<span>Git {{ payload.metadata.git_sha }}</span>{% endif %}
+          {% if payload.metadata.dataset_fingerprint %}<span>Fingerprint {{ payload.metadata.dataset_fingerprint }}</span>{% endif %}
+        </p>
+      </div>
+      <div class="crl-header-actions">
+        <button class="crl-btn" data-download-json>Download JSON</button>
+        <button class="crl-btn" data-download-csv>Download CSV</button>
+      </div>
+    </header>
+
+    <section class="crl-summary">
+      <div class="crl-card">
+        <h2>Primary estimate</h2>
+        {% set primary = payload.estimates[0] if payload.estimates else None %}
+        {% if primary %}
+          <p class="crl-primary">{{ '%.6g' % primary.value if primary.value is not none else 'n/a' }}</p>
+          <p class="crl-muted">Estimator: {{ primary.estimator }}</p>
+          {% if primary.ci %}
+            <p class="crl-muted">CI: [{{ '%.6g' % primary.ci[0] }}, {{ '%.6g' % primary.ci[1] }}]</p>
+          {% elif primary.lower_bound is not none or primary.upper_bound is not none %}
+            <p class="crl-muted">Bounds: [{{ primary.lower_bound }}, {{ primary.upper_bound }}]</p>
+          {% endif %}
+        {% else %}
+          <p class="crl-muted">No estimates available.</p>
+        {% endif %}
+      </div>
+      <div class="crl-card">
+        <h2>Data health</h2>
+        {% set overlap = payload.diagnostics.get('overlap') %}
+        {% set ess = payload.diagnostics.get('ess') %}
+        {% set tail = payload.diagnostics.get('weights') %}
+        <ul class="crl-list">
+          <li>Overlap violations: {{ overlap.support_violations if overlap is mapping else 'n/a' }}</li>
+          <li>ESS ratio: {{ ess.ess_ratio if ess is mapping else (ess if ess is number else 'n/a') }}</li>
+          <li>Tail fraction: {{ tail.tail_fraction if tail is mapping else 'n/a' }}</li>
+        </ul>
+      </div>
+      <div class="crl-card">
+        <h2>Decision</h2>
+        {% if payload.warnings %}
+          <p class="crl-status crl-status-warn">Caution</p>
+          <ul class="crl-list">
+            {% for warning in payload.warnings[:3] %}
+              <li>{{ warning.message or warning.get('message') }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="crl-status crl-status-good">Proceed</p>
+          <p class="crl-muted">No blocking warnings detected.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Estimates</h2>
+        <p class="crl-muted">Sortable table of estimator outputs.</p>
+      </div>
+      <div class="crl-table-wrap">
+        <table class="crl-table" data-sortable>
+          <thead>
+            <tr>
+              <th data-type="text">Estimator</th>
+              <th data-type="number">Value</th>
+              <th data-type="number">StdErr</th>
+              <th data-type="number">Lower</th>
+              <th data-type="number">Upper</th>
+              <th data-type="number">Warnings</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for estimate in payload.estimates %}
+            <tr>
+              <td>{{ estimate.estimator }}</td>
+              <td>{{ estimate.value }}</td>
+              <td>{{ estimate.stderr }}</td>
+              <td>{{ estimate.lower_bound if estimate.lower_bound is not none else '' }}</td>
+              <td>{{ estimate.upper_bound if estimate.upper_bound is not none else '' }}</td>
+              <td>{{ estimate.warnings | length }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Diagnostics</h2>
+        <p class="crl-muted">Overlap, ESS, weight tails, and shift metrics.</p>
+      </div>
+      <details class="crl-details" open>
+        <summary>Overlap</summary>
+        <pre>{{ payload.diagnostics.get('overlap', {}) | tojson(indent=2) }}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Effective sample size</summary>
+        <pre>{{ payload.diagnostics.get('ess', {}) | tojson(indent=2) }}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Weight tails</summary>
+        <pre>{{ payload.diagnostics.get('weights', {}) | tojson(indent=2) }}</pre>
+      </details>
+      {% if payload.diagnostics.get('shift') %}
+      <details class="crl-details">
+        <summary>Shift</summary>
+        <pre>{{ payload.diagnostics.get('shift') | tojson(indent=2) }}</pre>
+      </details>
+      {% endif %}
+    </section>
+
+    {% if payload.sensitivity %}
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Sensitivity</h2>
+        <p class="crl-muted">Robust bounds across gamma values.</p>
+      </div>
+      <div class="crl-card">
+        <pre>{{ payload.sensitivity | tojson(indent=2) }}</pre>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if payload.figures %}
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Figures</h2>
+        <p class="crl-muted">Click to enlarge.</p>
+      </div>
+      <div class="crl-figure-grid">
+        {% for fig in payload.figures %}
+          <button class="crl-figure" data-figure-src="{{ fig.src }}" data-figure-title="{{ fig.title }}">
+            <img src="{{ fig.src }}" alt="{{ fig.title }}" />
+            <span>{{ fig.title }}</span>
+          </button>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Metadata</h2>
+        <p class="crl-muted">Dataset, assumptions, configs, and environment.</p>
+      </div>
+      <details class="crl-details">
+        <summary>Dataset summary</summary>
+        <pre>{{ payload.metadata.dataset_summary | tojson(indent=2) }}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Configs</summary>
+        <pre>{{ payload.metadata.configs | tojson(indent=2) }}</pre>
+      </details>
+      <details class="crl-details">
+        <summary>Environment</summary>
+        <pre>{{ payload.metadata.environment | tojson(indent=2) }}</pre>
+      </details>
+    </section>
+
+    <section class="crl-section">
+      <div class="crl-section-header">
+        <h2>Payload</h2>
+        <p class="crl-muted">Complete JSON payload.</p>
+      </div>
+      <details class="crl-details">
+        <summary>Show JSON</summary>
+        <pre>{{ payload | tojson(indent=2) }}</pre>
+      </details>
+    </section>
+  </div>
+
+  <div class="crl-modal" hidden>
+    <div class="crl-modal-content" role="dialog" aria-modal="true" aria-label="Figure viewer">
+      <button class="crl-btn crl-modal-close" data-modal-close>Close</button>
+      <h3 class="crl-modal-title"></h3>
+      <img class="crl-modal-image" alt="" />
+    </div>
+  </div>
+
+  <script type="application/json" id="crl-report-data">{{ payload_json | safe }}</script>
+  {% if assets_mode == "inline" %}
+  <script>
+  {{ js_text | safe }}
+  </script>
+  {% else %}
+  <script src="report.js"></script>
+  {% endif %}
+</body>
+</html>
