@@ -1,11 +1,13 @@
-/* =====================================================
+:root {
+  --crl-header-bg: #ffffff;
+  --crl-header-ink: #000000;
+  --crl-header-muted: #555555;
 }
-/* ============================================================
-   18. LIGHT THEME HEADER CONTRAST
-   ============================================================ */
+
 [data-md-color-scheme="default"] .md-header,
 [data-md-color-scheme="default"] .md-tabs {
-  color: var(--crl-teal-800);
+  background-color: var(--crl-header-bg);
+  color: var(--crl-header-ink);
 }
 
 [data-md-color-scheme="default"] .md-header__title,
@@ -14,13 +16,13 @@
 [data-md-color-scheme="default"] .md-tabs__link,
 [data-md-color-scheme="default"] .md-search__input,
 [data-md-color-scheme="default"] .md-search__icon {
-  color: var(--crl-teal-800);
+  color: var(--crl-header-ink);
 }
 
 [data-md-color-scheme="default"] .md-tabs__link--active,
 [data-md-color-scheme="default"] .md-tabs__link:hover,
 [data-md-color-scheme="default"] .md-header__button:hover {
-  color: var(--crl-teal-500) !important;
+  color: var(--crl-header-ink);
 }
 
 [data-md-color-scheme="default"] .md-header__button svg,
@@ -29,5 +31,5 @@
 }
 
 [data-md-color-scheme="default"] .md-search__input::placeholder {
-  color: rgba(15, 35, 48, 0.6);
+  color: var(--crl-header-muted);
 }
