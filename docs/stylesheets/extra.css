@@ -440,7 +440,7 @@
 
 [data-md-color-scheme="default"] .md-header,
 [data-md-color-scheme="default"] .md-tabs {
-  color: #000;
+  color: #111 !important;
 }
 
 [data-md-color-scheme="default"] .md-header__title,
@@ -449,13 +449,13 @@
 [data-md-color-scheme="default"] .md-tabs__link,
 [data-md-color-scheme="default"] .md-search__input,
 [data-md-color-scheme="default"] .md-search__icon {
-  color: #000;
+  color: #111 !important;
 }
 
 [data-md-color-scheme="default"] .md-tabs__link--active,
 [data-md-color-scheme="default"] .md-tabs__link:hover,
 [data-md-color-scheme="default"] .md-header__button:hover {
-  color: #000 !important;
+  color: #111 !important;
 }
 
 [data-md-color-scheme="default"] .md-header__button svg,
@@ -464,7 +464,7 @@
 }
 
 [data-md-color-scheme="default"] .md-search__input::placeholder {
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(17, 17, 17, 0.6);
 }
 
 .md-header__button.md-logo {
