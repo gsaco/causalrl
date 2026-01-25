@@ -251,6 +251,10 @@ body {
   z-index: 1000;
 }
 
+.crl-modal[hidden] {
+  display: none;
+}
+
 .crl-modal-content {
   background: var(--surface);
   padding: 20px;
