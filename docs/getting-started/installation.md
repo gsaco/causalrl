@@ -42,7 +42,7 @@ python -m pip install -e ".[rlu]"
 ## Workflow schematic
 
 <figure class="crl-figure">
-  <img src="../assets/diagrams/workflow.svg" alt="Workflow diagram from logged data to report" loading="lazy" />
+  <img src="../../assets/diagrams/workflow.svg" alt="Workflow diagram from logged data to report" loading="lazy" />
   <figcaption>Typical CausalRL workflow: data -> estimand -> estimator -> diagnostics -> sensitivity -> report.</figcaption>
 </figure>
 

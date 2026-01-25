@@ -7,8 +7,8 @@ figures are emitted by the tutorial notebooks in `notebooks/`.
 ## Bandit estimator comparison
 
 <figure class="crl-figure">
-  <a href="../assets/figures/bandit_estimator_comparison.svg" data-gallery="results">
-    <img src="../assets/figures/bandit_estimator_comparison_web.png" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
+  <a href="../../assets/figures/bandit_estimator_comparison.svg" data-gallery="results">
+    <img src="../../assets/figures/bandit_estimator_comparison_web.png" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
   </a>
   <figcaption>Bandit OPE estimates with uncertainty for IS and WIS compared to ground truth.</figcaption>
 </figure>
@@ -27,8 +27,8 @@ Why it matters:
 ## MDP estimator comparison
 
 <figure class="crl-figure">
-  <a href="../assets/figures/mdp_estimator_comparison.svg" data-gallery="results">
-    <img src="../assets/figures/mdp_estimator_comparison_web.png" alt="MDP estimator comparison with uncertainty" loading="lazy" />
+  <a href="../../assets/figures/mdp_estimator_comparison.svg" data-gallery="results">
+    <img src="../../assets/figures/mdp_estimator_comparison_web.png" alt="MDP estimator comparison with uncertainty" loading="lazy" />
   </a>
   <figcaption>MDP OPE estimates for IS, WIS, PDIS, and DR with uncertainty bands.</figcaption>
 </figure>
@@ -47,8 +47,8 @@ Why it matters:
 ## Overlap diagnostics
 
 <figure class="crl-figure">
-  <a href="../assets/figures/bandit_overlap_ratios.svg" data-gallery="results">
-    <img src="../assets/figures/bandit_overlap_ratios_web.png" alt="Overlap ratios histogram" loading="lazy" />
+  <a href="../../assets/figures/bandit_overlap_ratios.svg" data-gallery="results">
+    <img src="../../assets/figures/bandit_overlap_ratios_web.png" alt="Overlap ratios histogram" loading="lazy" />
   </a>
   <figcaption>Distribution of target/behavior importance ratios for bandit data.</figcaption>
 </figure>
@@ -65,8 +65,8 @@ Why it matters:
 ## Effective sample size over time
 
 <figure class="crl-figure">
-  <a href="../assets/figures/mdp_ess_by_time.svg" data-gallery="results">
-    <img src="../assets/figures/mdp_ess_by_time_web.png" alt="Effective sample size by time step" loading="lazy" />
+  <a href="../../assets/figures/mdp_ess_by_time.svg" data-gallery="results">
+    <img src="../../assets/figures/mdp_ess_by_time_web.png" alt="Effective sample size by time step" loading="lazy" />
   </a>
   <figcaption>ESS drops over time for MDP trajectories under importance weighting.</figcaption>
 </figure>
@@ -83,8 +83,8 @@ Why it matters:
 ## Weighted reward distribution
 
 <figure class="crl-figure">
-  <a href="../assets/figures/bandit_weighted_rewards.svg" data-gallery="results">
-    <img src="../assets/figures/bandit_weighted_rewards_web.png" alt="Weighted rewards histogram" loading="lazy" />
+  <a href="../../assets/figures/bandit_weighted_rewards.svg" data-gallery="results">
+    <img src="../../assets/figures/bandit_weighted_rewards_web.png" alt="Weighted rewards histogram" loading="lazy" />
   </a>
   <figcaption>Importance-weighted rewards plotted on a log scale.</figcaption>
 </figure>
@@ -101,8 +101,8 @@ Why it matters:
 ## Sensitivity bounds
 
 <figure class="crl-figure">
-  <a href="../assets/figures/bandit_sensitivity_bounds.svg" data-gallery="results">
-    <img src="../assets/figures/bandit_sensitivity_bounds_web.png" alt="Sensitivity bounds curve" loading="lazy" />
+  <a href="../../assets/figures/bandit_sensitivity_bounds.svg" data-gallery="results">
+    <img src="../../assets/figures/bandit_sensitivity_bounds_web.png" alt="Sensitivity bounds curve" loading="lazy" />
   </a>
   <figcaption>Bounded-confounding sensitivity curve for bandit OPE.</figcaption>
 </figure>
@@ -119,8 +119,8 @@ Why it matters:
 ## End-to-end bandit workflow
 
 <figure class="crl-figure">
-  <a href="../assets/figures/bandit_end_to_end_estimator_comparison.pdf" data-gallery="results">
-    <img src="../assets/figures/bandit_end_to_end_estimator_comparison.png" alt="End-to-end bandit estimator comparison" loading="lazy" />
+  <a href="../../assets/figures/bandit_end_to_end_estimator_comparison.pdf" data-gallery="results">
+    <img src="../../assets/figures/bandit_end_to_end_estimator_comparison.png" alt="End-to-end bandit estimator comparison" loading="lazy" />
   </a>
   <figcaption>Estimator comparison from the bandit end-to-end notebook.</figcaption>
 </figure>
@@ -137,8 +137,8 @@ Why it matters:
 ## Long-horizon MDP comparison
 
 <figure class="crl-figure">
-  <a href="../assets/figures/mdp_long_horizon_estimator_comparison.pdf" data-gallery="results">
-    <img src="../assets/figures/mdp_long_horizon_estimator_comparison.png" alt="Long-horizon MDP estimator comparison" loading="lazy" />
+  <a href="../../assets/figures/mdp_long_horizon_estimator_comparison.pdf" data-gallery="results">
+    <img src="../../assets/figures/mdp_long_horizon_estimator_comparison.png" alt="Long-horizon MDP estimator comparison" loading="lazy" />
   </a>
   <figcaption>Estimator comparison in a longer-horizon MDP.</figcaption>
 </figure>

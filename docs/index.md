@@ -2,7 +2,7 @@
 
 <div class="crl-hero" markdown="1">
 
-<img src="assets/branding/causalrl-banner.png" alt="CausalRL Banner" style="width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.3);" />
+<img src="assets/branding/causalrl-banner.svg" alt="CausalRL Banner" style="width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.3);" />
 
 ## Estimand-first causal RL and off-policy evaluation
 

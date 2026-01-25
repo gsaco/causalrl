@@ -29,7 +29,7 @@ report.save_html("report.html")
 ```
 
 <figure class="crl-figure">
-  <img src="../assets/figures/bandit_estimator_comparison.svg" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
+  <img src="../../assets/figures/bandit_estimator_comparison.svg" alt="Bandit estimator comparison with uncertainty" loading="lazy" />
   <figcaption>Estimator comparison rendered with the CausalRL grayscale style.</figcaption>
 </figure>
 
