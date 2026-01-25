@@ -70,20 +70,43 @@
 
   function closeModal() {
     if (!modal) return;
+    modal.setAttribute("hidden", "");
     modal.hidden = true;
+    modal.style.display = "none";
+  }
+
+  function openModal(src, title) {
+    if (!modal || !modalImage || !modalTitle) return;
+    modalImage.src = src || "";
+    modalTitle.textContent = title || "Figure";
+    modal.hidden = false;
+    modal.removeAttribute("hidden");
+    modal.style.display = "flex";
   }
 
   document.querySelectorAll("[data-figure-src]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      if (!modal || !modalImage || !modalTitle) return;
-      modalImage.src = btn.getAttribute("data-figure-src");
-      modalTitle.textContent = btn.getAttribute("data-figure-title") || "Figure";
-      modal.hidden = false;
+      openModal(
+        btn.getAttribute("data-figure-src"),
+        btn.getAttribute("data-figure-title")
+      );
     });
   });
 
   if (closeBtn) {
-    closeBtn.addEventListener("click", closeModal);
+    closeBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
   }
 
   document.addEventListener("keydown", (event) => {
@@ -91,4 +114,6 @@
       closeModal();
     }
   });
+
+  closeModal();
 })();
