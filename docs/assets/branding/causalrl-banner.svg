@@ -27,6 +27,9 @@
     <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
       <path d="M48 0H0V48" fill="none" stroke="#9ec4cf" stroke-opacity="0.08" stroke-width="1" />
     </pattern>
+    <clipPath id="right-panel">
+      <rect x="720" y="0" width="880" height="520" />
+    </clipPath>
   </defs>
 
   <rect width="1600" height="520" fill="url(#bg)" />
@@ -34,45 +37,47 @@
   <rect width="1600" height="520" fill="url(#glowB)" />
   <rect width="1600" height="520" fill="url(#grid)" opacity="0.45" />
 
-  <g opacity="0.4" stroke="#2a6b74" stroke-width="1.4" fill="none">
-    <path d="M-80 140 C120 90 240 110 360 150 S620 220 760 200 S1040 110 1300 160 S1500 240 1700 180" />
-    <path d="M-120 200 C120 150 240 170 360 210 S620 280 760 260 S1040 170 1300 220 S1500 300 1700 240" />
-    <path d="M-140 270 C120 220 240 240 360 280 S620 350 760 330 S1040 240 1300 290 S1500 370 1700 310" />
-    <path d="M-160 340 C120 300 240 320 360 360 S620 430 760 410 S1040 320 1300 370 S1500 450 1700 390" />
-  </g>
+  <g clip-path="url(#right-panel)">
+    <g opacity="0.4" stroke="#2a6b74" stroke-width="1.4" fill="none">
+      <path d="M-80 140 C120 90 240 110 360 150 S620 220 760 200 S1040 110 1300 160 S1500 240 1700 180" />
+      <path d="M-120 200 C120 150 240 170 360 210 S620 280 760 260 S1040 170 1300 220 S1500 300 1700 240" />
+      <path d="M-140 270 C120 220 240 240 360 280 S620 350 760 330 S1040 240 1300 290 S1500 370 1700 310" />
+      <path d="M-160 340 C120 300 240 320 360 360 S620 430 760 410 S1040 320 1300 370 S1500 450 1700 390" />
+    </g>
 
-  <g opacity="0.3">
-    <circle cx="1260" cy="110" r="160" fill="#f6c453" filter="url(#soft)" />
-    <circle cx="340" cy="420" r="180" fill="#4dd2bf" filter="url(#soft)" />
-  </g>
+    <g opacity="0.3">
+      <circle cx="1260" cy="110" r="160" fill="#f6c453" filter="url(#soft)" />
+      <circle cx="340" cy="420" r="180" fill="#4dd2bf" filter="url(#soft)" />
+    </g>
 
-  <path d="M220 340 C420 240 580 240 780 330 S1180 430 1380 300" fill="none" stroke="url(#accent)" stroke-width="4" opacity="0.9" />
-  <path d="M220 340 C420 240 580 240 780 330 S1180 430 1380 300" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.15" />
+    <path d="M220 340 C420 240 580 240 780 330 S1180 430 1380 300" fill="none" stroke="url(#accent)" stroke-width="4" opacity="0.9" />
+    <path d="M220 340 C420 240 580 240 780 330 S1180 430 1380 300" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.15" />
 
-  <g stroke="url(#accent)" stroke-width="3" fill="none" opacity="0.9">
-    <path d="M960 140 C1060 90 1180 110 1280 160" />
-    <path d="M960 360 C1060 410 1180 390 1280 340" />
-    <path d="M960 140 C1020 250 1020 250 960 360" />
-  </g>
+    <g stroke="url(#accent)" stroke-width="3" fill="none" opacity="0.9">
+      <path d="M960 140 C1060 90 1180 110 1280 160" />
+      <path d="M960 360 C1060 410 1180 390 1280 340" />
+      <path d="M960 140 C1020 250 1020 250 960 360" />
+    </g>
 
-  <g stroke="#bfeee3" stroke-width="2" fill="none" opacity="0.55">
-    <path d="M900 250 C980 200 1080 200 1160 240" />
-    <path d="M900 250 C980 300 1080 300 1160 260" />
-  </g>
+    <g stroke="#bfeee3" stroke-width="2" fill="none" opacity="0.55">
+      <path d="M900 250 C980 200 1080 200 1160 240" />
+      <path d="M900 250 C980 300 1080 300 1160 260" />
+    </g>
 
-  <g fill="#0b1117" stroke="url(#accent)" stroke-width="3">
-    <circle cx="900" cy="250" r="12" />
-    <circle cx="960" cy="140" r="10" />
-    <circle cx="960" cy="360" r="10" />
-    <circle cx="1280" cy="160" r="10" />
-    <circle cx="1280" cy="340" r="10" />
-    <circle cx="1160" cy="240" r="9" />
-    <circle cx="1160" cy="260" r="9" />
-  </g>
+    <g fill="#0b1117" stroke="url(#accent)" stroke-width="3">
+      <circle cx="900" cy="250" r="12" />
+      <circle cx="960" cy="140" r="10" />
+      <circle cx="960" cy="360" r="10" />
+      <circle cx="1280" cy="160" r="10" />
+      <circle cx="1280" cy="340" r="10" />
+      <circle cx="1160" cy="240" r="9" />
+      <circle cx="1160" cy="260" r="9" />
+    </g>
 
-  <g opacity="0.85">
-    <path d="M900 250 L1090 250" stroke="url(#accent)" stroke-width="4" />
-    <path d="M1080 242 L1098 250 L1080 258" fill="none" stroke="url(#accent)" stroke-width="4" />
+    <g opacity="0.85">
+      <path d="M900 250 L1090 250" stroke="url(#accent)" stroke-width="4" />
+      <path d="M1080 242 L1098 250 L1080 258" fill="none" stroke="url(#accent)" stroke-width="4" />
+    </g>
   </g>
 
   <g font-family="Space Grotesk, Avenir Next, Futura, Trebuchet MS, Arial, sans-serif" fill="#f8fbff">

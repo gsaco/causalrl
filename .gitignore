@@ -14,7 +14,6 @@ coverage.xml
 .ipynb_checkpoints/
 .nox/
 .tmp_cli_smoke/
-.tmp_cli_smoke*/
 
 build/
 dist/
@@ -26,6 +25,11 @@ site/
 venv/
 .env/
 .direnv/
+.venv_audit/
+.venv_release/
+.venv_release.bak_*/
+.tmp_cli_smoke_ope/
+docs/assets/benchmarks/
 
 .DS_Store
 Thumbs.db
@@ -41,7 +45,6 @@ Thumbs.db
 /tmp/
 /report.html
 /summary.csv
-docs/assets/benchmarks/
 *.log
 *.tmp
 *.bak
