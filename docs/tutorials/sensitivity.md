@@ -8,4 +8,4 @@ and compute bounds alongside point estimates.
 
 ## Notebook
 
-- [06_sensitivity_unobserved_confounding.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/06_sensitivity_unobserved_confounding.ipynb)
+- [06_sensitivity_unobserved_confounding.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/06_sensitivity_unobserved_confounding.ipynb)

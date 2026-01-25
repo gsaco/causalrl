@@ -42,6 +42,7 @@ def render_html(
         js_text = _read_asset("report.js")
 
     payload_json = json.dumps(payload, default=_to_jsonable)
+    payload_json = payload_json.replace("</", "<\\/")
 
     return template.render(
         title=title or "CausalRL Report",

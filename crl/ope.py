@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Iterable, overload
 
@@ -220,6 +221,36 @@ def evaluate(
     ...
 
 
+def evaluate_ope(
+    dataset: BanditDataset | TrajectoryDataset | TransitionDataset,
+    policy: Policy,
+    estimand: PolicyValueEstimand | None = None,
+    estimators: Iterable[str | OPEEstimator] | str = "default",
+    diagnostics: list[str] | str = "default",
+    inference: dict[str, Any] | None = None,
+    sensitivity: SensitivityPolicyValueEstimand | None = None,
+    seed: int = 0,
+) -> OpeReport:
+    """Run an end-to-end OPE evaluation with reporting."""
+
+    return _evaluate_legacy(
+        dataset=dataset,
+        policy=policy,
+        estimand=estimand,
+        estimators=estimators,
+        diagnostics=diagnostics,
+        inference=inference,
+        sensitivity=sensitivity,
+        seed=seed,
+    )
+
+
+def run_spec(spec: EvaluationSpec) -> Any:
+    """Run an EvaluationSpec and return an EvaluationResult."""
+
+    return _evaluate_from_spec(spec)
+
+
 def evaluate(
     dataset: BanditDataset | TrajectoryDataset | TransitionDataset | EvaluationSpec,
     policy: Policy | None = None,
@@ -230,13 +261,22 @@ def evaluate(
     sensitivity: SensitivityPolicyValueEstimand | None = None,
     seed: int = 0,
 ) -> Any:
-    """Run an end-to-end OPE evaluation with reporting."""
+    """Run an end-to-end OPE evaluation with reporting.
+
+    Note:
+        Passing an EvaluationSpec is deprecated; use run_spec(spec) instead.
+    """
 
     if isinstance(dataset, EvaluationSpec):
-        return _evaluate_from_spec(dataset)
+        warnings.warn(
+            "crl.ope.evaluate(spec) is deprecated; use run_spec(spec).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return run_spec(dataset)
     if policy is None:
         raise ValueError("policy is required when dataset is provided directly.")
-    return _evaluate_legacy(
+    return evaluate_ope(
         dataset=dataset,
         policy=policy,
         estimand=estimand,
@@ -713,4 +753,4 @@ def evaluate_many(**kwargs: Any) -> Any:
     return _evaluate_many(**kwargs)
 
 
-__all__ = ["OpeReport", "evaluate", "evaluate_many"]
+__all__ = ["OpeReport", "evaluate", "evaluate_ope", "run_spec", "evaluate_many"]

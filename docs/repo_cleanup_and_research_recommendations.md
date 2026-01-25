@@ -31,8 +31,7 @@ After (selected):
 │       ├── api/
 │       └── methods/
 ├── docs/
-│   ├── assets/
-│   └── notebooks/
+│   └── assets/
 └── notebooks/
 ```
 
@@ -59,8 +58,7 @@ Risks / follow-ups:
 | `docs/assets/.DS_Store` | generated | OS metadata; no references | none | low | delete |
 | `docs/notebooks/docs/` | generated / empty | Empty leftover after asset cleanup; no references | none | low | delete |
 | `notebooks/docs/` | generated / empty | Empty leftover after asset cleanup; no references | none | low | delete |
-| `notebooks/` | duplicate (kept) | README explicitly mentions it; contains jupytext .py sources | none | high | keep |
-| `docs/notebooks/` | documentation (kept) | MkDocs nav references these notebooks | none | high | keep |
+| `notebooks/` | documentation (kept) | README and tutorials link to notebooks; contains jupytext .py sources | none | high | keep |
 
 ### Files moved to archive
 
@@ -132,7 +130,7 @@ Use a single template page (e.g., `docs/explanation/theory_notes_template.md`) a
 
 ### API clarity and examples
 
-- `crl.evaluate` plus `crl.api` provides a stable surface and notebooks cover the main workflows (`examples/quickstart`, `docs/notebooks/`).
+- `crl.evaluate_ope` plus `crl.api` provides a stable surface and notebooks cover the main workflows (`examples/quickstart`, `notebooks/`).
 - CLI exists (`crl/cli.py`), but it only runs synthetic benchmarks. NOT FOUND: CLI path for loading real datasets described in `docs/how-to/trajectory_dataset_from_parquet.md` or `docs/how-to/logged_bandit_from_dataframe.md`.
 - `diagnostics` parameter is not actionable beyond on/off; users cannot choose subsets.
 
@@ -278,4 +276,4 @@ Use a single template page (e.g., `docs/explanation/theory_notes_template.md`) a
 
 ## 6. OPTIONAL: Demo HTML App
 
-Not added. The repo already uses MkDocs for the docs site, so a standalone HTML page under `docs/demo/` would be unlinked and harder to maintain. A better alternative is a MkDocs page (for example, `docs/explanation/method_explorer.md`) or a notebook-driven demo that uses existing `docs/notebooks/` infrastructure.
+Not added. The repo already uses MkDocs for the docs site, so a standalone HTML page under `docs/demo/` would be unlinked and harder to maintain. A better alternative is a MkDocs page (for example, `docs/explanation/method_explorer.md`) or a notebook-driven demo that uses the existing `notebooks/` sources.

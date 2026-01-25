@@ -23,7 +23,7 @@ from crl.evaluation import (
     SensitivitySpec,
     evaluate_many,
 )
-from crl.ope import OpeReport, evaluate
+from crl.ope import OpeReport, evaluate, evaluate_ope, run_spec
 from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed
 from crl.version import __version__
@@ -51,6 +51,8 @@ __all__ = [
     "TransitionDataset",
     "OpeReport",
     "evaluate",
+    "evaluate_ope",
+    "run_spec",
     "BehaviorPolicyFit",
     "fit_behavior_policy",
     "SelectionResult",

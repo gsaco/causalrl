@@ -39,7 +39,7 @@ import numpy as np
 from crl.assumptions import AssumptionSet
 from crl.assumptions_catalog import BOUNDED_CONFOUNDING
 from crl.estimands.sensitivity_policy_value import SensitivityPolicyValueEstimand
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 sensitivity = SensitivityPolicyValueEstimand(
     policy=policy,
@@ -48,5 +48,5 @@ sensitivity = SensitivityPolicyValueEstimand(
     gammas=np.linspace(1.0, 2.0, 6),
     assumptions=AssumptionSet([BOUNDED_CONFOUNDING]),
 )
-report = evaluate(dataset=dataset, policy=policy, sensitivity=sensitivity)
+report = evaluate_ope(dataset=dataset, policy=policy, sensitivity=sensitivity)
 ```

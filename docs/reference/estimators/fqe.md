@@ -55,5 +55,5 @@ report = FQEEstimator(estimand).estimate(dataset)
 
 ## Notebook
 
-- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/03_mdp_ope_walkthrough.ipynb)
-- [04_confidence_intervals_and_hcope.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/04_confidence_intervals_and_hcope.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/03_mdp_ope_walkthrough.ipynb)
+- [04_confidence_intervals_and_hcope.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/04_confidence_intervals_and_hcope.ipynb)

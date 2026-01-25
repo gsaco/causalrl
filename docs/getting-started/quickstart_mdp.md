@@ -65,6 +65,6 @@ print("true", true_value)
 
 ## Next steps
 
-- Run the full quickstart script: `python examples/quickstart/mdp_ope.py`
+- Run the full quickstart script: `python -m examples.quickstart.mdp_ope`
 - See the decision tree: [Estimator Selection Guide](../explanation/estimator_selection.md)
 - Learn how to read diagnostics: [Diagnostics Interpretation](../how-to/diagnostics_interpretation.md)

@@ -60,9 +60,9 @@ policy = Policy.from_torch(model, action_space_n=4, device="cpu")
 ## Step 3: Run evaluation
 
 ```python
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
-report = evaluate(dataset=bandit, policy=policy)
+report = evaluate_ope(dataset=bandit, policy=policy)
 summary = report.to_dataframe()
 ```
 

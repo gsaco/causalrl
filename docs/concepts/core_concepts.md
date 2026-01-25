@@ -55,9 +55,9 @@ render tables and HTML outputs.
 For most workflows you can use `evaluate`:
 
 ```python
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
-report = evaluate(dataset=dataset, policy=policy)
+report = evaluate_ope(dataset=dataset, policy=policy)
 ```
 
 This selects default estimators for the dataset type and returns an `OpeReport`

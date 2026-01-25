@@ -3,13 +3,13 @@ from crl.assumptions_catalog import MARKOV, OVERLAP, SEQUENTIAL_IGNORABILITY, BE
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
 from crl.benchmarks.mdp_synth import SyntheticMDP, SyntheticMDPConfig
 from crl.estimands.policy_value import PolicyValueEstimand
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 
 def test_evaluate_bandit_default():
     bench = SyntheticBandit(SyntheticBanditConfig(seed=0))
     dataset = bench.sample(num_samples=200, seed=1)
-    report = evaluate(dataset=dataset, policy=bench.target_policy)
+    report = evaluate_ope(dataset=dataset, policy=bench.target_policy)
     df = report.to_dataframe()
     assert not df.empty
 
@@ -23,7 +23,7 @@ def test_evaluate_mdp_named_estimators():
         horizon=dataset.horizon,
         assumptions=AssumptionSet([SEQUENTIAL_IGNORABILITY, OVERLAP, BEHAVIOR_POLICY_KNOWN, MARKOV]),
     )
-    report = evaluate(
+    report = evaluate_ope(
         dataset=dataset,
         policy=bench.target_policy,
         estimand=estimand,

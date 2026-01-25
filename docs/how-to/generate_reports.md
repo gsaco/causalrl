@@ -3,7 +3,7 @@
 Use `OpeReport` to save HTML reports and figures.
 
 ```python
-report = evaluate(dataset=dataset, policy=policy)
+report = evaluate_ope(dataset=dataset, policy=policy)
 report.plot_estimator_comparison()
 report.save_html("report.html")
 ```

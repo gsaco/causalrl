@@ -7,7 +7,7 @@ still exposes diagnostics and uncertainty.
 ## Run the script
 
 ```bash
-python examples/quickstart/bandit_ope.py
+python -m examples.quickstart.bandit_ope
 ```
 
 ## What it does
@@ -26,4 +26,4 @@ python examples/quickstart/bandit_ope.py
 ## Next steps
 
 - See the full notebook workflow: `notebooks/02_bandit_ope_walkthrough.ipynb`
-- Use `evaluate(...)` for multi-estimator reports.
+- Use `evaluate_ope(...)` for multi-estimator reports.

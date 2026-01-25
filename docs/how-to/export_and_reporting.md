@@ -22,9 +22,9 @@ The JSON payload includes a `schema_version` field for downstream parsing.
 ## OpeReport (pipeline)
 
 ```python
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
-report = evaluate(dataset=dataset, policy=policy)
+report = evaluate_ope(dataset=dataset, policy=policy)
 report.to_dataframe()  # summary table
 report.to_html("report.html")
 ```

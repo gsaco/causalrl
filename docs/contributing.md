@@ -24,4 +24,4 @@ mkdocs build
 - Document new estimators with method and assumption cards.
 - Ensure benchmarks remain deterministic.
 
-Full guide: https://github.com/gsaco/causalrl/blob/v4/CONTRIBUTING.md
+Full guide: https://github.com/gsaco/causalrl/blob/main/CONTRIBUTING.md

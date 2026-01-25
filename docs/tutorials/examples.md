@@ -5,25 +5,25 @@ kept minimal so you can adapt them quickly.
 
 ## Quickstart scripts (recommended)
 
-- Bandit OPE: [`examples/quickstart/bandit_ope.py`](https://github.com/gsaco/causalrl/blob/v4/examples/quickstart/bandit_ope.py)
-- MDP OPE: [`examples/quickstart/mdp_ope.py`](https://github.com/gsaco/causalrl/blob/v4/examples/quickstart/mdp_ope.py)
+- Bandit OPE: [`examples/quickstart/bandit_ope.py`](https://github.com/gsaco/causalrl/blob/main/examples/quickstart/bandit_ope.py)
+- MDP OPE: [`examples/quickstart/mdp_ope.py`](https://github.com/gsaco/causalrl/blob/main/examples/quickstart/mdp_ope.py)
 
 Run them locally:
 
 ```bash
-python examples/quickstart/bandit_ope.py
-python examples/quickstart/mdp_ope.py
+python -m examples.quickstart.bandit_ope
+python -m examples.quickstart.mdp_ope
 ```
 
 ## 10-line end-to-end example
 
 ```python
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=500, seed=1)
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 
 print(report.summary_table())
 ```
@@ -34,7 +34,7 @@ The repo includes notebooks that walk through diagnostics, sensitivity analysis,
 and estimator selection. Each notebook is paired with a `.py` script via
 Jupytext so you can diff and run them easily. See the source directory:
 
-- [`notebooks/`](https://github.com/gsaco/causalrl/tree/v4/notebooks)
+- [`notebooks/`](https://github.com/gsaco/causalrl/tree/main/notebooks)
 
 Recommended notebooks:
 

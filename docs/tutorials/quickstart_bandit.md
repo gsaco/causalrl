@@ -14,11 +14,11 @@ it interactively.
 
 ```python
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=1000, seed=1)
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 ```
 
 Plot the estimator comparison and export a report:
@@ -35,4 +35,4 @@ report.save_html("report.html")
 
 ## Notebook
 
-- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/02_bandit_ope_walkthrough.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/02_bandit_ope_walkthrough.ipynb)

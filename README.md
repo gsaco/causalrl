@@ -144,16 +144,16 @@ for estimator in estimators:
 Runnable scripts:
 
 ```bash
-python examples/quickstart/bandit_ope.py
-python examples/quickstart/mdp_ope.py
+python -m examples.quickstart.bandit_ope
+python -m examples.quickstart.mdp_ope
 ```
 
 End-to-end pipeline:
 
 ```python
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 report.to_dataframe()
 report.save_html("report.html")
 ```

@@ -56,11 +56,11 @@ python -m pip install -e .
 
 ```python
 from crl.benchmarks.bandit_synth import SyntheticBandit, SyntheticBanditConfig
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
 benchmark = SyntheticBandit(SyntheticBanditConfig(seed=0))
 dataset = benchmark.sample(num_samples=1000, seed=1)
-report = evaluate(dataset=dataset, policy=benchmark.target_policy)
+report = evaluate_ope(dataset=dataset, policy=benchmark.target_policy)
 
 print(report.summary_table())
 ```

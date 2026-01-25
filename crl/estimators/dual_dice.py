@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from typing import Any
 
@@ -24,6 +25,9 @@ class DualDICEConfig:
 
     ridge: float = 1e-3
     normalize: bool = True
+
+
+DUALDICE_FEATURE_WARN_THRESHOLD = 5000
 
 
 class DualDICEEstimator(OPEEstimator):
@@ -72,6 +76,12 @@ class DualDICEEstimator(OPEEstimator):
         gamma = data.discount
 
         num_features = num_states * num_actions
+        if num_features > DUALDICE_FEATURE_WARN_THRESHOLD:
+            warnings.warn(
+                "DualDICE builds dense one-hot features of size state_space_n * action_space_n. "
+                "Memory scales as O((S*A)^2); consider reducing state/action spaces or using another estimator.",
+                UserWarning,
+            )
         idx = obs.astype(int) * num_actions + actions.astype(int)
         idx = idx[mask]
 
@@ -111,7 +121,7 @@ class DualDICEEstimator(OPEEstimator):
         diagnostics: dict[str, Any] = {
             "density_ratio": _ratio_stats(density_ratio)
         }
-        warnings: list[str] = [
+        warning_messages: list[str] = [
             "Uncertainty for density-ratio estimators may be unreliable; interpret CI cautiously."
         ]
 
@@ -120,7 +130,7 @@ class DualDICEEstimator(OPEEstimator):
             stderr=stderr,
             ci=compute_ci(value, stderr),
             diagnostics=diagnostics,
-            warnings=warnings,
+            warnings=warning_messages,
             metadata={"estimator": "DualDICE", "config": self.config.__dict__},
             data=data,
         )

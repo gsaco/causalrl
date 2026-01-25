@@ -48,5 +48,5 @@ report = ISEstimator(estimand, clip_rho=10.0, use_log_weights=True).estimate(dat
 
 ## Notebook
 
-- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/02_bandit_ope_walkthrough.ipynb)
-- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/v4/notebooks/03_mdp_ope_walkthrough.ipynb)
+- [02_bandit_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/02_bandit_ope_walkthrough.ipynb)
+- [03_mdp_ope_walkthrough.ipynb](https://github.com/gsaco/causalrl/blob/main/notebooks/03_mdp_ope_walkthrough.ipynb)

@@ -87,14 +87,7 @@
     "path": "notebooks",
     "action": "kept",
     "replacement": "none",
-    "reason": "Source notebooks and jupytext .py pairs; referenced in README.",
-    "risk": "high"
-  },
-  {
-    "path": "docs/notebooks",
-    "action": "kept",
-    "replacement": "none",
-    "reason": "MkDocs nav points to these notebooks.",
+    "reason": "README and tutorials link to notebooks; contains jupytext .py sources.",
     "risk": "high"
   }
 ]

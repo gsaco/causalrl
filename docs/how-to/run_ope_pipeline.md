@@ -5,9 +5,9 @@ Use the high-level pipeline to evaluate a policy end-to-end.
 ## Python API
 
 ```python
-from crl.ope import evaluate
+from crl.ope import evaluate_ope
 
-report = evaluate(dataset=dataset, policy=policy, estimators="default")
+report = evaluate_ope(dataset=dataset, policy=policy, estimators="default")
 report.to_dataframe()
 report.save_html("report.html")
 ```
@@ -27,7 +27,7 @@ sensitivity = SensitivityPolicyValueEstimand(
     gammas=np.linspace(1.0, 2.0, 6),
     assumptions=AssumptionSet([BOUNDED_CONFOUNDING]),
 )
-report = evaluate(dataset=dataset, policy=policy, sensitivity=sensitivity)
+report = evaluate_ope(dataset=dataset, policy=policy, sensitivity=sensitivity)
 ```
 
 ## Estimated behavior policy

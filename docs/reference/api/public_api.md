@@ -5,8 +5,10 @@ listed here may change without notice.
 
 ## Core entry points
 
-- `crl.evaluate` - end-to-end OPE pipeline returning an `OpeReport`.
-- `crl.ope.evaluate` - same entry point, explicit module import.
+- `crl.evaluate_ope` - end-to-end OPE pipeline returning an `OpeReport`.
+- `crl.run_spec` - run an `EvaluationSpec` and return an `EvaluationResult`.
+- `crl.evaluate` - compatibility wrapper (spec usage deprecated).
+- `crl.ope.evaluate_ope` - same entry point, explicit module import.
 - `crl.ope.OpeReport` - aggregate report for an OPE run.
 - `crl.set_seed` - seed Python/NumPy/torch RNGs.
 

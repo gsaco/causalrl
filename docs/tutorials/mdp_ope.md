@@ -6,7 +6,7 @@ estimators in a finite-horizon MDP.
 ## Run the script
 
 ```bash
-python examples/quickstart/mdp_ope.py
+python -m examples.quickstart.mdp_ope
 ```
 
 ## What it does

@@ -1,4 +1,8 @@
 import numpy as np
+import pytest
+
+pytest.importorskip("hypothesis")
+
 from hypothesis import given, settings
 from hypothesis import strategies as st
 

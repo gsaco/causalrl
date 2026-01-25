@@ -57,7 +57,7 @@ from crl.estimators import (
     WeightedDoublyRobustEstimator,
     WISEstimator,
 )
-from crl.ope import OpeReport, evaluate
+from crl.ope import OpeReport, evaluate, evaluate_ope, run_spec
 from crl.selectors import SelectionResult, select_estimator
 from crl.utils.seeding import set_seed
 
@@ -115,6 +115,8 @@ __all__ = [
     "FQEEstimator",
     "OpeReport",
     "evaluate",
+    "evaluate_ope",
+    "run_spec",
     "BehaviorPolicyFit",
     "fit_behavior_policy",
     "SelectionResult",

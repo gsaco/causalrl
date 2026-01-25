@@ -26,6 +26,14 @@ DualDICE estimates the discounted occupancy ratio and reweights rewards.
 ## Failure modes
 
 - Sparse state-action coverage can destabilize ratio estimates.
+- Dense feature construction scales as `O((S·A)^2)` memory; large discrete spaces can be impractical.
+
+## Scaling notes
+
+DualDICE constructs dense one-hot features for all state-action pairs. When
+`state_space_n * action_space_n` grows large, memory usage can explode.
+The implementation emits a warning above a conservative threshold to flag
+potential OOM risk.
 
 ## Minimal example
 

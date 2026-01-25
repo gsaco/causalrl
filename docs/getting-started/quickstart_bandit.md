@@ -57,5 +57,5 @@ print("true", true_value)
 ## Next steps
 
 - Read the dataset contract: [Dataset Format and Validation](../concepts/dataset_format.md)
-- Run the full quickstart script: `python examples/quickstart/bandit_ope.py`
+- Run the full quickstart script: `python -m examples.quickstart.bandit_ope`
 - Learn how to export results: [Export and Reporting](../how-to/export_and_reporting.md)
