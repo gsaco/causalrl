@@ -1,13 +1,446 @@
+/* ============================================================
+   CausalRL Premium Theme - Masterpiece Design System
+   ============================================================ */
+
+/* ============================================================
+   1. COLOR SYSTEM - Matching README Banner
+   ============================================================ */
 :root {
-  --crl-header-bg: #ffffff;
-  --crl-header-ink: #000000;
-  --crl-header-muted: #555555;
+  /* Primary palette - luminous teal from banner */
+  --crl-teal-50: #e6faf7;
+  --crl-teal-100: #bfeee3;
+  --crl-teal-200: #98f0dc;
+  --crl-teal-300: #6ee4cd;
+  --crl-teal-400: #4dd2bf;
+  --crl-teal-500: #2a9d8f;
+  --crl-teal-600: #21867a;
+  --crl-teal-700: #1a5761;
+  --crl-teal-800: #0f2330;
+  --crl-teal-900: #0b1117;
+
+  /* Secondary palette - warm gold accent */
+  --crl-gold-200: #fbe5a8;
+  --crl-gold-300: #f6c453;
+  --crl-gold-400: #e5a91f;
+  --crl-gold-500: #d4930a;
+
+  /* Surface colors */
+  --crl-surface-light: #f8fafb;
+  --crl-surface-card: #ffffff;
+  --crl-border-light: rgba(42, 157, 143, 0.15);
+  --crl-shadow-light: 0 4px 20px rgba(42, 157, 143, 0.08);
+  --crl-shadow-hover: 0 12px 40px rgba(42, 157, 143, 0.15);
+
+  /* Gradients */
+  --crl-gradient-hero: linear-gradient(135deg, #0b1117 0%, #0f2330 45%, #0d3b3f 100%);
+  --crl-gradient-accent: linear-gradient(90deg, #4dd2bf, #98f0dc, #f6c453);
+  --crl-gradient-card: linear-gradient(135deg, rgba(77, 210, 191, 0.05), rgba(246, 196, 83, 0.02));
+  --crl-gradient-glow: radial-gradient(ellipse at center, rgba(77, 210, 191, 0.15), transparent 70%);
+
+  /* Material overrides for light mode */
+  --md-primary-fg-color: #2a9d8f;
+  --md-primary-fg-color--light: #4dd2bf;
+  --md-primary-fg-color--dark: #1a5761;
+  --md-accent-fg-color: #f6c453;
+  --md-accent-fg-color--transparent: rgba(246, 196, 83, 0.15);
+}
+
+/* Dark mode colors */
+[data-md-color-scheme="slate"] {
+  --crl-surface-light: #0f1419;
+  --crl-surface-card: #161b22;
+  --crl-border-light: rgba(77, 210, 191, 0.2);
+  --crl-shadow-light: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --crl-shadow-hover: 0 12px 40px rgba(77, 210, 191, 0.1);
+
+  --md-primary-fg-color: #4dd2bf;
+  --md-primary-fg-color--light: #98f0dc;
+  --md-primary-fg-color--dark: #2a9d8f;
+  --md-accent-fg-color: #f6c453;
+
+  --md-default-bg-color: #0d1117;
+  --md-default-bg-color--light: #161b22;
+}
+
+/* ============================================================
+   2. TYPOGRAPHY ENHANCEMENT
+   ============================================================ */
+.md-typeset {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--md-default-fg-color);
+  margin-bottom: 1rem;
+}
+
+.md-typeset h2 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--crl-border-light);
+}
+
+.md-typeset h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--md-primary-fg-color);
+}
+
+/* ============================================================
+   3. PREMIUM HERO SECTION
+   ============================================================ */
+.md-typeset .crl-hero {
+  background: var(--crl-gradient-hero);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  margin: -0.5rem -0.5rem 2rem -0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(11, 17, 23, 0.4);
+}
+
+/* Animated glow orbs */
+.md-typeset .crl-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(ellipse, rgba(77, 210, 191, 0.15), transparent 60%);
+  animation: heroGlow 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.md-typeset .crl-hero::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 50%;
+  height: 160%;
+  background: radial-gradient(ellipse, rgba(246, 196, 83, 0.1), transparent 60%);
+  animation: heroGlow 10s ease-in-out infinite alternate-reverse;
+  pointer-events: none;
+}
+
+@keyframes heroGlow {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  100% { transform: translate(30px, -20px) scale(1.1); opacity: 0.9; }
+}
+
+.md-typeset .crl-hero h1,
+.md-typeset .crl-hero h2 {
+  color: #fff !important;
+  border: none;
+  margin-top: 0;
+  padding-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.md-typeset .crl-hero h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #fff, #bfeee3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.md-typeset .crl-hero .crl-hero-subtitle {
+  font-size: 1.15rem;
+  margin-bottom: 1.5rem;
+  color: var(--crl-teal-200);
+  position: relative;
+  z-index: 1;
+  font-weight: 400;
+}
+
+/* Hero buttons with glassmorphism */
+.md-typeset .crl-hero .crl-hero-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.md-typeset .crl-hero .crl-hero-actions a.md-button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 50px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: none;
+}
+
+.md-typeset .crl-hero .crl-hero-actions a.md-button:hover {
+  background: rgba(77, 210, 191, 0.3);
+  border-color: var(--crl-teal-400);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(77, 210, 191, 0.25);
+}
+
+.md-typeset .crl-hero .crl-hero-actions a.md-button--primary {
+  background: var(--crl-gradient-accent);
+  background-size: 200% 100%;
+  border: none;
+  color: var(--crl-teal-900);
+  font-weight: 600;
+}
+
+.md-typeset .crl-hero .crl-hero-actions a.md-button--primary:hover {
+  background-position: 100% 0;
+  box-shadow: 0 8px 30px rgba(246, 196, 83, 0.3);
+}
+
+/* ============================================================
+   4. FEATURE CARDS GRID
+   ============================================================ */
+.md-typeset .grid.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.md-typeset .grid.cards > ul > li {
+  background: var(--crl-surface-card);
+  border: 1px solid var(--crl-border-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  list-style: none;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset .grid.cards > ul > li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--crl-gradient-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--crl-shadow-hover);
+  border-color: var(--crl-teal-400);
+}
+
+.md-typeset .grid.cards > ul > li:hover::before {
+  transform: scaleX(1);
+}
+
+.md-typeset .grid.cards > ul > li strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--md-primary-fg-color);
+  margin-bottom: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li {
+  background: var(--crl-surface-card);
+  border-color: rgba(77, 210, 191, 0.15);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li:hover {
+  background: linear-gradient(135deg, rgba(77, 210, 191, 0.08), rgba(246, 196, 83, 0.03));
+}
+
+/* ============================================================
+   5. GALLERY ENHANCEMENT
+   ============================================================ */
+.md-typeset .crl-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.md-typeset .crl-gallery a {
+  display: block;
+  background: var(--crl-surface-card);
+  border: 1px solid var(--crl-border-light);
+  border-radius: 16px;
+  padding: 0.5rem;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--crl-shadow-light);
+}
+
+.md-typeset .crl-gallery a:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--crl-shadow-hover);
+  border-color: var(--crl-teal-400);
+}
+
+.md-typeset .crl-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.md-typeset .crl-gallery a:hover img {
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   6. FIGURE STYLING
+   ============================================================ */
+.md-typeset figure.crl-figure {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: var(--crl-surface-card);
+  border: 1px solid var(--crl-border-light);
+  border-radius: 20px;
+  box-shadow: var(--crl-shadow-light);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.md-typeset figure.crl-figure:hover {
+  box-shadow: var(--crl-shadow-hover);
+  border-color: var(--crl-teal-400);
+}
+
+.md-typeset figure.crl-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.md-typeset figure.crl-figure figcaption {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--crl-border-light);
+  font-size: 0.9rem;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ============================================================
+   7. CODE BLOCKS ENHANCEMENT
+   ============================================================ */
+.md-typeset pre {
+  border-radius: 12px;
+  border: 1px solid var(--crl-border-light);
+  box-shadow: var(--crl-shadow-light);
+}
+
+.md-typeset pre > code {
+  border-radius: 12px;
+}
+
+.md-typeset code {
+  border-radius: 6px;
+  padding: 0.15em 0.4em;
+  background: rgba(77, 210, 191, 0.1);
+  color: var(--md-primary-fg-color--dark);
+  font-size: 0.85em;
+}
+
+[data-md-color-scheme="slate"] .md-typeset code {
+  background: rgba(77, 210, 191, 0.15);
+  color: var(--crl-teal-200);
+}
+
+/* Copy button styling */
+.md-clipboard {
+  color: var(--crl-teal-400);
+}
+
+.md-clipboard:hover {
+  color: var(--crl-gold-300);
+}
+
+/* ============================================================
+   8. ADMONITIONS ENHANCEMENT
+   ============================================================ */
+.md-typeset .admonition {
+  border-radius: 12px;
+  border-left-width: 4px;
+  box-shadow: var(--crl-shadow-light);
+}
+
+.md-typeset .admonition.note {
+  border-color: var(--crl-teal-400);
+}
+
+.md-typeset .admonition.tip {
+  border-color: var(--crl-gold-300);
+}
+
+.md-typeset .admonition-title {
+  font-weight: 600;
+}
+
+/* ============================================================
+   9. NAVIGATION ENHANCEMENTS
+   ============================================================ */
+.md-tabs__link {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.md-tabs__link--active,
+.md-tabs__link:hover {
+  color: var(--crl-teal-400) !important;
+}
+
+.md-nav__link:hover {
+  color: var(--crl-teal-400);
+}
+
+.md-nav__link--active {
+  color: var(--crl-teal-400) !important;
+  font-weight: 600;
+}
+
+/* Sidebar styling */
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--crl-teal-400) transparent;
+}
+
+/* ============================================================
+   10. HEADER STYLING
+   ============================================================ */
+.md-header {
+  background: rgba(11, 17, 23, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(77, 210, 191, 0.1);
+}
+
+[data-md-color-scheme="default"] .md-header {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--crl-border-light);
 }
 
 [data-md-color-scheme="default"] .md-header,
 [data-md-color-scheme="default"] .md-tabs {
-  background-color: var(--crl-header-bg);
-  color: var(--crl-header-ink);
+  color: #000;
 }
 
 [data-md-color-scheme="default"] .md-header__title,
@@ -16,13 +449,13 @@
 [data-md-color-scheme="default"] .md-tabs__link,
 [data-md-color-scheme="default"] .md-search__input,
 [data-md-color-scheme="default"] .md-search__icon {
-  color: var(--crl-header-ink);
+  color: #000;
 }
 
 [data-md-color-scheme="default"] .md-tabs__link--active,
 [data-md-color-scheme="default"] .md-tabs__link:hover,
 [data-md-color-scheme="default"] .md-header__button:hover {
-  color: var(--crl-header-ink);
+  color: #000 !important;
 }
 
 [data-md-color-scheme="default"] .md-header__button svg,
@@ -31,5 +464,214 @@
 }
 
 [data-md-color-scheme="default"] .md-search__input::placeholder {
-  color: var(--crl-header-muted);
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.md-header__button.md-logo {
+  padding: 0.3rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.5rem;
+  width: auto;
+}
+
+/* Search bar enhancement */
+.md-search__form {
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.md-search__form:hover,
+.md-search__form:focus-within {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--crl-teal-400);
+}
+
+[data-md-color-scheme="default"] .md-search__form {
+  background: var(--crl-surface-light);
+  border-color: var(--crl-border-light);
+}
+
+/* ============================================================
+   11. BUTTONS GENERAL
+   ============================================================ */
+.md-typeset a.md-button {
+  border-radius: 50px;
+  text-transform: none;
+  font-weight: 500;
+  padding: 0.7rem 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--md-primary-fg-color);
+}
+
+.md-typeset a.md-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(42, 157, 143, 0.2);
+}
+
+.md-typeset a.md-button--primary {
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  border-color: transparent;
+}
+
+.md-typeset a.md-button--primary:hover {
+  background: var(--md-primary-fg-color--dark);
+  box-shadow: 0 8px 25px rgba(42, 157, 143, 0.3);
+}
+
+/* ============================================================
+   12. TABLE ENHANCEMENT
+   ============================================================ */
+.md-typeset table:not([class]) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--crl-border-light);
+  box-shadow: var(--crl-shadow-light);
+}
+
+.md-typeset table:not([class]) th {
+  background: linear-gradient(135deg, var(--crl-teal-700), var(--crl-teal-800));
+  color: #fff;
+  font-weight: 600;
+  padding: 1rem;
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.85rem 1rem;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+  background: rgba(77, 210, 191, 0.05);
+}
+
+/* ============================================================
+   13. IFRAME / REPORT PREVIEW
+   ============================================================ */
+.md-typeset .crl-report-frame {
+  display: block;
+  width: 100%;
+  height: 80vh;
+  min-height: 640px;
+  border: 1px solid var(--crl-border-light);
+  border-radius: 20px;
+  background: var(--crl-surface-card);
+  box-shadow: var(--crl-shadow-light);
+  overflow: hidden;
+}
+
+/* ============================================================
+   14. FOOTER
+   ============================================================ */
+.md-footer {
+  background: var(--crl-teal-900);
+  border-top: 1px solid rgba(77, 210, 191, 0.2);
+}
+
+.md-footer-meta {
+  background: transparent;
+}
+
+/* ============================================================
+   15. MOBILE RESPONSIVENESS
+   ============================================================ */
+@media screen and (max-width: 76.1875em) {
+  .md-typeset .crl-hero {
+    padding: 2rem 1.5rem;
+    margin: -0.5rem -1rem 1.5rem -1rem;
+    border-radius: 0;
+  }
+
+  .md-typeset .grid.cards > ul {
+    grid-template-columns: 1fr;
+  }
+
+  .md-typeset .crl-gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .crl-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .md-typeset .crl-hero .crl-hero-actions {
+    flex-direction: column;
+  }
+
+  .md-typeset .crl-hero .crl-hero-actions a.md-button {
+    text-align: center;
+  }
+}
+
+/* ============================================================
+   16. SPECIAL ELEMENTS
+   ============================================================ */
+
+/* Version badge */
+.md-typeset .crl-version-badge {
+  display: inline-block;
+  background: var(--crl-gradient-accent);
+  color: var(--crl-teal-900);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* Stats/highlight boxes */
+.md-typeset .crl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.md-typeset .crl-stats > div {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: var(--crl-surface-card);
+  border: 1px solid var(--crl-border-light);
+  border-radius: 16px;
+}
+
+.md-typeset .crl-stats strong {
+  display: block;
+  font-size: 2rem;
+  background: var(--crl-gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glowing accent line */
+.md-typeset hr {
+  border: none;
+  height: 2px;
+  background: var(--crl-gradient-accent);
+  margin: 2rem 0;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   17. SMOOTH SCROLLING & ANIMATIONS
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
