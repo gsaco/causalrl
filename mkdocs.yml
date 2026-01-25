@@ -3,22 +3,41 @@ repo_url: https://github.com/gsaco/causalrl
 site_url: https://gsaco.github.io/causalrl/
 theme:
   name: material
+  custom_dir: docs/overrides
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/chart-scatter-plot
+    repo: fontawesome/brands/github
   features:
     - content.code.copy
+    - content.code.annotate
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
+    - navigation.top
     - navigation.tracking
+    - navigation.instant
+    - navigation.instant.progress
     - search.highlight
     - search.suggest
+    - search.share
+    - toc.follow
+    - header.autohide
   palette:
-    - scheme: default
-      primary: blue grey
-      accent: indigo
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    - scheme: slate
-      primary: blue grey
-      accent: indigo
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
@@ -131,7 +150,15 @@ nav:
       - Contributing: contributing.md
 plugins:
   - search
-  - glightbox
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
   - mkdocs-jupyter:
       include_source: true
       execute: false
@@ -145,16 +172,38 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
+  - def_list
+  - footnotes
+  - tables
   - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       use_pygments: true
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.mark
+  - pymdownx.keys
   - toc:
       permalink: true
+      toc_depth: 3
 extra_css:
   - stylesheets/extra.css
 extra:
   version: "0.1.0"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gsaco/causalrl
+  generator: false
