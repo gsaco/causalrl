@@ -2,7 +2,7 @@
 
 ## Release status
 
-- Current release: v0.1.0 (research preview, alpha quality).
+- Current release: v0.2.0 (research preview, alpha quality).
 - API may evolve as estimator coverage and diagnostics expand.
 
 ## Versioning and deprecations

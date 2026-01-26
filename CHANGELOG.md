@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 0.2.0 - 2026-01-26
+
 - Added dataset constructors for numpy arrays and pandas dataframes.
 - Added policy adapters for sklearn and torch, plus callable policy wrappers.
 - Added bootstrap CI support and standardized report exports.

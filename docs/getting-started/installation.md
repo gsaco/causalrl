@@ -1,11 +1,17 @@
 # Installation
 
-CausalRL is imported as `crl`. PyPI publishing is planned; for now install from
-source.
+CausalRL is imported as `crl`. Install from PyPI or source.
 
 ## PyPI status
 
-Not yet published (as of January 23, 2026).
+Available on PyPI (as of January 26, 2026).
+
+## Install from PyPI
+
+```bash
+python -m pip install causalrl
+python -m pip install "causalrl[all]"
+```
 
 ## Install from source
 
@@ -17,15 +23,16 @@ python -m pip install -e .
 
 ## Optional extras
 
-Choose extras when you need them:
+Choose extras when you need them (use `causalrl[...]` for PyPI installs or
+`.[...]` for editable installs):
 
 ```bash
-python -m pip install -e ".[docs]"
-python -m pip install -e ".[benchmarks]"
-python -m pip install -e ".[notebooks]"
-python -m pip install -e ".[behavior]"
-python -m pip install -e ".[d4rl]"
-python -m pip install -e ".[rlu]"
+python -m pip install "causalrl[docs]"
+python -m pip install "causalrl[benchmarks]"
+python -m pip install "causalrl[notebooks]"
+python -m pip install "causalrl[behavior]"
+python -m pip install "causalrl[d4rl]"
+python -m pip install "causalrl[rlu]"
 ```
 
 !!! tip "Recommended extras"

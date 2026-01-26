@@ -22,7 +22,7 @@ Know what you're estimating. Know when to trust it. Know how it was produced.
 
 ---
 
-**Package**: `causalrl` · **Import**: `crl` · **Version**: 0.1.0 · [:fontawesome-brands-github: GitHub](https://github.com/gsaco/causalrl)
+**Package**: `causalrl` · **Import**: `crl` · **Version**: 0.2.0 · [:fontawesome-brands-github: GitHub](https://github.com/gsaco/causalrl)
 
 ---
 
@@ -87,13 +87,16 @@ Know what you're estimating. Know when to trust it. Know how it was produced.
 === "Installation"
 
     ```bash
-    # Clone and install (PyPI coming soon)
+    # Install from PyPI
+    pip install causalrl
+
+    # With all optional extras
+    pip install "causalrl[all]"
+
+    # Or install from source
     git clone https://github.com/gsaco/causalrl
     cd causalrl
     pip install -e .
-    
-    # With all optional extras
-    pip install -e ".[all]"
     ```
 
 === "First Evaluation"
