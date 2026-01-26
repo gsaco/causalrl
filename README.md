@@ -1,36 +1,3 @@
-<p align="center">
-  <img src="docs/assets/branding/causalrl-banner.png" alt="CausalRL - Estimand-first causal RL and off-policy evaluation" width="100%" />
-</p>
-
-<h1 align="center">CausalRL</h1>
-
-<p align="center">
-  <strong>Know what you're estimating. Know when to trust it. Know how it was produced.</strong>
-</p>
-
-<p align="center">
-  <a href="https://github.com/gsaco/causalrl/actions/workflows/ci.yml"><img src="https://github.com/gsaco/causalrl/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://gsaco.github.io/causalrl/"><img src="https://github.com/gsaco/causalrl/actions/workflows/pages.yml/badge.svg?branch=main" alt="Docs" /></a>
-  <a href="https://codecov.io/gh/gsaco/causalrl"><img src="https://codecov.io/gh/gsaco/causalrl/branch/main/graph/badge.svg" alt="Coverage" /></a>
-  <a href="https://pypi.org/project/causalrl/"><img src="https://img.shields.io/pypi/v/causalrl" alt="PyPI" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/gsaco/causalrl" alt="License" /></a>
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python" /></a>
-</p>
-
-<p align="center">
-  <a href="https://gsaco.github.io/causalrl/">📚 Docs</a> •
-  <a href="https://gsaco.github.io/causalrl/tutorials/">🎓 Tutorials</a> •
-  <a href="examples/README.md">💡 Examples</a> •
-  <a href="https://gsaco.github.io/causalrl/results/gallery.md">🖼️ Gallery</a> •
-  <a href="CITATION.cff">📄 Cite</a>
-</p>
-
----
-
-<table>
-<tr>
-<td>
-
 **CausalRL** is a research-grade Python library for **off-policy evaluation (OPE)** that makes causal assumptions explicit. It goes beyond point estimates—combining estimand-first design, diagnostics-first reporting, and reproducible benchmarks so you can tell not just *what* a policy is worth, but *whether you should trust the estimate.*
 
 </td>
